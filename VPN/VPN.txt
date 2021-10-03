@@ -1,0 +1,18 @@
+Web Site
+https://vpnoverview.com/vpn-information/what-is-a-vpn/
+
+how_vpn_work.pdf
+https://www.communicat.com.au/wp-content/uploads/2013/04/how_vpn_work.pdf
+
+Technical_Overview_of_Virtual_Private_NetworksVPNs.pdf
+https://www.researchgate.net/publication/274929918_Technical_Overview_of_Virtual_Private_NetworksVPNs
+
+Defining-a-VPN.pdf
+http://scitechconnect.elsevier.com/wp-content/uploads/2013/09/Defining-a-VPN.pdf
+
+CiscoVPN
+https://www.cisco.com/c/dam/en_us/training-events/le21/le34/downloads/689/academy/2008/sessions/BRK-134T_VPNs_Simplified.pdf
+
+How_Virtual_Private_Networks_Work
+https://www.academia.edu/29644138/How_Virtual_Private_Networks_Work
+
