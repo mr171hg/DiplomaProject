@@ -1,0 +1,24 @@
+Dobrý deň, moje meno je Marek Rohač a predtým než začneme 
+by som rád predstavil členov nášho pracovného tímu. 
+Predstavenie členov. (dvihnut ruku)
+
+Témou nášho semestrálneho zadania bola Virtualizácia sieťových funkcií
+ v 5g sietach.
+
+Našou úlohou bola taktiež príprava 5 otázok. Jedná sa o otázky, 
+ktoré je možné vidieť na tomto slide. Teda 
+
+Otázka 3.
+Siete 5G sa budujú tak, aby využívali signály s rôznymi frekvenciami:
+•	Vysokopásmové (high-band): 24+GHz 
+•	Strednopásmové (mid-band): 1 − 6GHz
+•	Nízkopásmové (low-band): < 1GHz
+
+Teda pre oblast kde je malý počet bts staníc by bolo najvhodnejšie 
+využiť frekvencie menšie ako 1 ghz, ktoré patria medzi nizko-pasmové. 
+Vo výsledku by sme mali pokrytie signalom aj v uvedených husto zastavaných prostrediach 
+avśak na úkor nižšia kapacita a nižšie prenosové rýchlosti.
+
+Ak by sme však potrebovali pokrytie s vyssou kapacitou a aj prenosovymi rychlostami 
+tak by sme museli zvoliť iné pásmo 
+

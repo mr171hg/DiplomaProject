@@ -1,0 +1,2 @@
+ubuntu command for shared folder 
+sudo usermod -aG vboxsf $(whoami)
