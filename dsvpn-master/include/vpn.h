@@ -15,10 +15,10 @@ Last Update: 20.02.2022 -- add description
 /*UNIX-like OS Dependent Libraries*/
 #include <sys/ioctl.h>
 #include <sys/socket.h>
-#include <sys/types.h>
 #include <sys/uio.h>
 #include <sys/wait.h>
-
+#include <netdb.h>
+#include <poll.h>
 #include <net/if.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
@@ -29,12 +29,11 @@ Last Update: 20.02.2022 -- add description
 #include <errno.h>
 #include <fcntl.h>
 #include <inttypes.h>
-#include <netdb.h>
-#include <poll.h>
 #include <signal.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/types.h>
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
