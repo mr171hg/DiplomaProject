@@ -2,10 +2,11 @@
 
 \chapter{Virtual Private Network -- VPN}\label{1}
 Virtuálna privátna sieť (ďalej \textbf{\acrshort{vpn}}) je jeden zo spôsobov prepojenia zariadení, tak že internetová komunikácia medzi nimi je privátna, resp. zabezpečená aj v prípade používania nezabezpečenej, verejnej siete. Bezpečnosť spojenia je docielená pomocou kryptografických protokolov v tuneli, ktorý VPN vytvára. Pod pojmom tunel sa v skutočnosti myslí virtuálna zašifrovaná linka, ktorou je dátový paket prenášaný po sieti medzi koncovými zariadeniami. V skutočnosti tunel vzniká pomocou procesu zapuzdrenia dát. V závislosti od toho na akej úrovni OSI referenčného modelu sa pohybujeme. 
-Táto technológia patrí aktuálne k najpoužívanejším spôsobom pripojenia sa medzi 2 rôznymi internetovými doménami. Najčastejší výskyt je možné sledovať v korporačnom prostredí, pričom cieľom je rozšírenie možností bezpečného pripojenia sa k firemnej sieti. Vzhľadom na firemné tajomstvá je nutné aby bolo takéto spojenie bezpečné a zamestnanci sa mohli pripojiť z rôznych miest. Vďaka uvedeným vlastnostiam je následne možná aj práca z~domu (z~ang. \textit{Home office}), ktorá môže byť benefitom pre obe strany. Ukážka použitia VPN je znázornená pomocou \ref{vpndemo}. 
-\begin{figure}[!ht]
+Táto technológia patrí aktuálne k najpoužívanejším spôsobom pripojenia sa medzi 2 rôznymi internetovými doménami. Najčastejší výskyt je možné sledovať v korporačnom prostredí, pričom cieľom je rozšírenie možností bezpečného pripojenia sa k firemnej sieti. Vzhľadom na firemné tajomstvá je nutné aby bolo takéto spojenie bezpečné a zamestnanci sa mohli pripojiť z rôznych miest. Vďaka uvedeným vlastnostiam je následne možná aj práca z~domu (z~ang. \textit{Home office}), ktorá môže byť benefitom pre obe strany. Ukážka použitia VPN je znázornená pomocou \ref{vpndemo} a \ref{vpnfancy}. 
+
+\begin{figure}[!h]
 	\centering
-	\includegraphics[width=.9\textwidth]{figures/VPNdemo}
+	\includegraphics[width=.8\textwidth]{figures/VPNdemo}
 	\caption{Ukážka typického VPN pripojenia}
 	\label{vpndemo}
 \end{figure}
@@ -16,9 +17,98 @@ Táto technológia patrí aktuálne k najpoužívanejším spôsobom pripojenia 
 	\caption{vpn fancy obrazok}
 	\label{vpnfancy}
 \end{figure}
-\section{Výhody a nevýhody VPN sieti}
-neviem ci to bude treba na samostatnu podkapitolu
-mozno len doplnit informacie do textu 
+
+\section{Charakteristika a definovanie pojmov}
+Obsahom tejto podkapitoly je zavedenie a následne stručná charakteristika pojmov, potrebných na pochopenie problematiky VPN sieti.
+\subsection{Charakteristika referenčných modelov}\label{crm}
+V rámci  podkapitoly \ref{rm} je potrebné pred samotnou klasifikáciou vysvetliť pojmy Referenčný model prepojenia otvorených systémov\footnote{z ang. \textit{Open Systems Interconnection reference model}} (ďalej \acrshort{osi}) a Model opisujúci balíky internetových protokolov, známy ako, \acrshort{tcpip} referenčný model.
+
+Úlohou uvedených referenčných modelov je vizualizácia postupu spracovania dát od používateľa až k ich odoslaniu zo zariadenia\footnote{z ang. \textit{end-to-end data communication}}. Pojem spracovanie dát znamená opísanie toho ako dochádza v jednotlivých abstraktných vrstvách k pretransformovaniu používateľských dát na súbor jednotiek a núl, ktoré sú následne odoslané do iného zariadenia. 
+
+\acrshort{osi} Model vznikol v skorších fázach evolúcie počítačových sietí. Vychádza skôr z teoretického než praktického prístupu. Pozostáva zo 7 abstraktných vrstiev\footnote{z ang. \textit{layer}}:
+
+\begin{enumerate}
+	\item{fyzická vrstva} -- z ang. \textit{Physical Layer} (ďalej L1), 
+	\item{spojová vrstva} -- z ang. \textit{Data Link Layer} (ďalej L2),
+	\item{sieťová vrstva} -- z ang. \textit{Network Layer} (ďalej L3),
+	\item{transportná vrstva} -- z ang. \textit{Transport Layer} (ďalej L4),
+	\item{relačná vrstva} -- z ang. \textit{Session Layer} (ďalej L5),
+	\item{prezenčná vrstva} -- z ang. \textit{Presentation Layer} (ďalej L6),
+	\item{aplikačná vrstva} -- z ang. \textit{Application Layer} (ďalej L7).
+\end{enumerate}
+
+V schéme \ref{osi} sa nachádzajú stručne opísané jednotlivé činnosti vrstiev.
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.8\textwidth]{figures/osi}
+	\caption{https://www.comptia.org/blog/open-systems-interconnection-reference-model - dobry zdroj na rozsirenie}
+	\label{osi}
+\end{figure}
+
+
+Čím je väčšie číslo vrstvy tým bližšie sa dáta nachádzajú pri používateľovi. Vďaka uvedeným vlastnostiam je tento model vhodnejší pri začiatku štúdia spracovania sieťových dát v počítači. Z rovnakého dôvodu sa taktiež viac stretávame s jeho použitím pri opise funkcionality riešenia ako s  \acrshort{tcpip} novším modelom.  Viac informácií o problematike nájde čitateľ v \cite{osi}.
+
+Na druhej strane \acrshort{tcpip} model vznikol z praktického prístupu. Hlavný rozdiel je v počte abstraktných vrstiev, ktorý je v prípade \acrshort{tcpip} zmenšený na 4 vrstvy \cite{tcpip}. 
+TCP/IP model je zobrazený pomocou schémy \ref{tcpipprot}. V uvedenej schéme sú znázornené aj niektoré z protokolov, ktoré sa na jednotlivých vrstvách používajú.
+
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figures/tcpipprot}
+	\caption{Schéma TCP/IP modelu s niektorými protokolmi}
+	\label{tcpipprot}
+\end{figure}
+
+\textbf{Aplikačná vrstva (L5-7)} zahŕňa protokoly používané väčšinou aplikácií na poskytovanie užívateľských služieb alebo výmenu aplikačných dát cez sieťové pripojenia, ktoré je vytvorené protokolmi na nižšej úrovni.  Spája vrstvy L5 až L7 OSI modelu. Príklady známych protokolov aplikačnej vrstvy sú \acrfull{http}, \acrfull{ftp}, \acrfull{smtp} a iné. Údaje, resp. dáta sú pri spracovaní kódované podľa L4 protokolov. Sú zapuzdrené do protokolových jednotiek transportnej vrstvy, tzv. \textbf{segmentov}.  
+
+\textbf{Transportná vrstva (L4)} vytvára základné dátové kanály, ktoré aplikácie používajú na výmenu dát. Vrstva vytvára konektivitu medzi hostiteľmi, ktorá je nezávislá od siete, štruktúry užívateľských dát a smerovacích informácií. Konektivita na transportnej vrstve môže byť kategorizovaná ako orientovaná na spojenie, implementovaná v protokole \acrshort{tcp}, alebo \acrshort{udp} bez orientácie na spojenie. Uvedené protokoly sú stručne charakterizované nižšie, v tejto podkapitole. 
+
+Protokoly v tejto vrstve zabezpečujú:
+\begin{itemize}
+	\item{riadenie chýb} -- z ang. \textit{error control} \cite{ec},
+	\item{segmentáciu dát} -- z ang. \textit{segmentation} \cite{sd},
+	\item{riadenie toku dát} -- z ang. \textit{flow control} \cite{fc},
+	\item{riadenie preťaženia} -- z ang. \textit{congestion control} \cite{cc},
+	\item{adresovanie aplikácií} -- z ang. \textit{application addressing} \cite{aa}.
+\end{itemize}
+Výstupom transportnej vrstvy sú segmenty, ktoré sú spracované v ďalšej vrstve referenčného modelu. 
+
+\textbf{Internetová, resp. Sieťová vrstva (L3)} je zodpovedná za odosielanie paketov cez jednu alebo viac sietí. S touto funkcionalitou internetová vrstva umožňuje sieťovanie, prepojenie rôznych IP sietí a v podstate vytvára internet. Z L4 segmentov tvorí pakety, tak že pridá informácie potrebné na ďalšie smerovanie. 
+
+\textbf{Linková vrstva (L2)} sa používa na presun paketov medzi rozhraniami internetovej vrstvy dvoch rôznych hostiteľov na rovnakom linku. Procesy vysielania a prijímania paketov na linke je možné konfigurovať. Zariadenia nazývané prepínače \footnote{z ang. \textit{switch}}, vykonávajú rámcovania\footnote{z ang. \textit{frame}}. Pripravujú pakety z L3 vrstvy na prenos pridaním ďalších informácií. Týmto úkonom vzniknú rámce. Tie sa prenášajú do fyzickej vrstvy a cez prenosové médium až k hostiteľovi. Fyzická vrstva predstavuje prvok, cez ktoré sú dáta prenášane. Napríklad optický a ethernetový kábel. 
+
+Vyššie uvedené procesy prípravy dát sú znázornené pomocou schémy \ref{p1} a \ref{p2}.
+% TODO: \usepackage{graphicx} required
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.7\linewidth]{figures/prenos1z2}
+	\caption{spoj tento obrazok s nasledujucim do jedneho}
+	\label{p1}
+\end{figure}
+\begin{figure}
+	\centering
+	\includegraphics[width=0.7\linewidth]{figures/prenos2z2}
+	\caption{spoj tento obrazok s predchadzajucim do jedneho, plus \ref{osi}}
+	\label{p2}
+\end{figure}
+\newpage
+\textbf{Protokol riadenia prenosu} (z ang. \textit{Transmission Control Protocol}, ďalej \acrshort{tcp}) je komunikačný protokol orientovaný na nadviazanie a udržanie sieťového spojenia medzi zariadeniami. Môže byť použitý pri úlohe príjímateľa aj odosielateľa (z ang. \textit{full-duplex}). Úlohou je spoľahlivý prenos dát medzi komunikantmi. Odoslanie a príjem dát je v rovnakom poradí. Protokol zároveň obsahuje mechanizmy na kontrolu výskytu chýb. Svoj názov má podľa dvoch najdôležitejších protokolov:
+\begin{itemize}
+	\item{Protokol Riadenia Prenosu} -- z ang. \textit{\acrlong{tcp}},
+	\item{Internet Protokol} -- z ang. \textit{\acrlong{ip}}. 
+\end{itemize}
+
+Na začiatku 21. storočia je 95\% paketov používaných na internete TCP. Bežné aplikácie používajúce TCP sú webové (HTTP/HTTPS protokoly), slúžiace na e-mailovú komunikáciu (SMTP/POP3/IMAP) a prenos súborov (z ang. \textit{File Transfer Protocol -- \acrshort{ftp}}). Minimálna dĺžka hlavičky TCP je 20 bajtov a maximálna dĺžka 60 bajtov. Po pridaní údajov TCP hlavičky k prenášaným dátam, vzniká tzv. \textit{segment}.
+
+V súčasnosti je možne TCP protokol implementovať softvérovo aj hardvérovo. Pri prvom z uvedených je problémom závislosť na OS a následne aj vysoká vyťaženosť procesora pri príprave a spracovaní dát. Pri hardvérovom riešení je výhodou optimalizácia a implementácia bez potreby dodatočnej úpravy OS. Hardvérové implementácie sa realizujú pomocou koprocesorov umiestnených vo vnútri procesora. Následkom toho môžeme dnes bežne pozorovať umiestnenie spomenutých zariadení na našich zariadeniach.
+
+Podrobnejšie informácie o TCP protokole je možné nájsť na \cite{tcp2}. V uvedenej publikácií sa nachádza opis TCP hlavičky, metódy nadviazania a ukončenia spojenia. Obdobne je spomenuté ako dochádza k prenosu dát pomocou sekvenčných čísel. Ak má používateľ nejasnosti v fungovaní TCP protokolu, odporúča sa danú publikáciu prečítať.
+
+\textbf{Používateľský datagramový protokol} (z ang. \textit{User Datagram Protocol}, ďalej \acrshort{udp}) je jedným zo základných komunikačných \acrshort{ip} protokolov. Používa sa na odosielanie správ iným hostiteľom v sieti. Správy sú prenášané ako datagramy v paketoch. \acrshort{udp} nevyžaduje predchádzajúcu komunikáciu na nastavenie komunikačných kanálov alebo dátových ciest. Používa jednoduchý komunikačný model bez spojenia s minimom protokolových mechanizmov. Poskytuje kontrolné súčty pre integritu údajov a čísla portov na adresovanie rôznych funkcií v zdroji a cieli datagramu. 
+
+Narozdiel od \acrshort{tcp}) neposkytuje žiadnu záruka doručenia správy alebo duplicitnej ochrany. 
+\acrshort{udp}) je vhodný na účely, kde kontrola a oprava chýb buď nie sú potrebné, alebo sa vykonávajú v aplikácii. Aplikácie citlivé na čas často používajú UDP, pretože zahadzovanie paketov je vhodnejšie ako čakanie na pakety oneskorené v dôsledku opätovného prenosu. Príklad použitia môžu byť streamovacie služby. 
+Podrobnejšie informácie o \acrshort{udp}) protokole nájde čitateľ v \cite{udp}.
+
 \section{Klasifikácia VPN sietí}
 V súčasnosti má čitateľ k dispozícií veľa rôznych internetových zdrojov o problematike VPN. Uvedené sú rôzne možnosti klasifikácie VPN siete. V rámci tejto práce klasifikujeme VPN siete podľa logickej topológie, použitých protokolov a vrstiev, na ktorých sú postupy aplikované. Obsahom tejto podkapitoly je rozdelenie a opis jednotlivých typov VPN sieti.
 \subsection{Rozdelenie VPN sieti podľa logickej topológie}
@@ -70,92 +160,23 @@ Model Sieť so sieťou je používaný najmä pri spojení vedľajšej pobočky 
  	\includegraphics[width=.7\textwidth]{figures/sts}
  	\caption{rearanzovat}
  	\label{sts}
- \end{figure}
-\subsection{Rozdelenie VPN sieti podľa použitých protokolov}      
+ \end{figure}    
 \subsection{Rozdelenie VPN sieti podľa vrstiev TCP/IP referenčného modelu}\label{rm}
-\subsubsection{Charakteristika referenčných modelov}
-V rámci  podkapitoly \ref{rm} je potrebné pred samotnou klasifikáciou vysvetliť pojmy Referenčný model prepojenia otvorených systémov\footnote{z ang. \textit{Open Systems Interconnection reference model}} (ďalej \acrshort{osi}) a Model opisujúci balíky internetových protokolov, známy ako, \acrshort{tcpip} referenčný model.
+VPN siete môžeme klasifikovať podľa vrstvy (ďalej \acrshort{l}) referenčného modelu, na ktorej dochádza k šifrovaniu dát. Stručná charakteristika referenčných modelov je obsahom podkapitoly \ref{crm}.
 
-Úlohou uvedených referenčných modelov je vizualizácia postupu spracovania dát od používateľa až k ich odoslaniu zo zariadenia\footnote{z ang. \textit{end-to-end data communication}}. Pojem spracovanie dát znamená opísanie toho ako dochádza v jednotlivých abstraktných vrstvách k pretransformovaniu používateľských dát na súbor jednotiek a núl, ktoré sú následne odoslané do iného zariadenia. 
-
-\acrshort{osi} Model vznikol v skorších fázach evolúcie počítačových sietí. Vychádza skôr z teoretického než praktického prístupu. Pozostáva zo 7 abstraktných vrstiev:
-
+Klasifikácia VPN sietí podľa \acrshort{osi} modelu:
 \begin{itemize}
-	\item{fyzická vrstva} -- vrstva 1 (ďalej L1), 
-	\item{spojová vrstva} -- vrstva 2 (ďalej L2),
-	\item{sieťová vrstva} -- vrstva 3 (ďalej L3),
-	\item{transportná vrstva} -- vrstva 4 (ďalej L4),
-	\item{relačná vrstva} -- vrstva 5 (ďalej L5),
-	\item{prezenčná vrstva} -- vrstva 6 (ďalej L6),
-	\item{aplikačná vrstva} -- vrstva 7 (ďalej L7).
+	\item{\textbf{L2 VPN}} -- VPN na spojovej vrstve,
+	\item{\textbf{L3 VPN}} -- VPN na sieťovej vrstve,
+	\item{\textbf{L4 VPN}} -- VPN na transportnej vrstve.
 \end{itemize}
 
-Čím je väčšie číslo vrstvy tým bližšie sa dáta nachádzajú pri používateľovi. Vďaka uvedeným vlastnostiam je tento model vhodnejší pri začiatku štúdia spracovania sieťových dát v počítači. Viac informácií o problematike nájde čitateľ v \cite{osi}.
 
-Na druhej strane \acrshort{tcpip} model vznikol z praktického prístupu. Hlavný rozdiel je v počte abstraktných vrstiev, ktorý je v prípade \acrshort{tcpip} zmenšený na 4 vrstvy \cite{tcpip}. 
-TCP/IP model je zobrazený pomocou schémy \ref{tcpipprot}. V uvedenej schéme sú znázornené aj niektoré z protokolov, ktoré sa na jednotlivých vrstvách používajú.
 
-\begin{figure}[!ht]
-	\centering
-	\includegraphics[width=0.9\textwidth]{figures/tcpipprot}
-	\caption{Schéma TCP/IP modelu s niektorými protokolmi}
-	\label{tcpipprot}
-\end{figure}
-
-\textbf{Aplikačná vrstva (L5-7)} zahŕňa protokoly používané väčšinou aplikácií na poskytovanie užívateľských služieb alebo výmenu aplikačných dát cez sieťové pripojenia, ktoré je vytvorené protokolmi na nižšej úrovni.  Spája vrstvy L5 až L7 OSI modelu. Príklady známych protokolov aplikačnej vrstvy sú \acrfull{http}, \acrfull{ftp}, \acrfull{smtp} a iné. Údaje, resp. dáta sú pri spracovaní kódované podľa L4 protokolov. Sú zapuzdrené do protokolových jednotiek transportnej vrstvy, tzv. \textbf{segmentov}.  
-
-\textbf{Transportná vrstva (L4)} vytvára základné dátové kanály, ktoré aplikácie používajú na výmenu dát. Vrstva vytvára konektivitu medzi hostiteľmi, ktorá je nezávislá od siete, štruktúry užívateľských dát a smerovacích informácií. Konektivita na transportnej vrstve môže byť kategorizovaná ako orientovaná na spojenie, implementovaná v protokole \acrshort{tcp}, alebo \acrshort{udp} bez orientácie na spojenie. Uvedené protokoly sú stručne charakterizované nižšie, v tejto podkapitole. 
-
-Protokoly v tejto vrstve zabezpečujú:
-\begin{itemize}
-	\item{riadenie chýb} -- z ang. \textit{error control} \cite{ec},
-	\item{segmentáciu dát} -- z ang. \textit{segmentation} \cite{sd},
-	\item{riadenie toku dát} -- z ang. \textit{flow control} \cite{fc},
-	\item{riadenie preťaženia} -- z ang. \textit{congestion control} \cite{cc},
-	\item{adresovanie aplikácií} -- z ang. \textit{application addressing} \cite{aa}.
-\end{itemize}
-Výstupom transportnej vrstvy sú segmenty, ktoré sú spracované v ďalšej vrstve referenčného modelu. 
-
-\textbf{Internetová, resp. Sieťová vrstva (L3)} je zodpovedná za odosielanie paketov cez jednu alebo viac sietí. S touto funkcionalitou internetová vrstva umožňuje sieťovanie, prepojenie rôznych IP sietí a v podstate vytvára internet. Z L4 segmentov tvorí pakety, tak že pridá informácie potrebné na ďalšie smerovanie. 
-
-\textbf{Linková vrstva (L2)} sa používa na presun paketov medzi rozhraniami internetovej vrstvy dvoch rôznych hostiteľov na rovnakom linku. Procesy vysielania a prijímania paketov na linke je možné konfigurovať. Zariadenia nazývané prepínače \footnote{z ang. \textit{Switch}}, vykonávajú rámcovania\footnote{z ang. \textit{frame}}. Pripravujú pakety z L3 vrstvy na prenos pridaním ďalších informácií. Týmto úkonom vzniknú rámce. Tie sa prenášajú do fyzickej vrstvy a cez prenosové médium až k hostiteľovi. Fyzická vrstva predstavuje prvok, cez ktoré sú dáta prenášane. Napríklad optický a ethernetový kábel. 
-
-Vyššie uvedené procesy prípravy dát sú znázornené pomocou schémy \ref{p1} a \ref{p2}.
-% TODO: \usepackage{graphicx} required
-\begin{figure}
-	\centering
-	\includegraphics[width=0.7\linewidth]{figures/prenos1z2}
-	\caption{spoj tento obrazok s nasledujucim do jedneho}
-	\label{p1}
-\end{figure}
-% TODO: \usepackage{graphicx} required
-\begin{figure}
-	\centering
-	\includegraphics[width=0.7\linewidth]{figures/prenos2z2}
-	\caption{spoj tento obrazok s predchadzajucim do jedneho}
-	\label{p2}
-\end{figure}
-
-\textbf{Protokol riadenia prenosu} (z ang. \textit{Transmission Control Protocol}, ďalej \acrshort{tcp}) je komunikačný protokol orientovaný na nadviazanie a udržanie sieťového spojenia medzi zariadeniami. Môže byť použitý pri úlohe príjímateľa aj odosielateľa (z ang. \textit{full-duplex}). Úlohou je spoľahlivý prenos dát medzi komunikantmi. Odoslanie a príjem dát je v rovnakom poradí. Protokol zároveň obsahuje mechanizmy na kontrolu výskytu chýb. Svoj názov má podľa dvoch najdôležitejších protokolov:
-\begin{itemize}
-	\item{Protokol Riadenia Prenosu} -- z ang. \textit{\acrlong{tcp}},
-	\item{Internet Protokol} -- z ang. \textit{\acrlong{ip}}. 
-\end{itemize}
-
-Na začiatku 21. storočia je 95\% paketov používaných na internete TCP. Bežné aplikácie používajúce TCP sú webové (HTTP/HTTPS protokoly), slúžiace na e-mailovú komunikáciu (SMTP/POP3/IMAP) a prenos súborov (z ang. \textit{File Transfer Protocol -- \acrshort{ftp}}). Minimálna dĺžka hlavičky TCP je 20 bajtov a maximálna dĺžka 60 bajtov. Po pridaní údajov TCP hlavičky k prenášaným dátam, vzniká tzv. \textit{segment}.
-
-V súčasnosti je možne TCP protokol implementovať softvérovo aj hardvérovo. Pri prvom z uvedených je problémom závislosť na OS a následne aj vysoká vyťaženosť procesora pri príprave a spracovaní dát. Pri hardvérovom riešení je výhodou optimalizácia a implementácia bez potreby dodatočnej úpravy OS. Hardvérové implementácie sa realizujú pomocou koprocesorov umiestnených vo vnútri procesora. Následkom toho môžeme dnes bežne pozorovať umiestnenie spomenutých zariadení na našich zariadeniach.
-
-Podrobnejšie informácie o TCP protokole je možné nájsť na \cite{tcp2}. V uvedenej publikácií sa nachádza opis TCP hlavičky, metódy nadviazania a ukončenia spojenia. Obdobne je spomenuté ako dochádza k prenosu dát pomocou sekvenčných čísel. Ak má používateľ nejasnosti v fungovaní TCP protokolu, odporúča sa danú publikáciu prečítať.
-
-\textbf{Používateľský datagramový protokol} (z ang. \textit{User Datagram Protocol}, ďalej \acrshort{udp}) je jedným zo základných komunikačných \acrshort{ip} protokolov. Používa sa na odosielanie správ iným hostiteľom v sieti. Správy sú prenášané ako datagramy v paketoch. \acrshort{udp} nevyžaduje predchádzajúcu komunikáciu na nastavenie komunikačných kanálov alebo dátových ciest. Používa jednoduchý komunikačný model bez spojenia s minimom protokolových mechanizmov. Poskytuje kontrolné súčty pre integritu údajov a čísla portov na adresovanie rôznych funkcií v zdroji a cieli datagramu. 
-
-Narozdiel od \acrshort{tcp}) neposkytuje žiadnu záruka doručenia správy alebo duplicitnej ochrany. 
-\acrshort{udp}) je vhodný na účely, kde kontrola a oprava chýb buď nie sú potrebné, alebo sa vykonávajú v aplikácii. Aplikácie citlivé na čas často používajú UDP, pretože zahadzovanie paketov je vhodnejšie ako čakanie na pakety oneskorené v dôsledku opätovného prenosu. Príklad použitia môžu byť streamovacie služby. 
-Podrobnejšie informácie o \acrshort{udp}) protokole nájde čitateľ v \cite{udp}.
-
-\subsection{Klasifikácie VPN sieti}
-
+\subsection{Rozdelenie VPN sieti podľa použitých protokolov}  
+\subsection{Zhrnutie klasifikácie VPN sieti}
+ Jednoducha schema so vsetkym v jednom obrazku 
+ 
 \cite{divvpn}, \cite{ciscovpn}
 https://www.vpnmentor.com/blog/different-types-of-vpns-and-when-to-use-them/
 https://www.top10vpn.com/what-is-a-vpn/vpn-types/
@@ -184,6 +205,11 @@ Viac informácií o TLS protokole, jednotlivých verziách a optimalizáciách j
 \subsection{Internet Protocol Security  -- IPSec}
 Ochrana medzi transportnou a sietovou vrstvou TCL/IP.
 Nabudúce. \cite{biks}
+
+\section{Výhody a nevýhody VPN sieti}
+neviem ci to bude rozsahovo treba na samostatnu podkapitolu
+mozno len doplnit informacie do textu zaciatku.
+
 \chapter{Kryptografia vo VPN}\label{krypto}
 Cieľom kryptografických blokov je utajiť správu pri jej ceste z bodu A do B. Teda od odosielateľa (tvorcu) správy, až k jej prijímateľovi. Dôsledkom tohto úkonu dochádza k zabezpečeniu 3 hlavných úloh kryptografie:
 \begin{itemize}
