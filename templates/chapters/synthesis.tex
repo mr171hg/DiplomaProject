@@ -1,5 +1,6 @@
 % !TEX root = ../thesis.tex
-\chapter{Prostredie virtuálnych strojov pomocou VirtualBox}\label{merania}
+\chapter{Konfigurácia prostredia, metodika testovania a merania}
+\section{Prostredie virtuálnych strojov pomocou VirtualBox}\label{merania}
 Pri testovaní funkcionality VPN sme použili virtualizačný nástroj (daľej \textbf{\acrshort{vm}}) Virtual Box (ďalej \textbf{\acrshort{vb})}, spoločnosti Oracle, vo verzii 6.1.30. \acrshort{vb} je voľne dostupný. Inštalácia je jednoduchá a rýchla. Viac informácii o nástroji je možné dohľadať v \cite{vbox}.
 
 Pre použitie je potrebné aby mal používateľ k dispozícií obraz operačného systému (ďalej \acrshort{os}). Tie nie je problém získať ani pre \acrshort{os} Windows a podobne, avšak pri našej práci sme zvolili využitie voľno dostupného  \acrshort{os} -- \textbf{Linux Ubuntu} vo verziách 20.04.3(\acrshort{lts}\footnote{z ang. \acrlong{lts}})-- OSC a 21.10 -- OSS. Pri opise práce použijeme označenia OSS pre VPN server a OSC pre klienta.
@@ -48,8 +49,12 @@ Konektivita jednotlivých možností je znázornená pomocou obrázku \ref{vbmod
 Vzhľadom k našim potrebám, teda obojsmerná komunikácia medzi 2 VM, sú pre nás relevantné režimy bridge a NAT network. Ako si môžeme všimnúť, NAT vyžaduje dodatočnú konfiguráciu portov v prípadoch kedy chceme aby nastala komunikácia medzi dvoma VM. Z tohto dôvodu je pre čo najjednoduchší prístup zvoliť práve režim bridge. Ten priradí VM vlastnú IP adresu, pomocou, ktorej stroj komunikuje. 
 
 Viac o jednotlivých režimov je taktiež možné nájsť v \cite{vbguide}. Autor sa venuje postupu konfigurácie jednotlivých režimov spoločne s ich opisom.
-   
-\chapter{DSVPN -- Dead Simple VPN}\label{dsvpn}
+
+\section{Nástroje použité v obrazoch}
+  winlibs, visual studio , gcc ,make, c kod na meranie poctu cyklov z bc + cas  
+\chapter{Implementacia jednoduchej VPN siete}
+https://learn.microsoft.com/en-us/windows/win32/winsock/finished-server-and-client-code
+\section{Dead Simple VPN}\label{dsvpn}
 Dead Simple VPN je voľne dostupný\footnote{\href{https://github.com/jedisct1/dsvpn}{https://github.com/jedisct1/dsvpn}} program, napísaný v jazyku C. Určený je pre operačný systém Linux. Autorom je Frank Denis. DSVPN rieši najbežnejší prípad použitia VPN, teda pripojenie klienta k VPN serveru cez nezabezpečenú sieť. Následne sa klient dostane na internet prostredníctvom servera. Uvedenú skutočnosť je možne vidieť na schéme \ref{vpnsimple}.
 \begin{figure}
 	\centering
@@ -143,7 +148,10 @@ Nakoniec, v \ref{vpntru20} môžeme vidieť ako klient pri internetovej komunik�
 	\caption{Overenie funkcionality DSVPN pomocou traceroute}
 	\label{vpntru20}
 \end{figure}
- \section{Analýza zdrojového kódu DSVPN}
+\section{Princíp fungovania programu}
+High level overview
+
+\section{Analýza zdrojového kódu DSVPN}
  Pri analýze sa zameriame výhradne na dôležité časti kódu DSVPN pre programovací jazyk C. Repozitár pozostáva z jedného make-file balíčka\cite{make}. 3 hlavičkových (.h) a k ním korešpondujúcimi zdrojovými kódmi (.c), s pomenovaním:
  \begin{enumerate}
  	\item \textbf{charm.h} -- kryptografická knižnica so 6 funkciami,
@@ -526,10 +534,10 @@ static void permute(uint32_t st[12])
 }
 	\end{lstlisting}
 \end{minipage}\\ 
-\chapter{Populárne VPN}\label{zlozitejsia vpn}
-V~súčasnosti je trend, využívanie VPN na súkromné účely. Dôvodov môže byť viacero. Napríklad prístup k lokálne blokovaným doménam, anonymita v internetovom prostredí, zabezpečenie pripojenia a iné. V tomto prípade vstupujú do popredia tzv. VPN poskytovatelia (z ang. \textit{VPN Providers}). Ktorý za poplatok poskytujú výhody pripojenia cez VPN k verejnej sieti.
-
-opis fungovania, demonštrácia v prostredi VB.
-\section{OpenVPN}
-\section{WireGuard}
-\section{Porovnanie -- mohlo by sa, ak sa stihne a bude vediet}
+\section{Analýza výpočtových nárokov DSVPN}\label{analyza}
+mozno sekcia nie kapitola, K VPN neviem co pozerat 
+https://windowsreport.com/test-vpn/ \\
+https://www.mdpi.com/1999-5903/14/9/264 \\
+https://nordvpn.com/vpn-speed-test/ \\
+https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=\&arnumber=9142755 \\
+https://citeseerx.ist.psu.edu/document?repid=rep1\&type=pdf\&doi=a5639b03df528315a8e901f8f6b2bad2824a643a \\

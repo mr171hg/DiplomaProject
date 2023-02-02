@@ -18,8 +18,19 @@ Táto technológia patrí aktuálne k najpoužívanejším spôsobom pripojenia 
 	\label{vpnfancy}
 \end{figure}
 
+\section{Výhody a nevýhody VPN sieti}
+neviem ci to bude rozsahovo treba na samostatnu podkapitolu
+mozno len doplnit informacie do textu zaciatku.
+
 \section{Charakteristika a definovanie pojmov}
 Obsahom tejto podkapitoly je zavedenie a následne stručná charakteristika pojmov, potrebných na pochopenie problematiky VPN sieti.
+\subsection{Tunel}
+https://en.wikipedia.org/wiki/Tunneling\_protocol
+
+\subsection{GRE - Generic Routing Encapsulation}\label{gre}
+??
+https://www.rfc-editor.org/info/rfc1701
+https://www.ietf.org/rfc/rfc1702.txt
 \subsection{Charakteristika referenčných modelov}\label{crm}
 V rámci  podkapitoly \ref{rm} je potrebné pred samotnou klasifikáciou vysvetliť pojmy Referenčný model prepojenia otvorených systémov\footnote{z ang. \textit{Open Systems Interconnection reference model}} (ďalej \acrshort{osi}) a Model opisujúci balíky internetových protokolov, známy ako, \acrshort{tcpip} referenčný model.
 
@@ -77,7 +88,7 @@ Výstupom transportnej vrstvy sú segmenty, ktoré sú spracované v ďalšej vr
 \textbf{Linková vrstva (L2)} sa používa na presun paketov medzi rozhraniami internetovej vrstvy dvoch rôznych hostiteľov na rovnakom linku. Procesy vysielania a prijímania paketov na linke je možné konfigurovať. Zariadenia nazývané prepínače \footnote{z ang. \textit{switch}}, vykonávajú rámcovania\footnote{z ang. \textit{frame}}. Pripravujú pakety z L3 vrstvy na prenos pridaním ďalších informácií. Týmto úkonom vzniknú rámce. Tie sa prenášajú do fyzickej vrstvy a cez prenosové médium až k hostiteľovi. Fyzická vrstva predstavuje prvok, cez ktoré sú dáta prenášane. Napríklad optický a ethernetový kábel. 
 
 Vyššie uvedené procesy prípravy dát sú znázornené pomocou schémy \ref{p1} a \ref{p2}.
-% TODO: \usepackage{graphicx} required
+
 \begin{figure}[!h]
 	\centering
 	\includegraphics[width=0.7\linewidth]{figures/prenos1z2}
@@ -93,8 +104,8 @@ Vyššie uvedené procesy prípravy dát sú znázornené pomocou schémy \ref{p
 \newpage
 \textbf{Protokol riadenia prenosu} (z ang. \textit{Transmission Control Protocol}, ďalej \acrshort{tcp}) je komunikačný protokol orientovaný na nadviazanie a udržanie sieťového spojenia medzi zariadeniami. Môže byť použitý pri úlohe príjímateľa aj odosielateľa (z ang. \textit{full-duplex}). Úlohou je spoľahlivý prenos dát medzi komunikantmi. Odoslanie a príjem dát je v rovnakom poradí. Protokol zároveň obsahuje mechanizmy na kontrolu výskytu chýb. Svoj názov má podľa dvoch najdôležitejších protokolov:
 \begin{itemize}
-	\item{Protokol Riadenia Prenosu} -- z ang. \textit{\acrlong{tcp}},
-	\item{Internet Protokol} -- z ang. \textit{\acrlong{ip}}. 
+	\item{Protokol riadenia prenosu} -- z ang. \textit{\acrlong{tcp}},
+	\item{Internet protokol} -- z ang. \textit{\acrlong{ip}}. 
 \end{itemize}
 
 Na začiatku 21. storočia je 95\% paketov používaných na internete TCP. Bežné aplikácie používajúce TCP sú webové (HTTP/HTTPS protokoly), slúžiace na e-mailovú komunikáciu (SMTP/POP3/IMAP) a prenos súborov (z ang. \textit{File Transfer Protocol -- \acrshort{ftp}}). Minimálna dĺžka hlavičky TCP je 20 bajtov a maximálna dĺžka 60 bajtov. Po pridaní údajov TCP hlavičky k prenášaným dátam, vzniká tzv. \textit{segment}.
@@ -110,7 +121,7 @@ Narozdiel od \acrshort{tcp}) neposkytuje žiadnu záruka doručenia správy aleb
 Podrobnejšie informácie o \acrshort{udp}) protokole nájde čitateľ v \cite{udp}.
 
 \section{Klasifikácia VPN sietí}
-V súčasnosti má čitateľ k dispozícií veľa rôznych internetových zdrojov o problematike VPN. Uvedené sú rôzne možnosti klasifikácie VPN siete. V rámci tejto práce klasifikujeme VPN siete podľa logickej topológie, použitých protokolov a vrstiev, na ktorých sú postupy aplikované. Obsahom tejto podkapitoly je rozdelenie a opis jednotlivých typov VPN sieti.
+V súčasnosti má čitateľ k dispozícií veľa rôznych internetových zdrojov o problematike VPN. Uvedené sú rôzne možnosti klasifikácie VPN siete. V rámci tejto práce klasifikujeme VPN siete podľa logickej topológie, použitých protokolov a vrstiev, na ktorých sú postupy aplikované. Obsahom tejto podkapitoly je rozdelenie a opis jednotlivých typov VPN sieti. V závere kapitoly čitateľ nájde sumárne rozdelenie VPN sieti v tejto práci, znázornené pomocou schémy.  
 \subsection{Rozdelenie VPN sieti podľa logickej topológie}
  Podľa topológie, v ktorej VPN spojenie prebieha rozdeľujeme VPN do 3 kategórií: 
 \begin{itemize}
@@ -153,15 +164,17 @@ VPN Koncentrátor je typ sieťového zariadenia, ktoré poskytuje zabezpečené 
 	\item{zabezpečiť integritu doručenia} -- z ang. \textit{Ensure end-to-end delivery of data}.
 \end{itemize}
 
-Model Sieť so sieťou je používaný najmä pri spojení vedľajšej pobočky s hlavnou, ktoré sa nachádzajú na rozdielnych geografických lokalitách. Pomocou schémy \ref{sts} je znázronený tento model. 
+Model Sieť so sieťou je používaný najmä pri spojení vedľajšej pobočky s hlavnou, ktoré sa nachádzajú na rozdielnych geografických lokalitách. Pomocou schémy \ref{sts} je znázornený tento model. 
 
  \begin{figure}[!ht]
  	\centering
  	\includegraphics[width=.7\textwidth]{figures/sts}
  	\caption{rearanzovat}
  	\label{sts}
- \end{figure}    
-\subsection{Rozdelenie VPN sieti podľa vrstiev TCP/IP referenčného modelu}\label{rm}
+ \end{figure}  
+
+Informácia z tejto podkapitoly boli čerpané z \cite{vpntech}.  
+\subsection{Rozdelenie VPN sieti podľa vrstiev referenčného modelu}\label{rm}
 VPN siete môžeme klasifikovať podľa vrstvy (ďalej \acrshort{l}) referenčného modelu, na ktorej dochádza k šifrovaniu dát. Stručná charakteristika referenčných modelov je obsahom podkapitoly \ref{crm}.
 
 Klasifikácia VPN sietí podľa \acrshort{osi} modelu:
@@ -171,25 +184,105 @@ Klasifikácia VPN sietí podľa \acrshort{osi} modelu:
 	\item{\textbf{L4 VPN}} -- VPN na transportnej vrstve.
 \end{itemize}
 
+Pri implementácií VPN komunikácie medzi zariadeniami je pre pochopenie dôležité určiť aké dáta vstupujú do šifrovacieho algoritmu. Pomocou tejto informácie a klasifikácie vyššie následne dokážeme zaradiť do určitej kategórie. Na schéme \ref{osidata} je možné si všimnúť aké dáta sú výstupom jednotlivých vrstiev. (spoj dva obrazky do jedneho netreba zbytocne dva)
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.7\textwidth]{figures/osidata}
+	\caption{zakomponovat k osi vysvetleniu}
+	\label{osidata}
+\end{figure}
+
+Princíp použitia bloku na šifrovanie je znázornený pomocou schémy \ref{sifr}.
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.7\textwidth]{figures/sifr.jpg}
+	\caption{potreba upravy iba na spoemnute vrstvy}
+	\label{sifr}
+\end{figure}
+
+Zo schémy je viditeľné, že spracovaním nižšej vrstvy dochádza k zväčšeniu bloku dát, ktoré je potrebné šifrovať. To môže negatívne ovplyvniť výslednú rýchlosť celého systému. Okrem uvedenej vlastnosti je dalším problémom prenos vrámci rôznych sieti. Každé zariadenie, ktoré smeruje dáta by muselo repetitívne šifrovať a dešifrovať čím by v danej implementácií vzniklo viac rizikových miest pre potencionálny útok. Z uvedených dôvodov je preto najrozšírenejší spôsob zapojenia šifrovacieho bloku na pomedzi L3 až L4 vrstvy. Smerovanie ostáva bez zásahu a k dešifrovaniu dochádza až na konečnom zariadení, prípadne v aplikácií na samotných dátach.
+
+Typický sa s L2 a L3 VPN sieťami môže používateľ stretnúť na špecializovaných sieťových zariadeniach. Konkrétne na routroch a switchoch. Prvé z uvedených je využívané najmä pri smerovaní, respektíve určení cesty smerom von z lokálnej siete až k cieľovej destinácií. Tento úkon je vykonaný za pomoci aplikácie smerovacích protokolov. Router je možné použiť aj na smerovanie v rámci lokálnej siete. V porovnaní so switchom však nedosahuje porovnateľný výkon. Na druhej strane klaasický switch je možné použiť len vrámci lokálnej siete. V súčasnosti sa používajú aj tzv. L3 switche. V porovnaní s routrom je ich prednosťou vyššia rýchlosť spracovania prichádzajúcich paketov pri väčšom počte pripojených zariadení.        
+
+\section{Protokoly vo VPN sieťach} 
+V predchádzajúcej podkapitole sme klasifikovali VPN siete na základe zapojenia kryptografického bloku do OSI referenčného modelu. V tejto podkapitole pomocou uvedeného rozdelenia, zaradíme a charakterizujeme zopár protokolov, ktoré sa typicky používajú vo VPN sieťach. Pred začiatkom by som rád čitateľa upozornil, že aktuálne neexistuje svetový štandard na vytváranie VPN spojení. Dôsledkom toho existuje veľké množstvo rôznych protokolov. 
+
+REFS\\
+https://www.worldwidejournals.com/international-journal-of-scientific-research-(IJSR)/file.php?val=July\_2013\_1372777193\_d5c86\_32.pdf  \\
+https://networkengineering.stackexchange.com/questions/59592/vpns-are-working-in-which-layer-of-the-osi-model\\
+https://networkengineering.stackexchange.com/questions/38109/ppp-vpn-tunneling-and-osi-model?rq=1\\
+https://nordvpn.com/blog/protocols/\\
+https://www.geeksforgeeks.org/types-of-virtual-private-network-vpn-and-its-protocols/?ref=rp\\
+
+\subsection{\acrfull{pptp}}
+
+?nerozumiem?PPTP enables on-demand, virtual private networks over the Internet or other public TCP/IP-based data networks ??\\
+
+\acrshort{tcpip} sieťový protokol \acrshort{pptp} poskytuje zabezpečuje bezpečný prenos dát z klienta do privátneho servera vo VPN sieti. Jedná sa o starší L2 protokol, ktorý bol definovaný v roku 1996. Je rozšírením L2 \acrshort{p2p} protokolu. \acrshort{pptp} zapuzdruje \acrshort{p2p} pakety do  IP datagramov. Následne ich prenáša cez sieť. Typicky pozostáva spojenie z 3 zariadení, ktoré sú znázornené na schéme \ref{ptptun} a \ref{pptpcon}. 
+
+% TODO: \usepackage{graphicx} required
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.7\textwidth]{figures/ptptun}
+	\caption{Architektura PPTP siete - PPTP je az od nas do PS}
+	\label{ptptun}
+\end{figure}
+% TODO: \usepackage{graphicx} required
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.7\textwidth]{figures/pptpcon}
+	\caption{lepsi obrazok}
+	\label{pptpcon}
+\end{figure}
+
+Zabezpečenie prenosu pomocou \acrshort{pptp} pozostáva typicky z 3 po sebe nasledujúcich procesov:
+\begin{enumerate}
+	\item{PPP pripojenie a komunikácia } -- z ang. \textit{PPP Connection and Communication},
+	\item{riadenie spojenia pomocou PPTP protokolu} -- z ang. \textit{PPTP Control Connection},
+	\item{prenos dát PPTP tunelom} -- z ang. \textit{PPTP Data Tunneling}.
+\end{enumerate}
+Prechod medzi procesmi je možný len ak došlo k úspešnému dokončeniu predchádzajúceho kroku. V prvom procese sa PPTP klient pripája k serveru s prístupom na internet\footnote{z ang. \textit{Network Access Server}} (ďalej \acrshort{nas}). Používa sa pri tom PPP protokol, ktorý nastolí spojenie a zašifruje pakety. V druhom kroku následne vznikne TCP pripojenie medzi NAT a PPTP serverom. Použitý je port 1723. Uvedeným postupom nám vznikne medzi zariadeniami PPTP Tunel. Po úspešnom vytvorení konektivity dochádza k zapuzdrovaniu prichádzajúcich zašifrovaných PPP dát do PPTP protokolu a ich prenosu cez tunel. PPTP zapuzdruje dáta do tzv. IP datagramov, ktoré už obsahujú zašifrovaný PPP paket. Datagramy su vytvorené pomocou \acrshort{gre} protokolu, ktorý bol opísaný v \ref{gre}. Na schéme \ref{pptpdat} je znázornená schém PPTP Paketu. 
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.7\textwidth]{figures/pptpdat}
+	\caption{sede sifrovane biele nie }
+	\label{pptpdat}
+\end{figure}
+
+PPTP Server po prijatí dáta rozbalí, dešifruje PPP paket a následne ho smeruje v rámci lokálnej siete.
+
+Je dôležité poznamenať, že PPTP klient môže mať priamy prístup na internet. V uvedenom prípade sa nevytvára prvotné PPP spojenie až k internetovému poskytovateľovi.
+Viac informácií o protokole PPTP nájde čitateľ na \cite{rfc2637} a \cite{pptp}, ktoré boli zdrojom pri tvorbe tejto podkapitoly.
+\subsubsection{Bezpečnosť a použitie protokolu} 
+Protokol vznikol v júny 1996. Implementácia poskytuje používateľovi:
+\begin{itemize}
+	\item{\textbf{Autentizáciu}} -- z ang. \textit{Authentication}, overenie totožnosti používateľa pomocou mena a hesla. Na výber boli autentizačné protokoly \textit{Challenge Handshake Authentication Protocol} (\acrshort{chap}) \cite{chap}, \textit{MicroSoft Challenge Handshake Authentication Protocol} (\acrshort{mschap}) \cite{mschap} a \textit{Password Authentication Protocol} (\acrshort{pap}) \cite{pap}.  
+	\item{\textbf{Kontrolu prístupu}} -- z ang. \textit{Access Control}, po úspešnej autentizácií je následne prístup používateľa riadený na základe pravidiel a politiky prístupu daného OS. 
+	\item{\textbf{Šifrovanie dát}} -- z ang. \textit{Data Encryption}, je vykonané pomocou vopred zdieľaného kľúča, ktorý sa získa odvodením z hašovanej hodnoty uloženého hesla používateľa. Haš je vstupom do prúdovej šifry RC4 \cite{rc4} a výstupom je  40-bitový kľúč relácie. 
+	\item{\textbf{Filtrovanie PPTP paketov}} -- z ang. \textit{PPTP Packet Filtering}, možnosť zapnutia filtrovania paketov len autentizovaných PPTP klientov.
+	\item{\textbf{Preddefinované Firewall pravidla pre PPTP}} -- z ang. \textit{PPTP with Firewalls and Routers}, PPTP má štandardne definovaný TCP port 1723 a ID 47 v IP protokole. Vďaka tomu je možné jednoducho presmerovať tok dát.
+\end{itemize} 
+
+Protokol je aktuálne štandardne zahrnutý v každej distribúcií \acrshort{os} Windows aj Linux. Pri vytváraní VPN siete teda používateľ môže zvoliť uvedený protokol na zabezpečený prenos dát v lokálnej, ale aj naprieč verejnou sieťou. Výhodou protokolu je vysoká kompatibilita naprieč rôznymi platformami. Nevýhodou je veľké množstvo zraniteľných miest, možností zneužitia a použitie starších kryptografických algoritmov. Aktuálne existujú protokoly poskytujúce lepšiu bezpečnosť ako uvedená implementácia. Z uvedených dôvodov sa tento protokol neodporúča používať.
 
 
-\subsection{Rozdelenie VPN sieti podľa použitých protokolov}  
-\subsection{Zhrnutie klasifikácie VPN sieti}
- Jednoducha schema so vsetkym v jednom obrazku 
- 
-\cite{divvpn}, \cite{ciscovpn}
-https://www.vpnmentor.com/blog/different-types-of-vpns-and-when-to-use-them/
-https://www.top10vpn.com/what-is-a-vpn/vpn-types/
-%https://en.wikipedia.org/wiki/Virtual_private_network
-%https://csrc.nist.gov/glossary/term/virtual_private_network
-https://www.auvik.com/franklyit/blog/vpn-types/
-https://www.geeksforgeeks.org/types-of-virtual-private-network-vpn-and-its-protocols/?ref=rp
-https://www.geeksforgeeks.org/difference-between-site-to-site-vpn-and-remote-access-vpn/?ref=rp
+\subsection{\acrfull{l2tp}}
+\subsection{\acrfull{mpls}}
+\subsubsection{L2 MPLS}
+\subsubsection{L3 MPLS}
 
 
-\section{Kryptografické zabezpečenie protokolov}
-TCP protokol sam o sebe nezabezpečí dáta, ku ktorým sa pridáva TCP hlavička. Dôsledkom toho vznikli viacere protokoly slúžiace na autentizované šifrovanie dát. Najznámejší je protokol zabezpečenia prenosu -- \acrshort{tls} a IPSec.
+\subsection{SSTP = Secure Socket Tunneling Protocol }
+\subsection{OpenVPN}
+
+\subsection{IKEv2 Internet Key Exchange version 2}
+
 \subsection{Transport Layer Security -- TLS}
+TCP protokol sam o sebe nezabezpečí dáta, ku ktorým sa pridáva TCP hlavička. Dôsledkom toho vznikli viacere protokoly slúžiace na autentizované šifrovanie dát. Najznámejší je protokol zabezpečenia prenosu -- \acrshort{tls} a IPSec.
+
 Zabezpečenie dát bolo prvotne vykonávané pomocou protokolu \textit{Secure Sockets Layer} -- \acrshort{ssl}. Tento spôsob používa certifikáty na odšifrovanie dát. SSL malo od svojho vytvorenia dlhý vývoj, ktorý smeroval až k doteraz najpoužívanejšiemu TLS vo verzii 1.3. Inými slovami, TLS protokol je nástupca SSL pričom obsahuje rôzne úpravy a vylepšenia najmä z hľadiska rýchlosti. Zároveň sa v dnešnej dobe neodporúča používanie SSL protokolu. Dôsledkom optimalizácií je, že klienta komunikujúci so serverom cez HTTPS protokol s TLS 1.3 je rýchlejší ako v prípade použitia nešifrovaného HTTP variantu. 
 
 TLS pracuje niekde na pomedzi aplikačnej a transportnej vrstvy. Spôsob spracovania dát je zobrazený pomocou schémy \ref{ssl} s SSL operáciami, prebratej z \cite{biks}. 
@@ -202,15 +295,37 @@ TLS pracuje niekde na pomedzi aplikačnej a transportnej vrstvy. Spôsob spracov
 
 Viac informácií o TLS protokole, jednotlivých verziách a optimalizáciách je možné nájsť na \cite{tls}. 
 
+viac viac viac
+
 \subsection{Internet Protocol Security  -- IPSec}
 Ochrana medzi transportnou a sietovou vrstvou TCL/IP.
 Nabudúce. \cite{biks}
 
-\section{Výhody a nevýhody VPN sieti}
-neviem ci to bude rozsahovo treba na samostatnu podkapitolu
-mozno len doplnit informacie do textu zaciatku.
+\subsection{Ostatne}
+Wireguard,Lightway
+ 
+\section{Zhrnutie VPN sieti}
+Jednoducha schema so vsetkym v jednom obrazku \\
 
-\chapter{Kryptografia vo VPN}\label{krypto}
+ 
+\cite{divvpn}, \cite{ciscovpn}
+https://www.vpnmentor.com/blog/different-types-of-vpns-and-when-to-use-them/
+https://www.top10vpn.com/what-is-a-vpn/vpn-types/
+%https://en.wikipedia.org/wiki/Virtual_private_network
+%https://csrc.nist.gov/glossary/term/virtual_private_network
+https://www.auvik.com/franklyit/blog/vpn-types/
+https://www.geeksforgeeks.org/types-of-virtual-private-network-vpn-and-its-protocols/?ref=rp
+https://www.geeksforgeeks.org/difference-between-site-to-site-vpn-and-remote-access-vpn/?ref=rp
+\\
+V~súčasnosti je trend, využívanie VPN na súkromné účely. Dôvodov môže byť viacero. Napríklad prístup k lokálne blokovaným doménam, anonymita v internetovom prostredí, zabezpečenie pripojenia a iné. V tomto prípade vstupujú do popredia tzv. VPN poskytovatelia (z ang. \textit{VPN Providers}). Ktorý za poplatok poskytujú výhody pripojenia cez VPN k verejnej sieti.
+-- stoji za zmienku \\
+https://github.com/vpnhood/VpnHood a plus v inych jazykoch 
+
+\chapter{Ľahká kryptografia}\label{krypto}
+Diplomaticky uvod do problematiky --> zdroj \\
+https://csrc.nist.gov/projects/lightweight-cryptography/finalists 
+
+\section{clanok}
 Cieľom kryptografických blokov je utajiť správu pri jej ceste z bodu A do B. Teda od odosielateľa (tvorcu) správy, až k jej prijímateľovi. Dôsledkom tohto úkonu dochádza k zabezpečeniu 3 hlavných úloh kryptografie:
 \begin{itemize}
 	\item \textbf{ochrana osobných údajov} (dôvernosť) -- z ang. \textit{Data Privacy}, 
@@ -325,5 +440,3 @@ Obsahom tejto podkapitoly sú uvedené postupy ako a za akých okolností je dan
 \subsubsection{Použitie hašovacieho režimu}
 Xoodyak sa dá aplikovať ako hašovacia funkcia.
 \subsubsection{Použitie kľúčového režimu}
-\section{Kryptografický algoritmus Gimli} 
-\section{Kryptografický algoritmus Simpira384} 
