@@ -18,9 +18,13 @@ Táto technológia patrí aktuálne k najpoužívanejším spôsobom pripojenia 
 	\label{vpnfancy}
 \end{figure}
 
+https://www.webhostingsecretrevealed.net/blog/security/how-vpn-works/
+
 \section{Výhody a nevýhody VPN sieti}
 neviem ci to bude rozsahovo treba na samostatnu podkapitolu
 mozno len doplnit informacie do textu zaciatku.
+
+V prípade nestabilného spojenia, je možný vysoký výskyt straty paketov. Dôvodom je použitie TCP protokolu. Takýto problém je vhodné riešiť, tak sa odporúča prejsť na protokol 
 
 \section{Charakteristika a definovanie pojmov}
 Obsahom tejto podkapitoly je zavedenie a následne stručná charakteristika pojmov, potrebných na pochopenie problematiky VPN sieti.
@@ -31,6 +35,33 @@ https://en.wikipedia.org/wiki/Tunneling\_protocol
 ??
 https://www.rfc-editor.org/info/rfc1701
 https://www.ietf.org/rfc/rfc1702.txt
+
+\subsection{IKEv2 Internet Key Exchange version 2}
+https://en.wikipedia.org/wiki/Internet\_Key\_Exchange
+
+\subsection{Transport Layer Security -- TLS}
+TCP protokol sam o sebe nezabezpečí dáta, ku ktorým sa pridáva TCP hlavička. Dôsledkom toho vznikli viacere protokoly slúžiace na autentizované šifrovanie dát. Najznámejší je protokol zabezpečenia prenosu -- \acrshort{tls} a IPSec.
+
+Zabezpečenie dát bolo prvotne vykonávané pomocou protokolu \textit{Secure Sockets Layer} -- \acrshort{ssl}. Tento spôsob používa certifikáty na odšifrovanie dát. SSL malo od svojho vytvorenia dlhý vývoj, ktorý smeroval až k doteraz najpoužívanejšiemu TLS vo verzii 1.3. Inými slovami, TLS protokol je nástupca SSL pričom obsahuje rôzne úpravy a vylepšenia najmä z hľadiska rýchlosti. Zároveň sa v dnešnej dobe neodporúča používanie SSL protokolu. Dôsledkom optimalizácií je, že klienta komunikujúci so serverom cez HTTPS protokol s TLS 1.3 je rýchlejší ako v prípade použitia nešifrovaného HTTP variantu. 
+
+TLS pracuje niekde na pomedzi aplikačnej a transportnej vrstvy. Spôsob spracovania dát je zobrazený pomocou schémy \ref{ssl} s SSL operáciami, prebratej z \cite{biks}. 
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[width=0.7\linewidth]{figures/ssl}
+	\caption{Prehľad operácií v SSL protokole}
+	\label{ssl}
+\end{figure}
+
+Viac informácií o TLS protokole, jednotlivých verziách a optimalizáciách je možné nájsť na \cite{tls}. 
+
+viac viac viac
+
+\subsection{\acrfull{p2p}}
+https://en.wikipedia.org/wiki/Point-to-Point\_Protocol
+
+\subsection{\acrfull{mpls}}
+\acrshort{mpls} by sme do slovenčiny mohli preložiť ako Multi-protokolové prepínanie štítkov. Samotný protokol pridáva k paketom tzv. MPLS hlavičku. Jej obsahom sú štítky\footnote{z ang. \textit{labels}}, na základe ktorých dochádza k smerovaniu a preposielaniu paketov. Týmto spôsobom nie je nutná ďalšia analýza paketov. Štítky neidentifikujú koncové body, ale virtuálne spojenia medzi viacerými uzlami. Označenie multi-protokolový má, pretože dokáže zapuzdrovať viacero sieťových protokolov. MPLS pracuje na pomedzi L2 a L3 vrstvy. Často sa zvykne označovať ako L2.5 protokol. Viac o tomto protokole je možné si prečítať na \cite{mpls}, \cite{mplstuke} a \cite{mplsrfc}.
+
 \subsection{Charakteristika referenčných modelov}\label{crm}
 V rámci  podkapitoly \ref{rm} je potrebné pred samotnou klasifikáciou vysvetliť pojmy Referenčný model prepojenia otvorených systémov\footnote{z ang. \textit{Open Systems Interconnection reference model}} (ďalej \acrshort{osi}) a Model opisujúci balíky internetových protokolov, známy ako, \acrshort{tcpip} referenčný model.
 
@@ -39,13 +70,13 @@ V rámci  podkapitoly \ref{rm} je potrebné pred samotnou klasifikáciou vysvetl
 \acrshort{osi} Model vznikol v skorších fázach evolúcie počítačových sietí. Vychádza skôr z teoretického než praktického prístupu. Pozostáva zo 7 abstraktných vrstiev\footnote{z ang. \textit{layer}}:
 
 \begin{enumerate}
-	\item{fyzická vrstva} -- z ang. \textit{Physical Layer} (ďalej L1), 
-	\item{spojová vrstva} -- z ang. \textit{Data Link Layer} (ďalej L2),
-	\item{sieťová vrstva} -- z ang. \textit{Network Layer} (ďalej L3),
-	\item{transportná vrstva} -- z ang. \textit{Transport Layer} (ďalej L4),
-	\item{relačná vrstva} -- z ang. \textit{Session Layer} (ďalej L5),
-	\item{prezenčná vrstva} -- z ang. \textit{Presentation Layer} (ďalej L6),
-	\item{aplikačná vrstva} -- z ang. \textit{Application Layer} (ďalej L7).
+	\item{\textbf{fyzická vrstva}} -- z ang. \textit{Physical Layer} (ďalej L1), 
+	\item{\textbf{spojová vrstva}} -- z ang. \textit{Data Link Layer} (ďalej L2),
+	\item{\textbf{sieťová vrstva}} -- z ang. \textit{Network Layer} (ďalej L3),
+	\item{\textbf{transportná vrstva}} -- z ang. \textit{Transport Layer} (ďalej L4),
+	\item{\textbf{relačná vrstva}} -- z ang. \textit{Session Layer} (ďalej L5),
+	\item{\textbf{prezenčná vrstva}} -- z ang. \textit{Presentation Layer} (ďalej L6),
+	\item{\textbf{aplikačná vrstva}} -- z ang. \textit{Application Layer} (ďalej L7).
 \end{enumerate}
 
 V schéme \ref{osi} sa nachádzajú stručne opísané jednotlivé činnosti vrstiev.
@@ -207,20 +238,13 @@ Zo schémy je viditeľné, že spracovaním nižšej vrstvy dochádza k zväčš
 Typický sa s L2 a L3 VPN sieťami môže používateľ stretnúť na špecializovaných sieťových zariadeniach. Konkrétne na routroch a switchoch. Prvé z uvedených je využívané najmä pri smerovaní, respektíve určení cesty smerom von z lokálnej siete až k cieľovej destinácií. Tento úkon je vykonaný za pomoci aplikácie smerovacích protokolov. Router je možné použiť aj na smerovanie v rámci lokálnej siete. V porovnaní so switchom však nedosahuje porovnateľný výkon. Na druhej strane klaasický switch je možné použiť len vrámci lokálnej siete. V súčasnosti sa používajú aj tzv. L3 switche. V porovnaní s routrom je ich prednosťou vyššia rýchlosť spracovania prichádzajúcich paketov pri väčšom počte pripojených zariadení.        
 
 \section{Protokoly vo VPN sieťach} 
-V predchádzajúcej podkapitole sme klasifikovali VPN siete na základe zapojenia kryptografického bloku do OSI referenčného modelu. V tejto podkapitole pomocou uvedeného rozdelenia, zaradíme a charakterizujeme zopár protokolov, ktoré sa typicky používajú vo VPN sieťach. Pred začiatkom by som rád čitateľa upozornil, že aktuálne neexistuje svetový štandard na vytváranie VPN spojení. Dôsledkom toho existuje veľké množstvo rôznych protokolov. 
-
-REFS\\
-https://www.worldwidejournals.com/international-journal-of-scientific-research-(IJSR)/file.php?val=July\_2013\_1372777193\_d5c86\_32.pdf  \\
-https://networkengineering.stackexchange.com/questions/59592/vpns-are-working-in-which-layer-of-the-osi-model\\
-https://networkengineering.stackexchange.com/questions/38109/ppp-vpn-tunneling-and-osi-model?rq=1\\
-https://nordvpn.com/blog/protocols/\\
-https://www.geeksforgeeks.org/types-of-virtual-private-network-vpn-and-its-protocols/?ref=rp\\
+V predchádzajúcej podkapitole sme klasifikovali VPN siete na základe zapojenia kryptografického bloku do OSI referenčného modelu. V tejto podkapitole pomocou uvedeného rozdelenia, zaradíme a charakterizujeme zopár protokolov, ktoré sa typicky používajú vo VPN sieťach. Pred začiatkom by som rád čitateľa upozornil, že aktuálne neexistuje svetový štandard na vytváranie VPN spojení. Dôsledkom toho existuje veľké množstvo rôznych protokolov. Vrámci tejto podkapaitoly si predstavíme niektoré z nich. 
 
 \subsection{\acrfull{pptp}}
 
 ?nerozumiem?PPTP enables on-demand, virtual private networks over the Internet or other public TCP/IP-based data networks ??\\
 
-\acrshort{tcpip} sieťový protokol \acrshort{pptp} poskytuje zabezpečuje bezpečný prenos dát z klienta do privátneho servera vo VPN sieti. Jedná sa o starší L2 protokol, ktorý bol definovaný v roku 1996. Je rozšírením L2 \acrshort{p2p} protokolu. \acrshort{pptp} zapuzdruje \acrshort{p2p} pakety do  IP datagramov. Následne ich prenáša cez sieť. Typicky pozostáva spojenie z 3 zariadení, ktoré sú znázornené na schéme \ref{ptptun} a \ref{pptpcon}. 
+\acrshort{tcpip} sieťový protokol \acrshort{pptp} poskytuje zabezpečuje bezpečný prenos dát z klienta do privátneho servera vo VPN sieti. Jedná sa o starší Microsoft L2 protokol, ktorý bol definovaný v roku 1996. Je rozšírením L2 \acrshort{p2p} protokolu. \acrshort{pptp} zapuzdruje \acrshort{p2p} pakety do  IP datagramov. Následne ich prenáša cez sieť. Typicky pozostáva spojenie z 3 zariadení, ktoré sú znázornené na schéme \ref{ptptun} a \ref{pptpcon}. 
 
 % TODO: \usepackage{graphicx} required
 \begin{figure}[h]
@@ -270,40 +294,138 @@ Protokol je aktuálne štandardne zahrnutý v každej distribúcií \acrshort{os
 
 
 \subsection{\acrfull{l2tp}}
-\subsection{\acrfull{mpls}}
-\subsubsection{L2 MPLS}
-\subsubsection{L3 MPLS}
+Ďalším z VPN tunelovacích protokolov je \acrshort{l2tp}. Špecifikovaný bol v roku 2000 v dokumente \acrshort{rfc}\footnote{z ang. \textit{Request For Comments}} 2661 \cite{rfc2661}. Inšpirovaný dvoma staršími protokolmi \acrshort{l2f}\footnote{z ang. \textit{Cisco Layer 2 Forwarding Protocol}} \cite{rfc2341} a PPTP.   
 
-
-\subsection{SSTP = Secure Socket Tunneling Protocol }
-\subsection{OpenVPN}
-
-\subsection{IKEv2 Internet Key Exchange version 2}
-
-\subsection{Transport Layer Security -- TLS}
-TCP protokol sam o sebe nezabezpečí dáta, ku ktorým sa pridáva TCP hlavička. Dôsledkom toho vznikli viacere protokoly slúžiace na autentizované šifrovanie dát. Najznámejší je protokol zabezpečenia prenosu -- \acrshort{tls} a IPSec.
-
-Zabezpečenie dát bolo prvotne vykonávané pomocou protokolu \textit{Secure Sockets Layer} -- \acrshort{ssl}. Tento spôsob používa certifikáty na odšifrovanie dát. SSL malo od svojho vytvorenia dlhý vývoj, ktorý smeroval až k doteraz najpoužívanejšiemu TLS vo verzii 1.3. Inými slovami, TLS protokol je nástupca SSL pričom obsahuje rôzne úpravy a vylepšenia najmä z hľadiska rýchlosti. Zároveň sa v dnešnej dobe neodporúča používanie SSL protokolu. Dôsledkom optimalizácií je, že klienta komunikujúci so serverom cez HTTPS protokol s TLS 1.3 je rýchlejší ako v prípade použitia nešifrovaného HTTP variantu. 
-
-TLS pracuje niekde na pomedzi aplikačnej a transportnej vrstvy. Spôsob spracovania dát je zobrazený pomocou schémy \ref{ssl} s SSL operáciami, prebratej z \cite{biks}. 
-\begin{figure}[!ht]
+L2TP sieť pozostáva primárne z 3 zariadení:
+\begin{enumerate}
+	\item{\textbf{PPP terminál}} -- ľubovoľné zariadenie na vykonanie PPP enkapsulácie na dáta a pripojenie k \acrshort{lac}\footnote{z ang. \textit{L2TP access concentrator}}. Môže to byť aj samotné zariadenie, ktoré sa pripája. 
+	\item{\textbf{L2TP prístupového servera}} -- \acrshort{lns}\footnote{z ang. \textit{L2TP Network Server}}, jeden z koncov tunela, ktorý deenkapsuluje dáta a poskytuje prístup do lokálnej sieti. Na zariadení prebieha autentizácia používateľa, nastolenie PPP relácie\footnote{z ang. \textit{session}} a L2TP tunela s \acrshort{lac}. Nasadzuje sa na hranici medzi privátnou a verejnou sieťou, zvyčajne ako sieťová brána na opustenie danej súkromnej siete\footnote{z ang. \textit{gateway}}. Obdobne poskytuje funkcionalitu prekladu adries z privátnych do verejných a opačne. Uvedená funkcionalitá sa nazýva \acrfull{nat}. Viac o tomto protokole je dostupné na \cite{nat}.   
+	\item{\textbf{L2TP koncentrátora}} -- \acrshort{lac}, zariadenie umiestnené medzi LNS a clientom. Služí na preposielanie paketov oboma smermi. V smere k LNS vytvára L2TP tunel. LAC server môže byť nasadený aj na PPP termináli a pracovať ako \acrshort{poe}\footnote{z ang. \textit{PPP Over Ethernet}} server. Zvyčajne je koncentrátor nasadený na \acrshort{nas}, ale je možné ho nasadiť na ľubovoľné sieťové zariadenie.
+\end{enumerate}
+V schéme \ref{l2tp} je znázornené ako sú spomenuté zariadenia zapojené v logickej topológií. Na schéme je znázornený aj proces enkapsulácie PPP paketov, prenosu dát naprieč tunelom a následnej deenkapsulácie. 
+% TODO: \usepackage{graphicx} required
+\begin{figure}
 	\centering
-	\includegraphics[width=0.7\linewidth]{figures/ssl}
-	\caption{Prehľad operácií v SSL protokole}
-	\label{ssl}
+	\includegraphics[width=0.7\textwidth]{figures/l2tp}
+	\caption{}
+	\label{l2tp}
 \end{figure}
 
-Viac informácií o TLS protokole, jednotlivých verziách a optimalizáciách je možné nájsť na \cite{tls}. 
+L2TP používa namiesto TCP protokolu UDP, ktorého výhodou je rýchlejší prenos bez kontroly prijatia na druhej strane spojenia.  
+Pri vzniku tunela používa UDP port 1701. Iniciátor tohto procesu následne vyberá náhodne z nečinných portov a smeruje nim pakety s portom 1701. Prijímač po prijatí paketu taktiež náhodne určí nečinný port a preposiela ním pakety prijaté iniciátorom. Takto zvolené portové čísla sa používajú až kým nie je komunikácia cez tunel ukončená. 
 
-viac viac viac
+L2TP vytvára 2 druhy spojenia počas vytvárania konektivity medzi LAC a LNS. 
+\begin{itemize}
+	\item{\textbf{tunelové spojenie}} -- z ang. \textit{tunnel connection}, napomáha k nastoleniu viacero tunelov medzi zariadeniami. Pozostáva z jedného alebo viacerých relačných spojení. Žiadosť o vytvorenie vytvára LAC server po prijatí PPP žiadosť od vzdialeného používateľa. LAC a LNS si vymenia informácie potrebné na vznik spojenia ako sú napríklad autentizačné informácie tunela a ID. Po úspešnom vyjednávaní\footnote{z ang. \textit{negotiation}} vznikne tunel, ktorý je identifikovateľný pomocou dohodnutého ID.  
+	\item{\textbf{relačné spojenie}} -- z ang. \textit{session connection}, reprezentuje PPP spojenie naprieč tunelom. Môže vzniknúť až keď je tunel úspešne vytvorený.	
+\end{itemize}     
+Po vytvorení oboch spojení následne odchádza k prenosu zapuzdrených PPP paketov naprieč týmto tunelom.
 
-\subsection{Internet Protocol Security  -- IPSec}
-Ochrana medzi transportnou a sietovou vrstvou TCL/IP.
-Nabudúce. \cite{biks}
+L2TP ponúka kompatibilitu pre mnohé platformy a jednoduchú konfiguráciu. OS Windows, Linux a Mac majú tento protokol zabudovaný v sebe. Výhodou je použitie UDP, vďaka tomu je možné protokol používať aj v nestabilnom sieťovom prostredí.
+Nevýhodou je zníženie prenosovej rýchlosti. L2TP používa taktiež vopred zdieľané kľúče a v prípade ak sa nezhodujú, tak dochádza k zastaveniu chodu. L2TP je podporuje iba limitovaný počtet portových čísel. Samotná implementácia L2TP neposkytuje, respektíve nezabezpečuje žiadne šifrovanie alebo autentizáciu paketa. Na zabezpečenie sa používa v kombinácií s iným protokolom. Veľmi známa je implementácia L2TP/IPSec. 
 
-\subsection{Ostatne}
-Wireguard,Lightway
+V roku 2005 vznikla 3. verzia protokolu, ktorá priniesla zväčšenie dĺžky ID v L2TP hlavičke, zo 16 na 32 bitov. Rozšírenie tunelového autentizačného mechanizmu a oddelenie L2TP dát súvisiacich s PPP protokolom. Viac o tomto upravenom protokole je možné nájsť na \cite{l2tpv3}.
+  
+Viac informácií o L2TP problematike je možné nájsť v \cite{l2tp}, \cite{rfc2661}, \cite{l2tphuawei}, odkiaľ boli informácie z tejto podkapitole čerpané. 
+
+\subsection{Internet Protocol Security (\acrshort{ipsec})}
+\acrshort{ipsec} je otvorený štandard. Vďaka tomu vďačí za veľkú popularitu a pravidelné aktualizácie kryptografických algoritmov. Protokol sa využíva na zabezpečenie bezpečnosti v sieti. IPSec môžeme klasifikujeme ako L3 protokol nakoľko pracuje s dátami zo sieťovej vrstvy. Má dva režimy:
+\begin{itemize}
+	\item{\textbf{transportný režim}} -- po prijatí paketu z vyššej vrstvy sú smerovacie dáta zachované a na základe nich sú dáta odosielané ďalej. K zvyšným dátam je pridaná hlavička použitého IPSec protokolu. Princíp pridania dát k paketu je znázornený na \ref{iptransport}  
+	\item{\textbf{tunelovací režim}} -- zapuzdruje paket z vyššej vrstvy. Pridáva novú IP hlavičku a hlavičku IPSec protokolu k pôvodnému nezapuzdrenému paketu. Uvedená skutočnosť je zobrazená na obrázku \ref{iptunel}
+\end{itemize}
+% TODO: \usepackage{graphicx} required
+\begin{figure} [!h]
+	\centering
+	\includegraphics[width=0.7\textwidth]{figures/iptransport}
+	\caption{IPSec transportný režim}
+	\label{iptransport}
+\end{figure}
+% TODO: \usepackage{graphicx} required
+\begin{figure} [!h]
+	\centering
+	\includegraphics[width=0.7\textwidth]{figures/iptunel}
+	\caption{IPSec tunelovací režim}
+	\label{iptunel}
+\end{figure}
+
+
+Za účelom poskytnutie zabezpečeného spojenia, protokol vykonáva autentizáciu, šifrovanie a vyjednávanie, resp. výmenu potrebných kľúčov. Jednotlivé činnosti sú realizované pomocou týchto IPSec protokolov:
+\begin{itemize}
+	\item{\textbf{Autentizačná hlavička}} -- z ang. \textit{Authentication Header}, pridáva k prepravovanému paketu dáta na zabezpečenie dátovej integrity a pôvodu. Chráni proti z ang. \textit{Replay attack} \cite{repa}. Dáta v tomto režime nie sú šifrované. AH hlavička je vygenerovaná v závislosti od toho v akom IPSec režime je protokol použítý.    
+	\item{\textbf{Bezpečnostné zapuzdrenie nákladu}} -- z ang. \textit{Encapsulating Security Payloads}, narozdiel od AH, ESP aj šifruje dáta z vyššej vrstvy. Vďaka tomu dochádza k zabezpečeniu dôvernosti, datovej integrity a autentizácie pôvodu. Výsledná hlavička závisí od dát zo sieťovej vrstvy a konfigurácie IPSec.    
+	\item{\textbf{\acrlong{isakmp}}} -- ďalej \acrshort{isakmp}, protokol na autentizáciu a výmenu kľúčov. Slúži taktiež na vytvorenie parametra \acrshort{sa}, ktorý sa používa v hlavičke \acrshort{ah}/\acrshort{esp}.
+\end{itemize}
+
+IPSec je možné nakonfigurovať, tak aby používal \acrshort{ah} a \acrshort{esp} selektívne alebo aj súčasne. V závislosti od konfigurácie následne dochádza k zapuzdrovaniu prichádzajúceho paketu. Používateľ má na výber viacero štandardných kryptografických algoritmov. Príkladmi sú \acrshort{aes} \cite{aes}, \acrshort{rsa} \cite{rsa}, Diffie-Hellman \cite{dh} a  eliptické krivky (\acrshort{ecdsa} \cite{ecdsa} aj \acrshort{ecdh} \cite{ecdh}).
+
+Nabudúce sa opytat ci biks predmet moze byt zdroj alebo ine. \cite{biks}
+
+\subsection{Secure Socket Tunneling Protocol (\acrshort{sstp})}
+SSTP je bežný L2 VPN protokol, ktorý zapuzdruje PPP ramce cez \acrshort{https} protokol \cite{https}. Spolieha sa na \acrshort{ssl}, resp. \acrshort{tls}, ktoré sú opísané v úvode práce. Vďaka tomu umožňuje ľahší prechod cez väčšinu firewallov a proxy brán. Teda blokovanie takto vytvoreného VPN spojenia je pre poskytovateľov internetu a správcov siete zložitejšie. 
+
+SSTP bol vytvorený v roku 2007 spoločnosťou Microsoft. Primárne pre platformu Windows. Cieľom bolo poskytnúť bezpečnejšiu náhradu za PPTP a L2TP. V súčasnosti sa považuje za jeden zo štandartných protokolov. Je dostupný vo viacerých operačných systémoch vrátane Linuxu a BSD. Pravidelne udržiavaný o čom svedčia aj priebežná aktualizácia dokumentácie na Microsoft dokumentačných stránkach. Informácie k tejto podkapitole boli čerpané z \cite{mssstp}. V uvedenom zdroji je možné nájsť podrobnejšie informácie o protokole. 
+
+Proces enkapsulácie s využitím protokolov je znázornený pomocou schémy \ref{sstpprotocolstack}. 
+% TODO: \usepackage{graphicx} required
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.3\textwidth]{figures/sstpprotocolstack}
+	\caption{Proces enkapsulácie PPP rámcov pomocou protokolov naprieč SSTP protokolom}
+	\label{sstpprotocolstack}
+\end{figure}
+Pri vytváraní SSTP segmentu dochádza k zapuzdreniu PPP rámcov pomocou HTTPS s využitím TCP protokolu s portovým číslom 443. Po úspešnom nadviazaní TCP a overení SSL/TLS spojenia dochádza k spracovaniu SSTP hlavičky. Po úspešnom odstránení sa následne získa prístup k pôvodnému PPP rámcu.   
+
+Podobne ako tomu bolo v prípade L2TP protokolu, opísaného vyššie, tak z hľadiska premávky putujú naprieč tunelom dva druhy paketov. Vytvára a odosiela ich klient aj server. Majú špecifický formát a musia byť prenášané po bajtoch a v sieťovom poradí bajtov\footnote{z ang. \textit{network byte order}}, z ľava do prava, teda od najvýznamnejšieho bitu po najmenej významný\footnote{sieťové spracovanie dát známe aj ako z ang. \textit{Big Endian}}. Prvé 4 parametre v oboch hlavičkách sú rovnaké: 
+\begin{enumerate}
+	\item{\textbf{Verzia}} -- z ang. \textit{Version}, má veľkosť 8-bitov, používa sa pri komunikácií a vyjednávaní SSTP verzie, ktorá sa má použiť. Prvé 4 bity signalizujú majoritnú verziu a zvyšné minoritnú verziu. 
+	\item{\textbf{Reservované}} -- z ang. \textit{Reserved}, 7 bitov nastavených na 0, rezervované pre budúce použitie, pri spracovaní sa ignorujú.
+	\item{\textbf{C}} -- 1 bit, indikátor pre dátový (0) a kontrolný SSTP paket (1). 
+	\item{\textbf{Dĺžka paketu}} -- z ang. \textit{LengthPacket}, 16-bitový parameter, pozostáva z:
+		\begin{itemize}
+			\item{\textbf{R}} -- 4 bity, pripravené na budúce použitie, nastavené na 0 a ignorované,
+			\item{\textbf{Dĺžka}} -- z ang. \textit{Length}, 12 bitov, špecifikuje bajtovú veľkosť celého SSTP paketu
+		\end{itemize}
+\end{enumerate}
  
+Rozdielnosť medzi hlavičkami vzniká v:
+\begin{itemize}
+	\item{\textbf{Dátové SSTP pakety}} -- z ang. \textit{SSTP Data Packets} \cite{datpak}, obsahujú 5. parameter 
+		\begin{itemize}
+			\item{\textbf{5. Dáta}} -- pole variabilnej dĺžky. Obsahuje zapuzdrený náklad z vyššej vrstvy.
+		\end{itemize} 
+	\item{\textbf{Kontrolné SSTP pakety}} -- z ang. \textit{SSTP Control Packets} \cite{conpak}, obsahuje 3 dodatočné parametre:
+		\begin{itemize}
+			\item{\textbf{5. Typ správy}} -- z ang. \textit{Message Type}, 16-bitové pole s SSTP správou o stave spojenia. Celkovo 9 možných správ \cite{conpak}. 
+			\item{\textbf{6. Číselné atribúty}} -- z ang. \textit{Num Attributes}, 16-bitové pole, ktoré špecifikuje počet parametrov v správe
+			\item{\textbf{7. Atribúty}} -- z ang. \textit{Atributes}, zoznam parametrov s variabilnou veľkosťou.
+		\end{itemize}	
+\end{itemize}   
+ 
+Protokol vo všeobecnosti nepodporuje spojenie typu sieť k sieti. Primárne je orientovaný na pripojenie klienta k sieti, za účelom získania vzdialeného prístupu. To isté platí pri autentizácií. Je možné autentizovať iba používateľa, iné možnosti nie sú podporované (zariadenie, smart card, počítať,...). V prípade nestabilného spojenia, je možný vysoký výskyt straty paketov. Dôvodom je použitie TCP protokolu. 
+
+Bezpečnosť SSTP je sprostredkovaná za pomoci HTTPS protokolu, ktorý používa SSL/TLS. Aplikované kryptografické algoritmy závisia od verzie SSL/TLS, ktorá je použitá v implementácií. TLS bol predmetom opisu v úvode práce. SSTP sa považuje za veľmi bezpečný protokol. Na druhej strane použitie robustných šifrovacích a autentizačných algoritmov, dosť spomaľuje výsledné SSTP VPN pripojenie.
+
+Viac informácií o protokole môže čitateľ nájsť v \cite{mssstp}, odkiaľ boli aj informácie pre túto podkapitolu čerpané.  
+
+
+\subsection{Ostatné populárne VPN protokoly}
+Vrámci tejto práce si predstavíme ešte dvojicu veľmi populárnych VPN riešení. Koncepčne sú riešenia pri vytváraní tunelu a prenose správ podobné vyššie opísaným protokolom. Z uvedeného dôvodu protokoly len stručne charakterizujeme.
+\subsubsection{OpenVPN}
+OpenVPN je jeden z najznámnejšich voľne dostupných VPN tunelovacích protokolov. Vznikol v roku 2001. Dostupné ako firmvérové riešenie pre výrobcov sieťových zariadení. Pre používateľa je dostupná vo forme softvéru, ktorý je potrebné nainštalovať na cieľovú platformu. Ponúka aj grafické rozhranie. Zabezpečené spojenie naprieč internetom je sprostredkovane prostredníctvom SSL/TLS protokolu. Dokáže pracovať s dátami na L2 aj L3 vrstve v závislosti od konfigurácie. Vďaka voľnému prístupu do zdrojového kódu poskytuje jednoduché možnosti na skúmanie výsledných riešení, validáciu a prípadnú úpravu podľa potrieb konkrétneho používateľa. Protokol je napísaný v jazyku C. Bezpečnostné prvky su implementované pomocou OpenSSL knižnice. Knižnica v sebe zahŕňa funkcie potrebné na šifrovanie, autentizáciu, výmenu kľúčov a mnoho ďalšieho. Na obrázku \ref{ovpnptstrc} je znázornená výstupna štruktúra paketu po zapuzdrení. 
+% TODO: \usepackage{graphicx} required
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.5\textwidth]{figures/ovpnptstrc}
+	\caption{}
+	\label{ovpnptstrc}
+\end{figure}
+
+Aktuálne používa na šifrovanie AES s 256-bitovou veľkosťou kľúča. V súčasnosti sa OpenVPN považuje za najbezpečnejšiu implementáciu VPN dostupnú pre viacero platforiem. Používateľ ma možnosti vo voľbe protokolu TCP alebo UDP. Podporuje aj prácu s IPv6. OpenVPN nie je kompatabilná s ostatnými protokolmi. Je preto potrebné mať implementáciu na serveri aj klientovi. Nevýhodou je pomerne veľké, energeticky a výpočtovo náročné prevedenie.
+
+Viac informácií o tomto komplexnom programe je možné nájsť v \cite{vpntech}, \cite{ovpn} a priamo na stránke OpenVPN\footnote{https://openvpn.net/faq/what-is-openvpn/}. Z uvedených zdrojov boli aj informácie čerpané. Zdrojový kód je dostupný napríklad na Githube\footnote{https://github.com/OpenVPN/openvpn/}. 
+\subsubsection{WireGuard}
+
 \section{Zhrnutie VPN sieti}
 Jednoducha schema so vsetkym v jednom obrazku \\
 
@@ -324,7 +446,7 @@ https://github.com/vpnhood/VpnHood a plus v inych jazykoch
 \chapter{Ľahká kryptografia}\label{krypto}
 Diplomaticky uvod do problematiky --> zdroj \\
 https://csrc.nist.gov/projects/lightweight-cryptography/finalists 
-
+https://csrc.nist.gov/CSRC/media/Projects/Lightweight-Cryptography/documents/final-lwc-submission-requirements-august2018.pdf
 \section{clanok}
 Cieľom kryptografických blokov je utajiť správu pri jej ceste z bodu A do B. Teda od odosielateľa (tvorcu) správy, až k jej prijímateľovi. Dôsledkom tohto úkonu dochádza k zabezpečeniu 3 hlavných úloh kryptografie:
 \begin{itemize}
