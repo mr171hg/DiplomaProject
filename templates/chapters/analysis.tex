@@ -30,7 +30,9 @@ V prípade nestabilného spojenia, je možný vysoký výskyt straty paketov. D�
 Obsahom tejto podkapitoly je zavedenie a následne stručná charakteristika pojmov, potrebných na pochopenie problematiky VPN sieti.
 \subsection{Tunel}
 https://en.wikipedia.org/wiki/Tunneling\_protocol
+https://en.wikipedia.org/wiki/TUN/TAP
 
+wintun --> build https://learn.microsoft.com/en-us/windows-hardware/drivers/download-the-wdk
 \subsection{GRE - Generic Routing Encapsulation}\label{gre}
 ??
 https://www.rfc-editor.org/info/rfc1701
@@ -425,7 +427,20 @@ Aktuálne používa na šifrovanie AES s 256-bitovou veľkosťou kľúča. V sú
 
 Viac informácií o tomto komplexnom programe je možné nájsť v \cite{vpntech}, \cite{ovpn} a priamo na stránke OpenVPN\footnote{https://openvpn.net/faq/what-is-openvpn/}. Z uvedených zdrojov boli aj informácie čerpané. Zdrojový kód je dostupný napríklad na Githube\footnote{https://github.com/OpenVPN/openvpn/}. 
 \subsubsection{WireGuard}
+WireGuard je najnovší protokol z vyššie uvedených. Pracuje iba na L3 vrstve. Jedná sa o implementáciu s voľne dostupným zdrojovým kódom. Vznikol v roku 2015. Cieľom projektu bolo vytvoriť jednoduchý protokol, ktorý sa ľahko používa, dosahuje vysoké prenosové rýchlosti a poskytuje kvalitnú bezpečnosť pre používateľa. Vo výsledku sa to vývojárom podarilo. Od roku 2020 sa stal súčasťou Linuxového jadra, konkrétne verzie Linux 5.6 kernel. Aktuálne podporuje veľké množstvo OS vrátane Androidu, Windowsu, MacOS, OS založené na BSD \cite{bsd} a ďalšie. Za úspešne prevedenie vďačí WireGuard implemetovaniu svojich funkcionalít do samotných jadier OS, čo značne zrýchľuje spracovanie dát. Samozrejmostou ostáva aj využitie moderných, extrémne rýchlych kryptografických algoritmov a podpora pre IPv4 a IPv6. 
 
+Protokoly použité vo WireGuarde sú:
+\begin{itemize}
+	\item{\textbf{X25519}} \cite{x25519} -- zabezpečuje výmenu kľúčov vďaka kryptografii s eliptickým krivkami \cite{ecc} (ďalej \acrshort{ecc}), ponúka 128-bitovú bezpečnosť s veľkosťou kľúča 256-bitov. Považuje sa za jednu z najrýchlejších kriviek v \acrshort{ecc}.
+	\item{\textbf{ChaCha20}} \cite{chacha} -- zabezpečuje symetrické šífrovanie.
+	\item{\textbf{Poly1305}} \cite{poly} -- vytvára autentifikačný kód správy\footnote{z ang. \textins{Message Authentication codes}}. Veľmi častá je kombinácia ChaCha20-Poly1305 za účelom autentizovaného šifrovania s pridruženými dátami\footnote{z ang. \textit{Authenticated encryption with associated data}}.
+	\item{\textbf{SipHash}} \cite{siphash} -- algoritmus sa používa na vytvorenie a mapovanie kľúčov k hodnotám v hashovacej tabuľke. Hashovacie tabuľky sú známy pojem v oblasti dátových štruktúr. Ich hlavnou výhodou je vysoká rýchlosť v porovnaní s ostatnými možnosťami.  
+	\item{\textbf{BLAKE2s}} \cite{blake} -- hashovacia funkcia, rýchlejšia než aktuálne štandardy z rodiny SHA. 
+	\item{\textbf{UDP}} --  protokol na prepravu zapuzdrených dát.
+\end{itemize} 
+WireGuard podporuje aj použitie vopred zdieľaného kľúča za účelom symetrického šifrovania. Dôvodom je pokrok v oblasti kvantových počítačov, ktoré predstavujú riziko pre algoritmy založené na asymetrickom šifrovaní.
+
+Viac informácií o tomto protokole je k dispozícií na \cite{wireguard} a \cite{wireguardpdf}, odkiaľ boli informácie aj čerpané. Zdrojový kód je rozdelený do viacerých repozitárov. Zoznam je dostupný na stránkach Wireguardu\footnote{https://www.wireguard.com/repositories/}.
 \section{Zhrnutie VPN sieti}
 Jednoducha schema so vsetkym v jednom obrazku \\
 
@@ -444,88 +459,137 @@ V~súčasnosti je trend, využívanie VPN na súkromné účely. Dôvodov môže
 https://github.com/vpnhood/VpnHood a plus v inych jazykoch 
 
 \chapter{Ľahká kryptografia}\label{krypto}
-Diplomaticky uvod do problematiky --> zdroj \\
 https://csrc.nist.gov/projects/lightweight-cryptography/finalists 
-https://csrc.nist.gov/CSRC/media/Projects/Lightweight-Cryptography/documents/final-lwc-submission-requirements-august2018.pdf
-\section{clanok}
-Cieľom kryptografických blokov je utajiť správu pri jej ceste z bodu A do B. Teda od odosielateľa (tvorcu) správy, až k jej prijímateľovi. Dôsledkom tohto úkonu dochádza k zabezpečeniu 3 hlavných úloh kryptografie:
+\\https://csrc.nist.gov/CSRC/media/Projects/Lightweight-Cryptography/documents/final-lwc-submission-requirements-august2018.pdf
+
+V počítačovej sfére sa do popredia dostávajú zariadenia, ktorých hardvérové prostriedky a ponúkaný výkon sú podstatne nižšie ako v prípade bežne dostupných zariadení na domáce, resp. komerčné použitie. Príkladom môžu byť \acrshort{iot} zariadenia, senzorové uzly, mikro-ovládače a podobné. Dôležitou vlastnosťou je aj komunikácia medzi sebou alebo inými zariadeniami. V dôsledku toho je nutné riešiť aj otázku zabezpečenia, resp. bezpečnosti takého prenosu dát. 
+
+Kryptografia je oblasť počítačovej vedy, ktorá sa zaoberá práve spomenutou problematikou. Hlavným cieľom je utajiť správu pri jej ceste z bodu A do B. Teda od odosielateľa (tvorcu) správy, až k jej prijímateľovi. Dôsledkom tohto úkonu dochádza k zabezpečeniu 3 hlavných úloh kryptografie:
 \begin{itemize}
 	\item \textbf{ochrana osobných údajov} (dôvernosť) -- z ang. \textit{Data Privacy}, 
 	\item \textbf{autenticita údajov} (prišla z miesta, kde sa uvádza)  -- z ang. \textit{Data Authenticity},
 	\item \textbf{integrita údajov} (nebolia upravená počas prenosu)  -- z ang. \textit{Data Integrity}.
+\end{itemize} 
+Pojem kryptografia vznikol už pomerne dávno a bol už viackrát charakterizovaný. Z toho dôvodu sa tejto problematike ďalej nebudeme venovať. Ak by však bol čitateľ v tejto oblasti nový, odporúčame najprv načerpať viac informácií. Kvalitné spracovanie problematiky je možné nájsť v \cite{levicky}. 
+
+V súčasnosti má používateľ možnosť vybrať si zo širokej ponuky kryptografických algoritmov. Výber je volený na základe potrebnej funkcionality, ktorú sa snažíme implementovať. Napríklad za účelom symetrického šifrovania by sme mohli použiť \acrshort{aes} \cite{aes}, ktorý je aktuálne používaný ako štandardný kryptografický algoritmus. Detailný opis jednotlivých blokov a postupov použitých v AES-e, je obsahom rôznych vydaní. Viac informácií o problematike nájde čitateľ v \cite{levicky}.
+
+V prípade zariadení spomenutých v úvode kapitoly, však môže nastať problém s výpočtovým výkonom pri realizácií algoritmov. Vo výsledku trvá vykonávanie funkcionality omnoho dlhšie ako v prípade normálnych zariadení. V roku 2005 bol prvýkrát definovaný pojem, z ang. \textit{Lightweight Cryptography}. Konkrétne v práci \cite{lwc}. Vrámci tejto práce voľne preložíme tento pojem ako \textbf{Ľahká kryptografia} (ďalej \acrshort{lwc}). 
+
+\acrshort{lwc} algoritmy sú mnoho násobne efektívnejšie ako súčasne používané konvenčné kryptografické štandardy. Dôvodom je ich vysoká rýchlosť a nízky počet potrebných procesorových inštrukcií na vykonanie cielenej funkcionality. V súčasnosti je častým javom použitie označenia \textit{lightweight} pre ľubovoľný kryptografický algoritmus. Jedná sa o implementácie, ktoré svojimi vlastnosťami spĺňajú základné požiadavky LWC. Tie boli definované samotnými autormi už v diele \cite{lwc}. Sú nimi: 
+\begin{itemize}
+	\item{\textbf{minimalizácia spotreby zdrojov zariadenia}} -- veľkosť kódu, používaných dát a spotreby energie,
+	\item{\textbf{poskytnutie vysokého stupňa bezpečnosti}},
+	\item{\textbf{odolnosť voči útokom tzv. z ang. \textit{side-attack}}} -- napríklad útokom na analýzu výkonu a na časovanie, 
+	\item{\textbf{jednoduchá implementácia a efektívnosť,}}
+	\item{\textbf{nízka pamäťová stopa}} -- z ang. \textit{low memory footprint}.
 \end{itemize}
 
- Prvý z uvedených bodov je najčastejšie žiadaným a známym cieľom. Odosielateľ správy zašifruje jej obsah pomocou použitia niektorého z šifrovacích algoritmov, kryptografického kľúča a následne správu odošle. Na druhej strane, prijímateľ, musí použiť komplementárny dešifrovací algoritmus s prislúchajúcim kľúčom. Ktokoľvek kto sa dostane medzi týchto komunikantov, k takto preposielanej správe, z nej nedokáže obsahovo nič zistiť, v istom časovom období. 
- 
- Dôsledkom týchto faktov je jasné, že komunikanti musia mať jasne definovaný použitý algoritmus. Zároveň je nutné aby došlo k výmene kryptografických kľúčov, ktoré sú pri šifrovaní a dešifrovaní aplikované. Tým sa zabezpečí aj druhá úloha -- Autenticita dát, pretože potrebné informácie budú mať len komunikanti. 
- 
- V kryptografických blokoch sú taktiež aplikované algoritmy na overenie integrity správ. Ich úlohou je potvrdiť, že do obsahu správy nebolo, počas jej transportu medzi komunikantmi, nič pridané, resp. ubrané.
- 
- V súčasnosti má používateľ možnosť vybrať si zo širokej ponuky kryptografických algoritmov. Medzi najznámejší patrí \acrshort{aes} \cite{aes}, ktorý je aktuálne používaný ako štandardný kryptografický algoritmus. Detailný opis jednotlivých blokov a postupov použitých v AES-e, je obsahom rôznych vydaní. Viac informácií o problematike nájde čitateľ v \cite{levicky}, ktorá obsahuje okrem opisu AES-u aj doležité informácie, týkajúce sa kryptografických základov.
+V práci budeme tieto algoritmy označovať ako \textit{Lightweight Cryptographic Algorithm} (ďalej \acrshort{lwca}).
+\acrshort{lwca} tvoria kryptografické algoritmy, ktoré splňajú vyššie stanovené vlastnosti a teda je možné ich aj nasadiť do tzv. \textit{low resource} zariadení. V závislosti od výslednej implementácie sa sledujú požiadavky na daný algoritmus. V prípade hardvérovej implementácie najväčšiu rolu pri tvorbe optimálneho algoritmu zohráva energetická spotreba a potrebná veľkosť čipu (chip size iba v zdroji -- In hardware implementations, chip size and/or energy
+consumption are the important measures to evaluate the lightweight properties.). Na druhej strane, pri softvérovej implementácií je dôležitým aspektom veľkosť algoritmu a/alebo jeho využitie RAM pamäte. Čím sú uvedené parametre nižšie, tým výhodnejší je nasadenie daného algoritmu pre cieľové zariadenie. V prípade slabých zariadení sa pri výslednej implementácií \acrshort{lwca} môžeme stretnúť aj s kompromisom medzi ponúknutou bezpečnosťou a efektivitou.
 
-V rámci tejto práce sme sa rozhodli opísať, v súčásnosti menej známe, algoritmy: 
-\begin{itemize}
-	\item XOODOO \cite{tkecak}
-	\item Gimli \cite{gimli}
-	\item Simpira384 \cite{simpira}
-\end{itemize}  
-Uvedené permutácie sú použité ako kryptografické primitívum a pri následnej tvorbe ďalších kryptografickych blokov. 
+V rámci tejto kapitoly si predstavíme jeden z novších \acrshort{lwca} algoritmov. Konkrétne balíček Xoodyak s kryptografickou permutáciou XOODOO \cite{tkecak} a jeho použitie. Xoodyak sa stal jedným z 10 finalistov v \acrshort{lwc} štandardizačnom procese Národného inštitútu pre štandardy a technológie (ďalej \acrshort{nist}) \cite{lwc3}. Aktuálne ešte stále prebieha výber štandardu.
 
-\section{Kryptografický algoritmus XOODOO a variácie} 
-XOODOO je sada 384-bitových kryptografických permutácií parametrizovaných počtom kôl. Funkcia kola/rundy\footnote{z ang. \textit{round}} funguje na 12 slovách\footnote{z ang. \textit{words}} po 32 bitoch. Vďaka tomu je efektívna aj na menej výkonných procesoroch nižšej triedy. Vytvoril ju tím Keccak, ktorý stojí za viacerými úspešnými kryptografickými algoritmami. Napríklad hashovacie funkcie z rodiny SHA-3 a iné -- \cite{kecsup}. XOODOO algoritmus vznikol po vytvorení tzv. Kravatte autentizačno-šifrovacieho algoritmu \cite{kravatte}, založené na Keccak-p permutácií \cite{keccakp}. Ten sa ukázal ako dostatočne rýchly na širokom spektre platforiem. Avšak nezapadá do kategórie tzv. ľahkej kryptografie \footnote{z ang. \textit{lightweight cryptography}}.
+Viac podrobností nájde čitateľ v \cite{lwc}, \cite{lwc2} a \cite{lwc3}, odkiaľ boli aj informácie z tejto kapitoly čerpané. 
+        
+\section{Kryptografická permutácia XOODOO a jej variácie}
+Permutácia je operácia, ktorá mení pozíciu vstupných prvkov, tak aby vo výsledku vzniklo nová usporiadaná množina. Kryptografické permutácie sú špeciálne navrhnuté matematické algoritmy, tak aby bolo možné využiť ich za účelom šifrovania a dešifrovania. Operácie vykonané v takýchto permutáciách musia byť invertibilné. Kryptografické permutácie tvoria základný stavebný blok pri následnej tvorbe ďalších kryptografických blokov. Množina základných stavebných blokov sa v kryptografii spoločne označuje ako kryptografické primitíva (ďalej \acrshort{kp}). Príkladom môžu byť hašovacie funkcie, generátory náhodných čísel a podobne. Viac informácií nájde čitateľ v \cite{kp}.  
+ 
+XOODOO je sada 384-bitových kryptografických permutácií parametrizovaných počtom kôl. Funkcia kola/rundy\footnote{z ang. \textit{round}} funguje na 12 slovách\footnote{z ang. \textit{words}} po 32 bitoch. Vďaka tomu je efektívna aj na menej výkonných procesoroch nižšej triedy. Vytvoril ju tím Keccak, ktorý stojí za viacerými úspešnými kryptografickými algoritmami. Napríklad hashovacie funkcie z rodiny SHA-3 a iné -- \cite{kecsup}. XOODOO algoritmus vznikol po vytvorení tzv. Kravatte autentizačno-šifrovacieho algoritmu \cite{kravatte}, založené na Keccak-p permutácií \cite{keccakp}. Ten sa ukázal ako dostatočne rýchly na širokom spektre platforiem. Avšak nezapadá do kategórie \acrshort{lwca}.
 
-Tím Keccak vypracoval nové riešenie. Ním bol port medzi ich prvotným Keccak-p dizajnom a Gimli-ho \cite{bernstein2017gimli} permutačným algoritmom. Vo výsledku autori zlúčili lepšie realizované prvky z oboch algoritmov do jedného celku. Primárny problém samotnej Gimli permutácie bol v slabom prejave zmeny výstupu po malých zmenách vo vstupnej správe. Táto vlastnosť sa v kryptografii označuje pomocou anglického pojmu, tzv. \textit{propagation properties}\footnote{Cieľom je aby aj zmena jedného bitu na vstupe, ovplyvnila čo najviac bitov vo výstupe -- tzv. \textit{Lavínový efekt}.}. Novo-vzniknuté riešenie autori pomenovali XOODOO. Na základe rôznych variácií tohto kryptografického primitíva sa im následne podarilo vytvoriť sadu vysoko efektívnych kryptografických funkcií. 
+Tím Keccak vypracoval nové riešenie. Ním bol port medzi ich prvotným Keccak-p dizajnom a Gimli-ho \cite{bernstein2017gimli} permutačným algoritmom. Vo výsledku autori zlúčili lepšie realizované prvky z oboch algoritmov do jedného celku. Primárny problém samotnej Gimli permutácie bol v slabom prejave zmeny výstupu po malých zmenách vo vstupnej správe. Táto vlastnosť sa v kryptografii označuje pomocou anglického pojmu, tzv. \textit{propagation properties}\footnote{Cieľom je aby aj zmena jedného bitu na vstupe, ovplyvnila čo najviac bitov vo výstupe -- tzv. \textit{Lavínový efekt}}. Novo-vzniknuté riešenie autori pomenovali XOODOO. Na základe rôznych variácií tohto kryptografického primitíva sa im následne podarilo vytvoriť sadu vysoko efektívnych kryptografických funkcií. 
 Medzi sady, ktorých jadro tvorí XOODOO, patrí Xoodyak a Xoofff. Xoofff pozostáva zo zlúčenia Farfalle konštrukcie \cite{farfalle} so XOODOO permutáciou. 
 
 Xoodyak ma narozdiel od Xoofff duplexovú konštrukciu \cite{duplex}. Vo výsledku máme ľahko prenosnú, všestrannú, kryptografickú knižnicu. Je vhodná do výkonovo obmedzených prostredí. Môže sa použiť pre väčšinu kryptografických funkcií, ktoré používajú symetrický kľúč. Napríklad hashovanie, šifrovanie, výpočet MAC alebo autentizované šifrovanie. O kvalite riešenia napovedá aj fakt, že sada Xoodyak je jedným z 10 finalistov v oblasti ľahkej kryptografie NIST štandardizačného procesu.
 V rámci tejto kapitoly opíšeme kryptografické primitívum XOODOO a následne balík Xoodyak. Informácie o téme boli čerpané z týchto zdrojov: \cite{tkecak}, \cite{xd}, \cite{xcb}, \cite{xoodoocb}, \cite{xdupdate},\cite{xdr1}.
 \subsection{XOODOO permutácia}
-XOODOO je rodina permutácií, ktorá je definovaná počtom rúnd. Má klasickú iteračnú štruktúru. Teda opakovateľne sa vola rundová funkcia s aktuálnym stavom. Pre pochopenie operácií je nutné pochopiť určité označenie použité v algoritme.
+XOODOO je permutácia, definovaná počtom rúnd. Má klasickú iteračnú štruktúru. Teda opakovane sa vola rundová funkcia s aktuálnym stavom. Pre pochopenie operácií je nutné pochopiť určité označenie použité v algoritme.
 
-Stav -- \textbf{state}, pozostáva z 3 rovnako veľkých horizontálnych rovín -- \textbf{planes}. Každá z týchto rovín obsahuje štyri paralelne 32-bitové pruhy -- \textbf{lanes}. Okrem tejto charakteristiky je možné opísať stav ako množinu 128 stĺpcov -- \textbf{columns}, pričom jeden stĺpec obsahuje 3 bity v každej rovine. Stav je teda tvorený zo stĺpcov usporiadaných v poli o rozmere 4x32. Posledná položka na opis stavu sú tzv. listy -- \textbf{sheets}. List sa skladá z 3 na sebe uložených pruhov. Uvedené pojmy sú znázornené pomocou schémy \ref{xoodooterm}, ktorá bola prebraná z \cite{xcb}.
+Stav -- \textbf{state}, pozostáva z 3 rovnako veľkých horizontálnych rovín -- \textbf{planes}\footnote{V jednej rovine je 128 bitov}. Každá z týchto rovín obsahuje štyri paralelne 32-bitové pruhy -- \textbf{lanes})\footnote{V jednom pruhu je 32 bitov}. Okrem tejto charakteristiky je možné opísať stav ako množinu zloženú zo stĺpcov -- \textbf{columns}\footnote{V jednom stĺpci je 12 bitov}, pričom jeden stĺpec obsahuje 4 bity v jednej rovine. Stav je teda tvorený zo stĺpcov usporiadaných v poli o rozmere $4\times3\times32 = 384$ bitov. Posledná položka na opis stavu sú tzv. listy -- \textbf{sheets}\footnote{V jednom liste je 96 bitov}. List sa skladá z 3 na sebe uložených pruhov. Uvedené pojmy sú znázornené pomocou schémy \ref{xoodooterm}, ktorá bola prebraná z \cite{xcb}.
 
 \begin{figure}[!h]
 	\centering
 	\includegraphics[width=1\textwidth]{figures/xoodooTerminology}
-	\caption{Grafické znázornenie terminológie v XOODOO}
+	\caption{Grafické znázornenie terminológie využitej v kryptografickej permutácii XOODOO \cite{xcb}}
 	\label{xoodooterm}
 \end{figure}
 
-Roviny majú index $y$. $y=0$ zodpovedá spodnej rovine a vrchná rovina $y=2$. Bit je označený s indexom $z$ vrámci množiny pruhov. List ich označujeme pomocou indexu $x$. Takže pozícia pruhu v stave je definovaná pomocou dvoch súradníc $(x,y)$. Konkrétny bit je možné v stave následne reprezentovať pomocou trojice súradníc $(x,y,z)$. Pri učení stĺpca sú potrebné 2 súradnice $(x,z)$. Pred spustením samotného algoritmu musí používateľ vykonať mapovanie 384-bitovej správy voči horizontálnym rovinám. Tento úkon sa realizuje pomocou vzorca \ref{index}.
+Roviny majú index $y$. Index $y=0$ zodpovedá spodnej rovine a vrchná rovina má index $y=2$. Bit je označený s indexom $z$ vrámci množiny pruhov. List označujeme pomocou indexu $x$. Pozícia pruhu v stave je definovaná pomocou dvoch súradníc $(x,y)$. Konkrétny bit je možné reprezentovať v stave pomocou trojice súradníc $(x,y,z)$. Pri určení stĺpca sú potrebné 2 súradnice $(x,z)$. Pred spustením samotného algoritmu musí používateľ vykonať mapovanie 384-bitovej správy voči horizontálnym rovinám. Tento úkon sa realizuje pomocou vzorca \ref{index}.
 
 \begin{equation}\label{index}
 	i=z+32(x+4y)
 \end{equation}
+Výhodou XOODOO je, že celý stav, 384 bitov, dokáže byť uložený v 12 registroch po 32 bitov. Vďaka tomu ideálne vyhovuje nízko výkonným 32-bitovým zariadeniam.
 
 Rundová funkcia pozostáva z 5 krokov:
 \begin{enumerate}
-	\item miešanie vrstvy (z ang. \textit{a mixing layer $\theta$}), 
-	\item posun rovín (z ang. \textit{a plane shifting $\rho_{west}$}), 
-	\item pridanie rundových konštánt (z ang. \textit{the addition of round constants $\iota$}),
-	\item nelineárna vrstva (z ang. \textit{a non-linear layer $\chi$}),
-	\item posun rovín (z ang. \textit{an another plane shifting $\rho_{east}$}).
+	\item miešanie vrstvy -- z ang. \textit{a mixing layer $\theta$}, 
+	\item posun rovín -- z ang. \textit{a plane shifting $\rho_{west}$}, 
+	\item pridanie rundových konštánt -- z ang. \textit{the addition of round constants $\iota$},
+	\item nelineárna vrstva -- z ang. \textit{a non-linear layer $\chi$},
+	\item posun rovín -- z ang. \textit{an another plane shifting $\rho_{east}$}.
 \end{enumerate}
-Opis jednotlivých krokov je znázornený pomocou schémy \ref{xoodooalgo}, ktorá je prebratá z \cite{xcb}. Schéma opisuje jednotlivé kroky algoritmu vrátane rundových konštánt. 
+Opis jednotlivých krokov je znázornený pomocou schémy \ref{xoodoochi}, \ref{xoodooml}, \ref{xoodooshift} ktoré sú prebraté z \cite{xcb}.  
 
-  \begin{figure}[!h]
+% TODO: \usepackage{graphicx} required
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.5\textwidth]{figures/xoodoochi}
+	\caption{Grafické znázornenie operácie $\chi$ \cite{xcb}}
+	\label{xoodoochi}
+\end{figure}
+% TODO: \usepackage{graphicx} required
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.5\textwidth]{figures/xoodooml}
+	\caption{Grafické znázornenie operácie $\rho$ \cite{xcb}}
+	\label{xoodooml}
+\end{figure}
+% TODO: \usepackage{graphicx} required
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.8\linewidth]{figures/xoodooshift}
+	\caption{Ilustrácia miešania vrstiev $\rho_{west}$ (vľavo) a $\rho_{east}$ (vpravo)\cite{xcb}}
+	\label{xoodooshift}
+\end{figure}
+K spomenutej schéme \ref{xoodooshift}, by sme rád doplnili, že posun je realizovaný na každom bite. Na schéme sú ilustrované len posuny 2 bitov. 
+   
+Tabuľka \ref{tab1} vysvetľuje jednotlivé operácie, ktoré sa v algoritme používajú. Algoritmus permutácie je následne znázornený pomocoou \ref{xoodooalgo}. Súčasťou implementácie sú aj tak zvané rundové konštanty. Tie je možné vidieť v \ref{tab2}. Uvedené ilustrácie boli prebrané z dokumentu \cite{xcb}.
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=1.0\textwidth]{figures/tab1}
+	\caption{Charakteristika operácií v algoritmickom zápise kryptografickej permutácie XOODOO \cite{xcb}}
+	\label{tab1}
+\end{figure}
+
+\begin{figure}[h!]
   	\centering
-  	\includegraphics[width=1.1\textwidth]{figures/xoodooalgo}
-  	\caption{}
+  	\includegraphics[width=1.0\textwidth]{figures/xoodooalgo}
+  	\caption{Algoritmický zápis kryptografickej permutácie XOODOO \cite{xcb}}
   	\label{xoodooalgo}
-  \end{figure}
+\end{figure}
 
-\subsection{Xoodyak} 
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=1.0\textwidth]{figures/tab2}
+	\caption{Súbor rundových konštánt kryptografického algoritmu XOODOO \cite{xcb}}
+	\label{tab2}
+\end{figure}
+
+\subsection{Kryptograficý balíček Xoodyak} 
 Xoodyak možno považovať za všestranný kryptografický nástroj. Je vhodný pre väčšinu operácií využívajúcich symetrický kľúč. Napríklad generovanie pseudonáhodných bitov, autentizáciu, šifrovanie a iné. Tím Keccak použil pri návrhu duplexnú konštrukciu. Konkrétne variant s plným stavom a využitím kľúča. Tento dizajn označujeme ako \acrfull{fskd}. Viac o tejto konštrukcii si čitateľ môže prečítať v \cite{duplex}.
 Operačný režim, v ktorom Xoodyak pracuje sa nazýva Cyklista -- z ang. \textit{Cyclist}. Tento názov získal ako opozitum k pomenovaniu režimu Motorista, ktorý je možné nájsť v Keyak schéme \cite{keyak}. Narozdiel od uvedeného balíka Keyak, nie je Xoodyak limitovaný len na autentizované šifrovanie. Je jednoduchší hlavne kvôli tomu že neobsahuje paralelné varianty.
 
 \subsubsection{Režim Cyklista}\label{cyklista}
-Režim Cyklista funguje na princípe kryptografických permutácií $f$, teda zmeny usporiadania bitov za pomoci tajného kľúča a matematických operácií. Parametrami sú veľkosti blokov $R_{hash}$, $R_{kin}$, $R_{kout}$ a veľkosť račety, resp. západky\footnote{z ang. \textit{the ratchet size}} \cite{ratchet} $\ell_{ratchet}$. Uvedený pojem sa v kryptografii používa vo forme obrazného pomenovania. Cieľom je poukázať na jednoduchý pohyb vpred, ale s ťažkým, resp. zložitejším pohybom naspäť. Dôležité je, že uvedený scenár je vyvolaný zámerným dizajnom. Šírka permutácie $b'$ je definovaná pomocou vzorca \ref{index2}. Všetky uvedené parametre sú v bajtoch. Pre označenie prázdneho slova budeme používať $\epsilon$.
+Režim Cyklista funguje na princípe kryptografických permutácií $f$, teda zmeny usporiadania bitov za pomoci tajného kľúča a matematických operácií. Parametrami sú veľkosti blokov $R_{hash}$, $R_{kin}$, $R_{kout}$ a veľkosť račety, resp. západky\footnote{z ang. \textit{the ratchet size}} \cite{ratchet} $\ell_{ratchet}$. Uvedený pojem sa v kryptografii používa vo forme obrazného pomenovania. Cieľom je poukázať na jednoduchý pohyb vpred, ale s ťažkým, resp. zložitejším pohybom naspäť. Dôležité je, že uvedený scenár je vyvolaný zámerným dizajnom. Šírka permutácie $b'$ je definovaná pomocou vzorca \ref{index2}. Všetky uvedené parametre sú v bajtoch. Pre označenie prázdneho slova budeme používať $E$.
 \begin{equation}\label{index2}
 	max(R_{hash}, R_{kin}, R_{kout}) + 2 \leq b'
 \end{equation} 
 
 Cyklista operuje v dvoch režimoch -- \textbf{hašovací a kľúčový}\footnote{z ang. \textit{hash and keyed mode}.}. 
-Inicializácia prebieha pomocou príkazu \lstinline|CYCLIST(K,id,counter)|. Ak sa parameter $K$ rovná prázdnemu slovu $\epsilon$, tak potom nastane spustenie v hašovacom režime. Aktuálne nie je do implementácie zakomponovaná možnosť zmeny režimu po inicializácií. Vývojári však túto vlastnosť nevylúčili pre prípadné aktualizácie balíka.  
+Inicializácia prebieha pomocou príkazu \lstinline|CYCLIST(K,id,counter)|. Ak sa parameter $K$ rovná prázdnemu slovu $E$, tak potom nastane spustenie v hašovacom režime. Aktuálne nie je do implementácie zakomponovaná možnosť zmeny režimu po inicializácií. Vývojári však túto vlastnosť nevylúčili pre prípadné aktualizácie balíka.  
 
 
 Dostupné funkcie závisia od režimu, v ktorom sa  Cyklista spúšťa. Medzi ne patria \lstinline|ABSORB()| a \lstinline|SQUEEZE()|. Možno ich volať v oboch režimoch, zatiaľ čo funkcie \lstinline|ENCRYPT()|, \lstinline|DECRYPT()|, \lstinline|SQUEEZEKEY()| a \lstinline|RATCHET()| sú dostupné len pre kľúčový režim. Účel každej funkcie je nasledujúci:
@@ -533,17 +597,18 @@ Dostupné funkcie závisia od režimu, v ktorom sa  Cyklista spúšťa. Medzi ne
 	\item \lstinline|ABSORB(X)| absorbuje vstupný reťazec X,
 	\item C $\gets$ \lstinline|ENCRYPT(P)| zašifruje P do C a absorbuje P,
 	\item P $\gets$ \lstinline|DECRYPT(C)| dešifruje C do P a absorbuje P,
-	\item Y $\gets$	\lstinline|SQUEEZE($\ell$)|  vytvára $\ell$-bajtový výstup, ktorý závisí od doteraz absorbovaných dát,
-	\item Y $\gets$	\lstinline|SQUEEZEKEY($\ell$)| funguje ako \lstinline|SQUEEZE($\ell$)|, ale používa sa za účelom generovania odvodeného kľúča, 		\\ell nefunguje v listings pckg
+	\item Y $\gets$	\lstinline|SQUEEZE(L)|  vytvára L-bajtový výstup, ktorý závisí od doteraz absorbovaných dát,
+	\item Y $\gets$	\lstinline|SQUEEZEKEY(L)| funguje ako \lstinline|SQUEEZE(L)|, ale používa sa za účelom generovania odvodeného kľúča,
 	\item \lstinline|RATCHET()| transformuje stav na nevratný tak, aby sa zabezpečila dopredná bezpečnosť\footnote{z ang. \textit{Forward secrecy}} \cite{fsec}. 
 \end{itemize}
 
-Stav bude závisieť od postupnosti volaní funkcií a od jeho vstupných reťazcov. Presnejšie povedané, zámerom je, že akýkoľvek výstup závisí od postupnosti všetkých vstupných reťazcov a volaní, tak že akékoľvek dva nasledujúce výstupné reťazce budú výstupom rôznych domén. Napríklad volanie \lstinline|ABSORB(X)| znamená, že výstup bude závisieť od reťazca $X$. Na druhej strane \lstinline|ABSORB()| vo funkcii \lstinline|ENCRYPT(P)| vytvorí výstup závislý aj od $P$ z funkcie šifrovania. Okrem uvedených závislostí ovplyvňujú výstup aj iné dizajnové riešenia. Príkladom je minimalizácia pamäťovej stopy. Vo výsledku teda výstup závisí od počtu predchádzajúcich volaní funkcie \lstinline|SQUEEZE()| a predtým spracovaných textov pomocou funkcií \lstinline|ENCRYPT()| a \lstinline|DECRYPT()|. Viac informácií o režime je dostupných v kapitole 7.2, publikácie \cite{xcb}. 
+Stav bude závisieť od postupnosti volaní funkcií a od jeho vstupných reťazcov. Presnejšie povedané, zámerom je, že akýkoľvek výstup závisí od postupnosti všetkých vstupných reťazcov a volaní, tak že akékoľvek dva nasledujúce výstupné reťazce budú výstupom rôznych domén. Napríklad volanie \lstinline|ABSORB(X)| znamená, že výstup bude závisieť od reťazca $X$. Na druhej strane \lstinline|ABSORB()| vo funkcii \lstinline|ENCRYPT(P)| vytvorí výstup závislý aj od $P$ z funkcie šifrovania. Okrem uvedených závislostí ovplyvňujú výstup aj iné dizajnové riešenia. Príkladom je minimalizácia pamäťovej stopy. Vo výsledku teda výstup závisí od počtu predchádzajúcich volaní funkcie \lstinline|SQUEEZE()| a predtým spracovaných textov pomocou funkcií \lstinline|ENCRYPT()| a \lstinline|DECRYPT()|. Viac informácií o režime je dostupných v kapitole 7.2, publikácie \cite{xcb}.
+Algoritmický zápis jednotlivých funkcií a doplňujúce informácie o režime Cyklista je možné nájsť v \cite{xdr2}, konkrétne v kapitole 2.2. 
 
 \subsubsection{Definícia a bezpečnosť}
 Xoodyak je definovaný pomocou operatívneho režimu Cyklista nasledovne:
 \begin{equation}
-	CYCLIST[f,R_{hash},R_{kin},R_{kout},\ell_{ratchet}]
+	CYCLIST[f,R_{hash},R_{kin},R_{kout},L_{ratchet}]
 \end{equation} 
 Kde jednotlivé parametre majú veľkosti:
 \begin{enumerate}
@@ -551,14 +616,41 @@ Kde jednotlivé parametre majú veľkosti:
 	\item $R_{hash}$ -- 16 bajtov,
 	\item $R_{kin}$ -- 44 bajtov,
 	\item $R_{kout}$ -- 24 bajtov,
-	\item $\ell_{ratchet}$ -- 16 bajtov.  
+	\item $L_{ratchet}$ -- 16 bajtov.  
 \end{enumerate}
 Takto definované parametre algoritmu dokážu poskytnúť 128-bitovú bezpečnosť v oboch režimoch Cyklistu. Samozrejmosťou je, že v prípade kľúčového režimu, musí byť veľkosť kľúča rovná alebo väčšia ako 128 bitov. Viac informácií o kryptografickej bezpečnosti algoritmov je možné nájsť v \cite{sec}.
 
-Viac informácií o bezpečnosti Xoodyak-a je možné nájsť v \cite{xcb, 7.3}, odkiaľ boli informácie čerpané.
+Viac informácií o bezpečnosti Xoodyak-a je možné nájsť v \cite{xcb, 7.3} a \cite{xdr2}, odkiaľ boli informácie čerpané.
 
 \subsection{Možnosti použitia Xoodyak algoritmu}
 Obsahom tejto podkapitoly sú uvedené postupy ako a za akých okolností je daný balík možné použiť. 
 \subsubsection{Použitie hašovacieho režimu}
-Xoodyak sa dá aplikovať ako hašovacia funkcia.
+Xoodyak sa dá aplikovať ako hašovacia funkcia. Konkrétne je možné ju použiť ako funkciu na rozšírenie výstupu\footnote{z ang. \textit{eXtendable-Output Function}} (ďalej \acrshort{xof}). Nominálne, resp. nie bežné použitie by v tomto prípade bolo nasledujúce: 
+\begin{enumerate}
+	\item \lstinline|CYCLIST(E,E,E)| -- spustenie v hašovacom režime,
+ 	\item \lstinline|ABSORB(X)| -- absorpcia vstupného reťazca X,
+ 	\item \lstinline|SQUEEZE(L)| -- vytvára L-bajtový výstup, ktorý závisí od doteraz absorbovaných dát,
+\end{enumerate}
+V tomto prípade by sa kryptografická bezpečnosť algoritmu pohybovala v závislosti od veľkosti výstupu L. Konkrétne v intervaloch:
+\begin{itemize}
+	\item{\textbf{odolnosť voči kolízií}} -- z ang. \textit{collision resistance} \cite{cr}, min(8L/2, 128) bitov,
+	\item{\textbf{odolnosť voči }} -- z ang. \textit{preimage and second preimage resistance} \cite{pa}, min(8L, 128) bitov,
+	\item{\textbf{odolnosť voči}} -- z ang. \textit{m-target preimage resistance} \cite{pa}, min(8L - log m, 128) bitov.
+\end{itemize}
+Bežná je však absorpcia sekvencie viacerých reťazcov.
+
 \subsubsection{Použitie kľúčového režimu}
+Inicializácia režimu začína použitím príkazu \lstinline|CYCLIST(K,id,counter)|. Autori uviedli celkovo 7 spôsobov využitia. V nich sa opisuje aj význam použitia id a counter parametrov.
+\begin{itemize}
+	\item{\textbf{Dvoj-cestné zabránenie viac-cieľového útoku}} -- z ang. \textit{Two ways to counteract multi-target attacks},
+	\item{\textbf{Tri spôsoby spracovania jednorázového kľúča}} -- z ang. \textit{Three ways to handle the nonce},
+	\item{\textbf{Autentizované šifrovanie}} -- z ang. \textit{Authenticated encryption},
+	\item{\textbf{Relačné autentizované šifrovanie}} -- z ang. \textit{Session authenticated encryption},
+	\item{\textbf{Račetové použitie}} -- z ang. \textit{Ratchet},
+	\item{\textbf{Subkľúčové rolovanie}} -- z ang. \textit{Rolling subkeys},
+	\item{\textbf{Prepoužitie jednorázového kľúča a uvoľnenie neoverenej dešifrovanej šifry}} -- z ang. \textit{Nonce reuse and release of unverified decrypted ciphertext}.
+\end{itemize}
+
+\textbf{Dvoj-cestné zabránenie viac-cieľového útoku} -- id parameter je voliteľný identifikátor kľúča K.   
+
+\subsubsection{Použitie za účelom autentizovaného šifrovania s bežným heslom}

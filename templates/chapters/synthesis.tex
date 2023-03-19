@@ -541,3 +541,22 @@ https://www.mdpi.com/1999-5903/14/9/264 \\
 https://nordvpn.com/vpn-speed-test/ \\
 https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=\&arnumber=9142755 \\
 https://citeseerx.ist.psu.edu/document?repid=rep1\&type=pdf\&doi=a5639b03df528315a8e901f8f6b2bad2824a643a \\
+
+\section{Windows kompatibilita}
+za ucelom Creating a virtual network device similar to /dev/net/tun in C on Windows
+
+To use the OpenVPN/tap-windows driver in a C program, you need to first install the driver on your Windows system. You can download the driver from the OpenVPN website.
+
+Once the driver is installed, you can use the following code snippet to create and configure a tap interface in your C program:
+
+This code snippet opens the tap adapter with the name "tap0801", queries and sets the media connect status, and then closes the adapter. You can modify the code to suit your specific needs.
+
+adapter
+
+ https://github.com/OpenVPN/tap-windows/tree/master/installer
+ \subsection{2.option}
+ On Linux, /dev/net/tun is used to create virtual network devices. On Windows, the equivalent is the TAP-Windows driver used by OpenVPN. To create a virtual network device on Windows using TAP-Windows driver, you can use the following code as an example:
+ 
+
+ Note that this code uses the TAP-Windows driver's control device interface to configure and set the status of the virtual network device. It opens the TAP device using the path "\\\\.\\Global\\TAP-Windows6" and sends the appropriate control codes to the device using the DeviceIoControl function. The TAP\_IOCTL\_CONFIG\_TUN control code is used to configure the TAP device, and the TAP\_IOCTL\_SET\_MEDIA\_STATUS control code is used to set the device status to up. The virtual network device name is returned by the TAP device driver and can be obtained from the tapName variable after calling TAP\_IOCTL\_CONFIG\_TUN.
+\section{incode creation }
