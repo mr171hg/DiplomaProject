@@ -651,6 +651,14 @@ Inicializácia režimu začína použitím príkazu \lstinline|CYCLIST(K,id,coun
 	\item{\textbf{Prepoužitie jednorázového kľúča a uvoľnenie neoverenej dešifrovanej šifry}} -- z ang. \textit{Nonce reuse and release of unverified decrypted ciphertext}.
 \end{itemize}
 
-\textbf{Dvoj-cestné zabránenie viac-cieľového útoku} -- id parameter je voliteľný identifikátor kľúča K.   
+\textbf{Dvoj-cestné zabránenie viac-cieľového útoku} -- id parameter je voliteľný identifikátor kľúča K. Pre každý tajný kľúč by mal byť jedinečný. Ponúka možnosť zabránenia viac-cieľovým útokom. Jedná sa o útok na viacero používateľov daného kryptografického systému, resp. viacero kľúčov používateľa. Viac o tomto útoku je možné nájsť v \cite{mta}. V prípade použitia id parametra algoritmus rozšíri veľkosť kľúča. Následne pri vyhľadávaní kľúčov nedochádza k degradácií bezpečnosti a veľkosť tajného kľúča môže ostať 128 bitov. Týmto spôsobom bude zachovaná aj rovnaká bezpečnosť systému pred útokom. 
+Príklad za účelom šifrovania správy P za pomoci tajného kľúča K s id, je na nasledujúci:
+\begin{enumerate}
+	\item{\lstinline|CYCLIST(K,id,E)|},
+	\item{\lstinline|ABSORB(nounce)|},
+	\item{C $\gets$ \lstinline|ENCRYPT(P)|}.
+\end{enumerate}
+
+\textbf{Tri spôsoby spracovania jednorázového kľúča} -- 3. parameter pri inicializácií režimu cyklista je \textit{counter}, resp. počítadlo. Jedná sa o dátový prvok vo forme bajtového reťazca, ktorý môže byť inkrementovaný. Spracúva sa po jednej číslici. Vďaka tomu sa obmedzuje počet informácií, ktoré vie útočník využiť pre rôzne vstupy. Pri inicializácií používateľ zvolí veľkosť počítadla v intervale $2 \leq B \leq 256$. Predpokladá sa, že počítadlo je reťazec z množiny $\mathbb{Z^*_B}$. Potom ak je počítadlo inicializované ako prázdny reťazec, tak množina všetkých možných hodnôt po inkrementácií je $\mathbb{Z^1_B}$. Pri každom ďalšom navýšení sa zvýši hodnota za $*$. Spracovanie prebieha od najvýznamnejšieho bitu. Čím menšia je hodnota B, tým menší je počet možných vstupov pri každej iterácií permutácie. Vďaka tomu je zabezpečená lepšia ochrana pred tzv. z ang \textit{Power analysis} \cite{paa} útokmi a jeho variantami. Za účelom zamedzenia týchto útokov sa používa \lstinline|ABSORB(nounce)| v prípade ak si počítadlo pri inicializácií zvolíme prázdny reťazec E. 
 
 \subsubsection{Použitie za účelom autentizovaného šifrovania s bežným heslom}
