@@ -25,27 +25,23 @@
 #include <ws2ipdef.h>
 #include <iphlpapi.h>
 #include <mstcpip.h>
-#include <ip2string.h>
 #include <winternl.h>
 #include <stdarg.h>
+#include "wintun.h"
+//#include <ip2string.h>
 
 #define nfds_t ULONG
 #define TCP_DEFER_ACCEPT SO_ACCEPTCONN
 #define SOL_TCP IPPROTO_TCP
 #define IFNAMSIZ 256
-#define TAP_CONTROL_CODE(request,method) \
-    CTL_CODE(FILE_DEVICE_UNKNOWN, request, method, FILE_ANY_ACCESS)
-#define TAP_IOCTL_SET_MEDIA_STATUS  TAP_CONTROL_CODE(6, METHOD_BUFFERED)
-#define TAP_IOCTL_CONFIG_TUN       TAP_CONTROL_CODE(10, METHOD_BUFFERED)
-#define SIOCSIFMTU SIO_UDP_CONNRESET
+#define SIOCSIFMTU      0x8922 
 //#pragma comment(lib, "ws2_32.lib")
-
 #else
+#include <sys/wait.h>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/uio.h>
-#include <sys/wait.h>
 #include <net/if.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>

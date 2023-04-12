@@ -8,7 +8,6 @@
 #include <ws2ipdef.h>
 #include <iphlpapi.h>
 #include <mstcpip.h>
-#include <ip2string.h>
 #include <winternl.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -319,8 +318,7 @@ int __cdecl main(void)
         LogError(L"Failed to create adapter", LastError);
         goto cleanupQuit;
     }
-    WINTUN_ADAPTER_CONFIGURATION marek = {0};
-    marek.
+
     DWORD Version = WintunGetRunningDriverVersion();
     Log(WINTUN_LOG_INFO, L"Wintun v%u.%u loaded", (Version >> 16) & 0xff, (Version >> 0) & 0xff);
 

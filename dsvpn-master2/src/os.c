@@ -7,8 +7,39 @@
 int poll(struct pollfd *fds, nfds_t nfds, int timeout){
     return WSAPoll(fds, nfds, timeout);
 }
+
 int close(int fd){
     return closesocket(fd);
+}
+
+static WINTUN_CREATE_ADAPTER_FUNC *WintunCreateAdapter;
+static WINTUN_CLOSE_ADAPTER_FUNC *WintunCloseAdapter;
+static WINTUN_DELETE_DRIVER_FUNC *WintunDeleteDriver;
+static WINTUN_START_SESSION_FUNC *WintunStartSession;
+static WINTUN_END_SESSION_FUNC *WintunEndSession;
+static WINTUN_GET_ADAPTER_LUID_FUNC *WintunGetAdapterLUID; 
+
+static HMODULE
+InitializeWintun(void)
+{
+    HMODULE Wintun =
+        LoadLibraryExW(L"wintun.dll", NULL, LOAD_LIBRARY_SEARCH_APPLICATION_DIR | LOAD_LIBRARY_SEARCH_SYSTEM32);
+    if (!Wintun)
+        return NULL;
+#define X(Name) ((*(FARPROC *)&Name = GetProcAddress(Wintun, #Name)) == NULL)
+    if (X(WintunCreateAdapter) || X(WintunCloseAdapter) || X(WintunDeleteDriver) || 
+        X(WintunStartSession) || X(WintunEndSession) || X(WintunGetAdapterLUID)/*|| X(WintunOpenAdapter) ||
+        X(WintunGetRunningDriverVersion)  || X(WintunSetLogger) || 
+        X(WintunGetReadWaitEvent) || X(WintunReceivePacket) || X(WintunReleaseReceivePacket) ||
+        X(WintunAllocateSendPacket) || X(WintunSendPacket)*/)
+#undef X
+    {
+        DWORD LastError = GetLastError();
+        FreeLibrary(Wintun);
+        SetLastError(LastError);
+        return NULL;
+    }
+    return Wintun;
 }
 #endif
  
@@ -108,53 +139,37 @@ int tun_create(char if_name[IFNAMSIZ], const char *wanted_name)
     return fd;
 }
 #elif defined(_WIN32)
-HANDLE tun_create(char if_name[IFNAMSIZ], const char *wanted_name)
+int tun_create(char if_name[IFNAMSIZ], const char *wanted_name)
 {   
-    /*HMODULE Wintun = InitializeWintun();
+    HMODULE Wintun = InitializeWintun();
     if (!Wintun){
         puts("Failed to initialize Wintun");
+        FreeLibrary(Wintun);
         return INVALID_HANDLE_VALUE;        
     }
     else{    
         puts("Wintun library loaded");
-    }*/
-
-    char adapterName = (wanted_name == NULL || strcmp(wanted_name, "auto") == 0) ? "wtun0" : wanted_name;
+    }
+    //char adapterName = (wanted_name == NULL || strcmp(wanted_name, "auto") == 0) ? "wtun0" : wanted_name;
     //GUID MyGuid = { 0xdeadbabe, 0xcafe, 0xbeef, { 0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef } }; //moze byt null
-    WINTUN_ADAPTER_HANDLE Adapter = WintunCreateAdapter(adapterName, "Wintun", NULL);
+    WINTUN_ADAPTER_HANDLE Adapter = WintunCreateAdapter(L"wtun0", L"Wintun", NULL);
     if (!Adapter){
         puts("Failed to create Wintun adapter");
+        FreeLibrary(Wintun);
         return INVALID_HANDLE_VALUE;
     }
-    snprintf(if_name, IFNAMSIZ, "%s", adapterName);
-
-    /*DWORD Version = WintunGetRunningDriverVersion();
-    puts("Wintun v%u.%u loaded", (Version >> 16) & 0xff, (Version >> 0) & 0xff);
-    
-    char* ipAddrStr = "192.168.1.1";
-    unsigned long ipAddr = inet_addr(ipAddrStr);
-    if (ipAddr == INADDR_NONE) {
-        printf("Invalid IP address: %s\n", ipAddrStr);
-    } else {
-        printf("IP address in binary BE: %u\n", ipAddr);
-    }
-    
-    */
-
-   /* MIB_UNICASTIPADDRESS_ROW AddressRow;
+	puts("ok");
+  
+    MIB_UNICASTIPADDRESS_ROW AddressRow;
     InitializeUnicastIpAddressEntry(&AddressRow);
     WintunGetAdapterLUID(Adapter, &AddressRow.InterfaceLuid);
     AddressRow.Address.Ipv4.sin_family = AF_INET;
-    AddressRow.Address.Ipv4.sin_addr.S_un.S_addr = htonl((10 << 24) | (6 << 16) | (7 << 8) | (7 << 0)); // 10.6.7.7 //
-    AddressRow.OnLinkPrefixLength = 24; // This is a /24 network //
+    AddressRow.Address.Ipv4.sin_addr.S_un.S_addr =  inet_addr("192.168.1.100"); /* 10.6.7.7 */
+    AddressRow.OnLinkPrefixLength = 24; /* This is a /24 network */
     AddressRow.DadState = IpDadStatePreferred;
-    DWORD LastError = CreateUnicastIpAddressEntry(&AddressRow);
-    if (LastError != ERROR_SUCCESS && LastError != ERROR_OBJECT_ALREADY_EXISTS)
-    {
-        puts("Failed to set Wintun IP address: %u", LastError);
-        WintunCloseAdapter(Adapter);
-        return INVALID_HANDLE_VALUE;
-    }*/
+    CreateUnicastIpAddressEntry(&AddressRow);
+    WINTUN_SESSION_HANDLE Session = WintunStartSession(Adapter, 0x400000);
+    snprintf(if_name, IFNAMSIZ, "%s", "wtun0");
     return Adapter;
 }
 #elif defined(__APPLE__)
@@ -254,7 +269,7 @@ int tun_create(char if_name[IFNAMSIZ], const char *wanted_name)
     return open(path, O_RDWR);
 }
 #endif
-
+#ifndef _WIN32
 int tun_set_mtu(const char *if_name, int mtu)
 {
     struct ifreq ifr;
@@ -271,17 +286,20 @@ int tun_set_mtu(const char *if_name, int mtu)
     }
     return close(fd);
 }
-#if defined(_WIN32)
+#endif
+/*if defined(_WIN32)
 ssize_t tun_read(int fd, void *data, size_t size)
 {
     
+    return 0;
 }
 
 ssize_t tun_write(int fd, const void *data, size_t size)
-{
-    
+{   
+    return 0;    
 }
-#elif !defined(__APPLE__) && !defined(__OpenBSD__)
+#el*/
+#if !defined(__APPLE__) && !defined(__OpenBSD__)
 ssize_t tun_read(int fd, void *data, size_t size)
 {
     return safe_read_partial(fd, data, size);
@@ -389,11 +407,9 @@ const char *get_default_gw_ip(void)
 #elif defined(__linux__)
     return read_from_shell_command(gw, sizeof gw,
                                    "ip route show default 2>/dev/null|awk '/default/{print $3}'");
-/*#elif defined(_WIN)
+#elif defined(_WIN32)
     return read_from_shell_command(gw, sizeof gw,
-                                   "ip route show default 2>/dev/null|awk '/default/{print $3}'"); 
-                                   route print 0.0.0.0 | findstr "0.0.0.0" | for /F "tokens=4" %i in ('more') do @echo %i  
-                                   */   
+                                   "route print 0.0.0.0 | findstr 0.0.0.0 | for /F \"tokens=3\" %i in ('more') do @echo %i");  
 #else
     return NULL;
 #endif
@@ -410,11 +426,8 @@ const char *get_default_ext_if_name(void)
 #elif defined(__linux__)
     return read_from_shell_command(if_name, sizeof if_name,
                                    "ip route show default 2>/dev/null|awk '/default/{print $5}'");
-/*#elif defined(_WIN)
-    return read_from_shell_command(if_name, sizeof if_name,
-                                   "ip route show default 2>/dev/null|awk '/default/{print $5}'"); 
-                                   route print 0.0.0.0 | findstr "0.0.0.0" | for /F "tokens=4" %i in ('more') do @echo %i //if asi vo win nema nazov 
-                                   */                                  
+#elif defined(_WIN32)
+    return "wtun0";                                                                    
 #else
     return NULL;
 #endif
@@ -453,7 +466,6 @@ int shell_cmd(const char *substs[][2], const char *args_str, int silent)
 {
     char * args[64];
     char   cmdbuf[4096];
-    pid_t  child;
     size_t args_i = 0, cmdbuf_i = 0, args_str_i, i;
     int    c, exit_status, is_space = 1;
 
@@ -506,6 +518,8 @@ int shell_cmd(const char *substs[][2], const char *args_str, int silent)
         return -1;
     }
     args[args_i] = NULL;
+#ifndef _WIN32
+    pid_t  child;
     if ((child = fork()) == (pid_t) -1) {
         return -1;
     } else if (child == (pid_t) 0) {
@@ -517,6 +531,19 @@ int shell_cmd(const char *substs[][2], const char *args_str, int silent)
     } else if (waitpid(child, &exit_status, 0) == (pid_t) -1 || !WIFEXITED(exit_status)) {
         return -1;
     }
+#else
+    char command[1074] = "runas /user:Administrator ";
+    strcat(command, args[0]);
+    strcat(command, " ");
+
+    if (silent) {
+        strcat(command, " > NUL 2>&1");
+    }
+
+    exit_status = system(command);
+
+    return exit_status;
+#endif
     return 0;
 }
 
@@ -526,13 +553,13 @@ Cmds firewall_rules_cmds(int is_server)
 #ifdef __linux__
         static const char
             *set_cmds[] =
-                { "sysctl net.ipv4.ip_forward=1",
-                  "ip addr add $LOCAL_TUN_IP peer $REMOTE_TUN_IP dev $IF_NAME",
+                { "sysctl net.ipv4.ip_forward=1", //ipv4 forwarding zapina
+                  "ip addr add $LOCAL_TUN_IP peer $REMOTE_TUN_IP dev $IF_NAME", //priradenie ip
                   "ip -6 addr add $LOCAL_TUN_IP6 peer $REMOTE_TUN_IP6/96 dev $IF_NAME",
-                  "ip link set dev $IF_NAME up",
+                  "ip link set dev $IF_NAME up", //zapnutie int
                   "iptables -t raw -I PREROUTING ! -i $IF_NAME -d $LOCAL_TUN_IP -m addrtype ! "
-                  "--src-type LOCAL -j DROP",
-                  "iptables -t nat -A POSTROUTING -o $EXT_IF_NAME -s $REMOTE_TUN_IP -j MASQUERADE",
+                  "--src-type LOCAL -j DROP", //blokuje vlastnu komunikaciu
+                  "iptables -t nat -A POSTROUTING -o $EXT_IF_NAME -s $REMOTE_TUN_IP -j MASQUERADE", //nat server to tun
                   "iptables -t filter -A FORWARD -i $EXT_IF_NAME -o $IF_NAME -m state --state "
                   "RELATED,ESTABLISHED -j ACCEPT",
                   "iptables -t filter -A FORWARD -i $IF_NAME -o $EXT_IF_NAME -j ACCEPT",
@@ -549,34 +576,23 @@ Cmds firewall_rules_cmds(int is_server)
 #elif defined(_WIN32)
     static const char
         *set_cmds[] =
-            { "reg add HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters /v IPEnableRouter /t REG_DWORD /d 1 /f",
-              "netsh interface ipv4 add address $IF_NAME $LOCAL_TUN_IP $REMOTE_TUN_IP",
-              "netsh interface ipv6 add address $IF_NAME $LOCAL_TUN_IP6",
-              "netsh interface ipv6 add route ::/96 $REMOTE_TUN_IP6 $LOCAL_TUN_IP6",
+            { "reg add HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters /v IPEnableRouter /t REG_DWORD /d 1 /f",
+              "netsh interface ipv4 add address $IF_NAME $LOCAL_TUN_IP 255.255.255.0",
+              "netsh interface ipv6 add address $IF_NAME $LOCAL_TUN_IP6/96",
+              "netsh interface ipv4 set subinterface \"wtun0\" mtu=9000 store=persistent",  //default je 65 535 - mohlo by robit problem medzi serverom a klientom
+              "netsh interface ipv4 set interface $IF_NAME forwarding=enabled",
               "netsh interface set interface $IF_NAME admin=enable",
-              "netsh advfirewall firewall add rule name=Drop traffic to local IP dir=in action=block protocol=any localip=$LOCAL_TUN_IP remoteip=!$LOCAL_TUN_IP",
-              "netsh interface ipv4 set address $EXT_IF_NAME static $REMOTE_TUN_IP 255.255.255.255 $LOCAL_GATEWAY",
-              "netsh routing ip nat add interface $EXT_IF_NAME full",
-              "netsh routing ip nat add interface $IF_NAME private",
-              "netsh advfirewall firewall add rule name=Allow RELATED and ESTABLISHED traffic from $EXT_IF_NAME to $IF_NAME dir=in action=allow protocol=any localip=any remoteip=me edge=yes enable=yes remoteport=any interfacetype=$EXT_IF_NAME",
-              "netsh advfirewall firewall add rule name=Allow all traffic from $IF_NAME to $EXT_IF_NAME dir=out action=allow protocol=any localip=$LOCAL_TUN_IP remoteip=any interfacetype=$IF_NAME",
-              "netsh advfirewall firewall add rule name=Allow traffic from $LOCAL_HOST to $REMOTE_TUN_IP dir=out action=allow protocol=any localip=$LOCAL_HOST remoteip=$REMOTE_TUN_IP interfacetype=any",
-              "netsh advfirewall firewall add rule name=Allow traffic from $REMOTE_TUN_IP to $LOCAL_HOST dir=in action=allow protocol=any localip=$REMOTE_TUN_IP remoteip=$LOCAL_HOST interfacetype=any",
+              "netsh advfirewall set allprofiles state off",
+              //"treba nam rutyyy"
+              //"route add smerZoServera"
+              //"route add smerDoServera"
               NULL },
-        *unset_cmds[] = {
-            "reg delete HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters /v IPEnableRouter /f",
-            "netsh interface ipv4 delete address $IF_NAME $LOCAL_TUN_IP",
-            "netsh interface ipv6 delete address $IF_NAME $LOCAL_TUN_IP6",
-            "netsh interface ipv6 delete route ::/96 $REMOTE_TUN_IP6 $LOCAL_TUN_IP6",
-            "netsh interface set interface $IF_NAME admin=disable",
-            "netsh advfirewall firewall delete rule name=Drop traffic to local IP"
-            "netsh interface ipv4 delete address $EXT_IF_NAME $REMOTE_TUN_IP",
-            "netsh routing ip nat delete interface $EXT_IF_NAME full",
-            "netsh routing ip nat delete interface $IF_NAME private",
-            "netsh advfirewall firewall delete rule name=Allow RELATED and ESTABLISHED traffic",
-            "netsh advfirewall firewall delete rule name=Allow all traffic from interface to external interface",
-            "netsh advfirewall firewall delete rule name=Allow traffic from local host to remote IP",
-            "netsh advfirewall firewall delete rule name=Allow traffic from remote IP to local host",
+        *unset_cmds[] = {   //wtun sa automaticky zatvara po ukonceni programu
+            "reg delete HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters /v IPEnableRouter /f",
+            "route -f",
+            "ipconfig /release",
+            "ipconfig /renew",
+            "netsh advfirewall set allprofiles state on",
             NULL
         };
 #elif defined(__APPLE__) || defined(__OpenBSD__) || defined(__FreeBSD__) || \
@@ -647,30 +663,24 @@ Cmds firewall_rules_cmds(int is_server)
         static const char
     *set_cmds[] =
         { "reg add HKLM\\SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters /v EnableTCPA /t REG_DWORD /d 0x1 /f",
+          "netsh interface ipv4 add address $IF_NAME $LOCAL_TUN_IP 255.255.255.0",
+          "netsh interface ipv6 add address $IF_NAME $LOCAL_TUN_IP6/96",
+          "netsh interface ipv4 set subinterface \"wtun0\" mtu=9000 store=persistent",
+          "netsh interface ipv4 set interface $IF_NAME forwarding=enabled",
           "netsh interface set interface $IF_NAME admin=enable",
-          "netsh advfirewall firewall add rule name=\"block traffic to LOCAL_TUN_IP\" dir=in action=block protocol=any localip=!$IF_NAME remoteip=$LOCAL_TUN_IP",
-          "netsh interface ipv4 add address $IF_NAME $LOCAL_TUN_IP $REMOTE_TUN_IP",
-          "netsh interface ipv6 add address $IF_NAME $LOCAL_TUN_IP6/$MASK_LENGTH",
+          "netsh advfirewall set allprofiles state off",
+          //"netsh advfirewall firewall add rule name=\"block traffic to LOCAL_TUN_IP\" dir=in action=block protocol=any localip=!$IF_NAME remoteip=$LOCAL_TUN_IP",
+          //"route add $LOCAL_TUN_IP mask 255.255.255.0 $EXT_GW_IP",
+          "route add $EXT_IP mask 255.255.255.0 $EXT_GW_IP",
 #ifndef NO_DEFAULT_ROUTES
-          "route add 0.0.0.0 mask 0.0.0.0 $LOCAL_TUN_IP metric 1 if $IF_NAME",
-          "route add ::/0 $LOCAL_TUN_IP6 metric 1 if $IF_NAME",
-          "route add 0.0.0.0 mask 0.0.0.0 $LOCAL_TUN_IP metric 1 table 42069",
-          "route add ::/0 $LOCAL_TUN_IP6 metric 1 table 42069",
-          "netsh interface ipv4 add route $LOCAL_TUN_IP/32 $IF_NAME metric=10 store=persistent",
-          "netsh interface ipv6 add route $LOCAL_TUN_IP6/$MASK_LENGTH $IF_NAME metric=10 store=persistent",
+          "route add 0.0.0.0 mask 0.0.0.0 $EXT_IP metric 3",  //alebo local_tun_ip
+          "route add ::/0 $LOCAL_TUN_IP6 metric 3",
 #endif
           NULL },
     *unset_cmds[] = {
-#ifndef NO_DEFAULT_ROUTES
-        "route delete 0.0.0.0 mask 0.0.0.0 $LOCAL_TUN_IP metric 1 if $IF_NAME",
-        "route delete ::/0 $LOCAL_TUN_IP6 metric 1 if $IF_NAME",
-        "route delete 0.0.0.0 mask 0.0.0.0 $LOCAL_TUN_IP metric 1 table 42069",
-        "route delete ::/0 $LOCAL_TUN_IP6 metric 1 table 42069",
-        "netsh interface ipv4 delete route $LOCAL_TUN_IP/32 $IF_NAME",
-        "netsh interface ipv6 delete route $LOCAL_TUN_IP6/$MASK_LENGTH $IF_NAME",
-#endif
-        "netsh advfirewall firewall delete rule name=\"block traffic to LOCAL_TUN_IP\"",
-        "netsh interface set interface $IF_NAME admin=disable",
+        "route -f",
+        "ipconfig /renew",
+        "netsh advfirewall set allprofiles state on",
         NULL
     };     
 #else

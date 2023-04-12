@@ -372,9 +372,15 @@ static int event_loop(Context *context)
     if (exit_signal_received != 0) {
         return -2;
     }
+#ifdef _WIN32
+     if ((found_fds = WSAPoll(fds, POLLFD_COUNT, 1500)) == -1) {
+        return errno == EINTR ? 0 : -1;
+    }
+#else
     if ((found_fds = poll(fds, POLLFD_COUNT, 1500)) == -1) {
         return errno == EINTR ? 0 : -1;
     }
+#endif
     if (fds[POLLFD_LISTENER].revents & POLLIN) {
         new_client_fd = tcp_accept(context, context->listen_fd);
         if (new_client_fd == -1) {
@@ -536,7 +542,6 @@ __attribute__((noreturn)) static void usage(void)
          "\tsudo ./dsvpn client vpn.key 34.216.127.34\n");
     exit(254);
 }
-
 static void get_tun6_addresses(Context *context)
 {
     static char local_tun_ip6[40], remote_tun_ip6[40];
@@ -615,39 +620,6 @@ int main(int argc, char *argv[])
 #ifndef _WIN32 //wintun ma na hodnotu 0xFFFF = 65535
     if (tun_set_mtu(context.if_name, DEFAULT_MTU) != 0) {
         perror("mtu");
-    }
-#else
-    MIB_UNICASTIPADDRESS_ROW AddressRow;
-    InitializeUnicastIpAddressEntry(&AddressRow);
-    WintunGetAdapterLUID(context.tun_fd, &AddressRow.InterfaceLuid);
-    AddressRow.Address.Ipv4.sin_family = AF_INET;
-    AddressRow.Address.Ipv4.sin_addr.S_un.S_addr = htonl((10 << 24) | (6 << 16) | (7 << 8) | (7 << 0)); // 10.6.7.7 //
-    AddressRow.OnLinkPrefixLength = 24; // This is a /24 network //
-    AddressRow.DadState = IpDadStatePreferred;
-    DWORD LastError = CreateUnicastIpAddressEntry(&AddressRow);
-    if (LastError != ERROR_SUCCESS && LastError != ERROR_OBJECT_ALREADY_EXISTS)
-    {
-        puts("Failed to set Wintun IP address: %u", LastError);
-        WintunCloseAdapter(Adapter);
-    // Get the adapter index of the WinTun adapter
-    DWORD adapterIndex = GetAdapterIndexFromHandle(context.tun_fd);
-    if (adapterIndex == 0) {
-        printf("GetAdapterIndexFromHandle failed with error: %d\n", GetLastError());
-        CloseHandle(adapterHandle);
-        WintunCloseAdapter(Adapter);
-        WSACleanup();
-        return -1;
-    }
-
-    // Assign the socket to the WinTun adapter
-    DWORD bytesReturned = 0;
-    iResult = WSAIoctl(context.client_fd, SIO_TUN_SET_ADAPTER_ID, &adapterIndex, sizeof(adapterIndex), NULL, 0, &bytesReturned, NULL, NULL);
-    if (iResult == SOCKET_ERROR) {
-        printf("WSAIoctl failed with error: %d\n", WSAGetLastError());
-        CloseHandle(adapterHandle);
-        closesocket(sock);
-        WSACleanup();
-        return -1;
     }
 #endif
 #ifdef __OpenBSD__

@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+
 #ifdef __SSSE3__
 #include <x86intrin.h>
 #endif
@@ -13,6 +14,13 @@
 #endif
 #include <sys/syscall.h>
 #include <unistd.h>
+#endif
+#ifdef _WIN32
+#include <windows.h>
+#include <ntsecapi.h>
+#include <ntstatus.h>
+#include <unistd.h>
+#include <stdio.h>
 #endif
 
 #include "charm.h"
@@ -327,7 +335,11 @@ void uc_memzero(void *buf, size_t len)
 
 void uc_randombytes_buf(void *buf, size_t len)
 {
-#ifdef __linux__
+#ifdef _WIN32
+	if (STATUS_SUCCESS!=BCryptGenRandom(NULL,buf,len, BCRYPT_USE_SYSTEM_PREFERRED_RNG)){
+		puts("BCRYPTGENRANDOM ERROR");
+	}
+#elif defined(__linux__)  
     if ((size_t) syscall(SYS_getrandom, buf, (int) len, 0) != len) {
         abort();
     }

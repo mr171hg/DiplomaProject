@@ -28,44 +28,18 @@ V prípade nestabilného spojenia, je možný vysoký výskyt straty paketov. D�
 
 \section{Charakteristika a definovanie pojmov}
 Obsahom tejto podkapitoly je zavedenie a následne stručná charakteristika pojmov, potrebných na pochopenie problematiky VPN sieti.
-\subsection{Tunel}
-https://en.wikipedia.org/wiki/Tunneling\_protocol
-https://en.wikipedia.org/wiki/TUN/TAP
+\subsection{Tunel a tunelovacie rozhrania}
+\textbf{Tunel} v počítačových sieťach predstavuje virtuálne spojenie medzi jedným alebo viacerými zariadeniami. Jeho obsahom sa prenášajú enkapsulované, resp. zapuzdrené dáta. Proces pridávania dát k pôvodným sa v tejto súvislosti zvykne taktiež označovať ako \textbf{tunelovanie}. V počítačových sieťach je týmto spôsobom možné zmeniť, resp. zameniť použitý protokol za iný. Príkladom by mohlo byť tunelovanie z IPv4 do IPv6. V uvedenom prípade sa z pôvodného paketu použijú dáta a k ním sa pridajú údaje potrebné na smerovanie v IPv6 sieti. Výhodou je, že týmto spôsobom vieme sprostredkovať kompatibilitu naprieč viacerými sieťami s rôznymi protokolmi. Obdobne vieme do procesu tunelovania začleniť aj bezpečnostné prvky v podobe šifrovania a autentizácie pôvodných dát. V súvislosti s tunelmi sa používateľ môže stretnúť s pojmami tunelovací protokol a tunelovacie rozhranie. 
 
-wintun --> build https://learn.microsoft.com/en-us/windows-hardware/drivers/download-the-wdk
-\subsection{GRE - Generic Routing Encapsulation}\label{gre}
-??
-https://www.rfc-editor.org/info/rfc1701
-https://www.ietf.org/rfc/rfc1702.txt
+\textbf{Tunelovací protokol} predstavuje súbor činností, ktoré sá v procese tunelovania vykonávajú. V súčasnosti existuje veľa protokolov, ktoré sú štandardne špecifikované a bežne používané v sieťovej komunikácií. Najčastejšie sa používateľ stretne s tunelovaním pri VPN sieťach. Niektoré VPN v sebe nesú názov použitého tunelovacieho protokolu. Za spomenutie stojí protokol \textit{Generic Routing Encapsulation} (ďalej \acrshort{gre}). \acrshort{gre} je tunelovací protokol vyvinutý spoločnosťou Cisco v roku 1994. Ponúka širokú paletu možností tunelovania viacerých sieťových protokolov vo virtuálnych spojeniach medzi zariadeniami, tzv. z ang. \textit{point-to-(multi)point}. Niektoré variácie sa používajú aj pri vytváraní VPN. Viac informácií o \acrshort{gre} je dostupné na \cite{gre} a \cite{rfc1701}. 
 
-\subsection{IKEv2 Internet Key Exchange version 2}
-https://en.wikipedia.org/wiki/Internet\_Key\_Exchange
+\textbf{Tunelovacie rozhranie}, resp. adaptér je virtuálne zariadenie, ktoré je možné vytvárať v jadre daného operačného systému. Jedná sa o kompletne softvérové riešenie. Dôležité je, že nie každý OS má natívnu podporu pre vytváranie virtuálnych tunelovacích rozhraní. Je preto potrebné používať ovláďače tretích strán, ktoré danú funkcionalitu implementujú. Od roku 2000 podporujú tieto rozhrania Solaris, Linux a BSD operačné systémy. Poznáme dva typy tunelovacích rozhraní. Konkrétne TAP a TUN rozhranie. Nedajú sa použiť spolu, pretože pracujú na rôznych vrstvách. TUN simuluje správanie zariadenia na sieťovej vrstve (L3) a teda spracúva pakety a používa sa pri smerovaní. Na druhej strane TAP rozhranie pracuje o úroveň nižšie s ethernetovými rámcami (L2). Používa sa na premostenie sieťovej premávky. TUN/TAP rozhrania je možné použiť na odosielanie a príjmanie dát. Dáta odoslané OS do TUN/TAP sú dodávané do programu, ktorý rozhrania vytvoril. Na druhej strane používateľ môže v programe taktiež odoslať dáta do rozhraní. V tomto prípade TUN/TAP vloží dáta do sieťového zásobníka OS. Tým emuluje ich príjem z externého zdroja. 
 
-\subsection{Transport Layer Security -- TLS}
-TCP protokol sam o sebe nezabezpečí dáta, ku ktorým sa pridáva TCP hlavička. Dôsledkom toho vznikli viacere protokoly slúžiace na autentizované šifrovanie dát. Najznámejší je protokol zabezpečenia prenosu -- \acrshort{tls} a IPSec.
-
-Zabezpečenie dát bolo prvotne vykonávané pomocou protokolu \textit{Secure Sockets Layer} -- \acrshort{ssl}. Tento spôsob používa certifikáty na odšifrovanie dát. SSL malo od svojho vytvorenia dlhý vývoj, ktorý smeroval až k doteraz najpoužívanejšiemu TLS vo verzii 1.3. Inými slovami, TLS protokol je nástupca SSL pričom obsahuje rôzne úpravy a vylepšenia najmä z hľadiska rýchlosti. Zároveň sa v dnešnej dobe neodporúča používanie SSL protokolu. Dôsledkom optimalizácií je, že klienta komunikujúci so serverom cez HTTPS protokol s TLS 1.3 je rýchlejší ako v prípade použitia nešifrovaného HTTP variantu. 
-
-TLS pracuje niekde na pomedzi aplikačnej a transportnej vrstvy. Spôsob spracovania dát je zobrazený pomocou schémy \ref{ssl} s SSL operáciami, prebratej z \cite{biks}. 
-\begin{figure}[!ht]
-	\centering
-	\includegraphics[width=0.7\linewidth]{figures/ssl}
-	\caption{Prehľad operácií v SSL protokole}
-	\label{ssl}
-\end{figure}
-
-Viac informácií o TLS protokole, jednotlivých verziách a optimalizáciách je možné nájsť na \cite{tls}. 
-
-viac viac viac
-
-\subsection{\acrfull{p2p}}
-https://en.wikipedia.org/wiki/Point-to-Point\_Protocol
-
-\subsection{\acrfull{mpls}}
-\acrshort{mpls} by sme do slovenčiny mohli preložiť ako Multi-protokolové prepínanie štítkov. Samotný protokol pridáva k paketom tzv. MPLS hlavičku. Jej obsahom sú štítky\footnote{z ang. \textit{labels}}, na základe ktorých dochádza k smerovaniu a preposielaniu paketov. Týmto spôsobom nie je nutná ďalšia analýza paketov. Štítky neidentifikujú koncové body, ale virtuálne spojenia medzi viacerými uzlami. Označenie multi-protokolový má, pretože dokáže zapuzdrovať viacero sieťových protokolov. MPLS pracuje na pomedzi L2 a L3 vrstvy. Často sa zvykne označovať ako L2.5 protokol. Viac o tomto protokole je možné si prečítať na \cite{mpls}, \cite{mplstuke} a \cite{mplsrfc}.
+Technológia TUN/TAP je pomerne známa a zaužívaná. Svoje uplatnenie zohráva pri softvérovej implementácií VPN. Okrem toho sa bežne používa aj vo sfére virtuálnych strojov. Napríklad aj vo voľne dostupný nástroji na virtualizáciu -- VirtualBox. Pri vytvorení a následnom používaní obrazu, dochádza k vytváraní tunelovacích rozhraní. Prostredníctvom zvolenej konfigurácie stroja sa rozhrania nakonfigurujú. Týmto spôsobom sa pre používateľa sprístupní možnosť komunikácie virtuálneho stroja s inými zariadeniami. 
+Viac informácií o problematike je možné nájsť na \cite{tunel}, \cite{tuntap} a \cite{tun}, odkiaľ bol obsah tejto kapitoly čerpaný.     
 
 \subsection{Charakteristika referenčných modelov}\label{crm}
-V rámci  podkapitoly \ref{rm} je potrebné pred samotnou klasifikáciou vysvetliť pojmy Referenčný model prepojenia otvorených systémov\footnote{z ang. \textit{Open Systems Interconnection reference model}} (ďalej \acrshort{osi}) a Model opisujúci balíky internetových protokolov, známy ako, \acrshort{tcpip} referenčný model.
+Pred podkapitolou \ref{rm} je potrebné pred samotnou klasifikáciou vysvetliť pojmy Referenčný model prepojenia otvorených systémov\footnote{z ang. \textit{Open Systems Interconnection reference model}} (ďalej \acrshort{osi}) a Model opisujúci balíky internetových protokolov, známy ako, \acrshort{tcpip} referenčný model.
 
 Úlohou uvedených referenčných modelov je vizualizácia postupu spracovania dát od používateľa až k ich odoslaniu zo zariadenia\footnote{z ang. \textit{end-to-end data communication}}. Pojem spracovanie dát znamená opísanie toho ako dochádza v jednotlivých abstraktných vrstvách k pretransformovaniu používateľských dát na súbor jednotiek a núl, ktoré sú následne odoslané do iného zariadenia. 
 
@@ -152,6 +126,31 @@ Podrobnejšie informácie o TCP protokole je možné nájsť na \cite{tcp2}. V u
 Narozdiel od \acrshort{tcp}) neposkytuje žiadnu záruka doručenia správy alebo duplicitnej ochrany. 
 \acrshort{udp}) je vhodný na účely, kde kontrola a oprava chýb buď nie sú potrebné, alebo sa vykonávajú v aplikácii. Aplikácie citlivé na čas často používajú UDP, pretože zahadzovanie paketov je vhodnejšie ako čakanie na pakety oneskorené v dôsledku opätovného prenosu. Príklad použitia môžu byť streamovacie služby. 
 Podrobnejšie informácie o \acrshort{udp}) protokole nájde čitateľ v \cite{udp}.
+
+\subsection{IKEv2 Internet Key Exchange version 2}
+https://en.wikipedia.org/wiki/Internet\_Key\_Exchange
+
+\subsection{Transport Layer Security -- TLS}
+TCP protokol sam o sebe nezabezpečí dáta, ku ktorým sa pridáva TCP hlavička. Dôsledkom toho vznikli viacere protokoly slúžiace na autentizované šifrovanie dát. Najznámejší je protokol zabezpečenia prenosu -- \acrshort{tls} a  \acrshort{ipsec}.
+
+Zabezpečenie dát bolo prvotne vykonávané pomocou protokolu \textit{Secure Sockets Layer} -- \acrshort{ssl}. Tento spôsob používa certifikáty na odšifrovanie dát. SSL malo od svojho vytvorenia dlhý vývoj, ktorý smeroval až k doteraz najpoužívanejšiemu TLS vo verzii 1.3. Inými slovami, TLS protokol je nástupca SSL pričom obsahuje rôzne úpravy a vylepšenia najmä z hľadiska rýchlosti. Zároveň sa v dnešnej dobe neodporúča používanie SSL protokolu. Dôsledkom optimalizácií je, že klienta komunikujúci so serverom cez HTTPS protokol s TLS 1.3 je rýchlejší ako v prípade použitia nešifrovaného HTTP variantu. 
+
+TLS pracuje niekde na pomedzi aplikačnej a transportnej vrstvy. Spôsob spracovania dát je zobrazený pomocou schémy \ref{ssl} s SSL operáciami, prebratej z \cite{biks}. 
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[width=0.7\linewidth]{figures/ssl}
+	\caption{Prehľad operácií v SSL protokole}
+	\label{ssl}
+\end{figure}
+
+Viac informácií o TLS protokole, jednotlivých verziách a optimalizáciách je možné nájsť na \cite{tls}. 
+
+\subsection{\acrfull{p2p}}
+https://en.wikipedia.org/wiki/Point-to-Point\_Protocol
+
+\subsection{\acrfull{mpls}}
+\acrshort{mpls} by sme do slovenčiny mohli preložiť ako Multi-protokolové prepínanie štítkov. Samotný protokol pridáva k paketom tzv. MPLS hlavičku. Jej obsahom sú štítky\footnote{z ang. \textit{labels}}, na základe ktorých dochádza k smerovaniu a preposielaniu paketov. Týmto spôsobom nie je nutná ďalšia analýza paketov. Štítky neidentifikujú koncové body, ale virtuálne spojenia medzi viacerými uzlami. Označenie multi-protokolový má, pretože dokáže zapuzdrovať viacero sieťových protokolov. MPLS pracuje na pomedzi L2 a L3 vrstvy. Často sa zvykne označovať ako L2.5 protokol. Viac o tomto protokole je možné si prečítať na \cite{mpls}, \cite{mplstuke} a \cite{mplsrfc}.
+
 
 \section{Klasifikácia VPN sietí}
 V súčasnosti má čitateľ k dispozícií veľa rôznych internetových zdrojov o problematike VPN. Uvedené sú rôzne možnosti klasifikácie VPN siete. V rámci tejto práce klasifikujeme VPN siete podľa logickej topológie, použitých protokolov a vrstiev, na ktorých sú postupy aplikované. Obsahom tejto podkapitoly je rozdelenie a opis jednotlivých typov VPN sieti. V závere kapitoly čitateľ nájde sumárne rozdelenie VPN sieti v tejto práci, znázornené pomocou schémy.  
@@ -459,9 +458,6 @@ V~súčasnosti je trend, využívanie VPN na súkromné účely. Dôvodov môže
 https://github.com/vpnhood/VpnHood a plus v inych jazykoch 
 
 \chapter{Ľahká kryptografia}\label{krypto}
-https://csrc.nist.gov/projects/lightweight-cryptography/finalists 
-\\https://csrc.nist.gov/CSRC/media/Projects/Lightweight-Cryptography/documents/final-lwc-submission-requirements-august2018.pdf
-
 V počítačovej sfére sa do popredia dostávajú zariadenia, ktorých hardvérové prostriedky a ponúkaný výkon sú podstatne nižšie ako v prípade bežne dostupných zariadení na domáce, resp. komerčné použitie. Príkladom môžu byť \acrshort{iot} zariadenia, senzorové uzly, mikro-ovládače a podobné. Dôležitou vlastnosťou je aj komunikácia medzi sebou alebo inými zariadeniami. V dôsledku toho je nutné riešiť aj otázku zabezpečenia, resp. bezpečnosti takého prenosu dát. 
 
 Kryptografia je oblasť počítačovej vedy, ktorá sa zaoberá práve spomenutou problematikou. Hlavným cieľom je utajiť správu pri jej ceste z bodu A do B. Teda od odosielateľa (tvorcu) správy, až k jej prijímateľovi. Dôsledkom tohto úkonu dochádza k zabezpečeniu 3 hlavných úloh kryptografie:
@@ -480,7 +476,7 @@ V prípade zariadení spomenutých v úvode kapitoly, však môže nastať probl
 \begin{itemize}
 	\item{\textbf{minimalizácia spotreby zdrojov zariadenia}} -- veľkosť kódu, používaných dát a spotreby energie,
 	\item{\textbf{poskytnutie vysokého stupňa bezpečnosti}},
-	\item{\textbf{odolnosť voči útokom tzv. z ang. \textit{side-attack}}} -- napríklad útokom na analýzu výkonu a na časovanie, 
+	\item{\textbf{odolnosť voči útoku cez postranné kanály -- z ang. \textit{side-channel attack}}}, napríklad útokom na analýzu výkonu a na časovanie, 
 	\item{\textbf{jednoduchá implementácia a efektívnosť,}}
 	\item{\textbf{nízka pamäťová stopa}} -- z ang. \textit{low memory footprint}.
 \end{itemize}
@@ -595,10 +591,10 @@ Inicializácia prebieha pomocou príkazu \lstinline|CYCLIST(K,id,counter)|. Ak s
 Dostupné funkcie závisia od režimu, v ktorom sa  Cyklista spúšťa. Medzi ne patria \lstinline|ABSORB()| a \lstinline|SQUEEZE()|. Možno ich volať v oboch režimoch, zatiaľ čo funkcie \lstinline|ENCRYPT()|, \lstinline|DECRYPT()|, \lstinline|SQUEEZEKEY()| a \lstinline|RATCHET()| sú dostupné len pre kľúčový režim. Účel každej funkcie je nasledujúci:
 \begin{itemize}
 	\item \lstinline|ABSORB(X)| absorbuje vstupný reťazec X,
-	\item C $\gets$ \lstinline|ENCRYPT(P)| zašifruje P do C a absorbuje P,
-	\item P $\gets$ \lstinline|DECRYPT(C)| dešifruje C do P a absorbuje P,
-	\item Y $\gets$	\lstinline|SQUEEZE(L)|  vytvára L-bajtový výstup, ktorý závisí od doteraz absorbovaných dát,
-	\item Y $\gets$	\lstinline|SQUEEZEKEY(L)| funguje ako \lstinline|SQUEEZE(L)|, ale používa sa za účelom generovania odvodeného kľúča,
+	\item $C$ $\gets$ \lstinline|ENCRYPT(P)| zašifruje P do C a absorbuje P,
+	\item $P$ $\gets$ \lstinline|DECRYPT(C)| dešifruje C do P a absorbuje P,
+	\item $Y$ $\gets$	\lstinline|SQUEEZE(L)|  vytvára L-bajtový výstup, ktorý závisí od doteraz absorbovaných dát,
+	\item $Y$ $\gets$	\lstinline|SQUEEZEKEY(L)| funguje ako \lstinline|SQUEEZE(L)|, ale používa sa za účelom generovania odvodeného kľúča,
 	\item \lstinline|RATCHET()| transformuje stav na nevratný tak, aby sa zabezpečila dopredná bezpečnosť\footnote{z ang. \textit{Forward secrecy}} \cite{fsec}. 
 \end{itemize}
 
@@ -626,11 +622,12 @@ Viac informácií o bezpečnosti Xoodyak-a je možné nájsť v \cite{xcb, 7.3} 
 Obsahom tejto podkapitoly sú uvedené postupy ako a za akých okolností je daný balík možné použiť. 
 \subsubsection{Použitie hašovacieho režimu}
 Xoodyak sa dá aplikovať ako hašovacia funkcia. Konkrétne je možné ju použiť ako funkciu na rozšírenie výstupu\footnote{z ang. \textit{eXtendable-Output Function}} (ďalej \acrshort{xof}). Nominálne, resp. nie bežné použitie by v tomto prípade bolo nasledujúce: 
-\begin{enumerate}
-	\item \lstinline|CYCLIST(E,E,E)| -- spustenie v hašovacom režime,
- 	\item \lstinline|ABSORB(X)| -- absorpcia vstupného reťazca X,
- 	\item \lstinline|SQUEEZE(L)| -- vytvára L-bajtový výstup, ktorý závisí od doteraz absorbovaných dát,
-\end{enumerate}
+\begin{lstlisting}[language=bash,mathescape=true]
+	CYCLIST($E$,$E$,$E$) //spustenie v hašovacom režime,
+ 	ABSORB($X$)        //absorpcia vstupného reťazca X,
+ 	SQUEEZE($L$)       //vytvára L-bajtový výstup, 
+	     	          //závislý od doteraz absorbovaných dát.
+\end{lstlisting}
 V tomto prípade by sa kryptografická bezpečnosť algoritmu pohybovala v závislosti od veľkosti výstupu L. Konkrétne v intervaloch:
 \begin{itemize}
 	\item{\textbf{odolnosť voči kolízií}} -- z ang. \textit{collision resistance} \cite{cr}, min(8L/2, 128) bitov,
@@ -640,25 +637,90 @@ V tomto prípade by sa kryptografická bezpečnosť algoritmu pohybovala v závi
 Bežná je však absorpcia sekvencie viacerých reťazcov.
 
 \subsubsection{Použitie kľúčového režimu}
-Inicializácia režimu začína použitím príkazu \lstinline|CYCLIST(K,id,counter)|. Autori uviedli celkovo 7 spôsobov využitia. V nich sa opisuje aj význam použitia id a counter parametrov.
+Inicializácia režimu začína použitím príkazu \lstinline|CYCLIST(K,id,counter)|. Autori uviedli celkovo 6 spôsobov použitia. V nich sa opisuje význam parametrov $id$, $counter$ $nounce$ a podobne aj možnosti použitia funkcií, spomenutých na začiatku podkapitole.
 \begin{itemize}
-	\item{\textbf{Dvoj-cestné zabránenie viac-cieľového útoku}} -- z ang. \textit{Two ways to counteract multi-target attacks},
+	\item{\textbf{Použitie na zabránenie viac-cieľového útoku}} -- z ang. \textit{Two ways to counteract multi-target attacks},
 	\item{\textbf{Tri spôsoby spracovania jednorázového kľúča}} -- z ang. \textit{Three ways to handle the nonce},
 	\item{\textbf{Autentizované šifrovanie}} -- z ang. \textit{Authenticated encryption},
-	\item{\textbf{Relačné autentizované šifrovanie}} -- z ang. \textit{Session authenticated encryption},
-	\item{\textbf{Račetové použitie}} -- z ang. \textit{Ratchet},
-	\item{\textbf{Subkľúčové rolovanie}} -- z ang. \textit{Rolling subkeys},
-	\item{\textbf{Prepoužitie jednorázového kľúča a uvoľnenie neoverenej dešifrovanej šifry}} -- z ang. \textit{Nonce reuse and release of unverified decrypted ciphertext}.
+	\item{\textbf{Autentizované relačné šifrovanie}} -- z ang. \textit{Session authenticated encryption},
+	\item{\textbf{Použitie funkcie \lstinline|RATCHET()|}} -- z ang. \textit{Ratchet},
+	\item{\textbf{Pohyblivé subkľúče}} -- z ang. \textit{Rolling subkeys},
 \end{itemize}
 
-\textbf{Dvoj-cestné zabránenie viac-cieľového útoku} -- id parameter je voliteľný identifikátor kľúča K. Pre každý tajný kľúč by mal byť jedinečný. Ponúka možnosť zabránenia viac-cieľovým útokom. Jedná sa o útok na viacero používateľov daného kryptografického systému, resp. viacero kľúčov používateľa. Viac o tomto útoku je možné nájsť v \cite{mta}. V prípade použitia id parametra algoritmus rozšíri veľkosť kľúča. Následne pri vyhľadávaní kľúčov nedochádza k degradácií bezpečnosti a veľkosť tajného kľúča môže ostať 128 bitov. Týmto spôsobom bude zachovaná aj rovnaká bezpečnosť systému pred útokom. 
-Príklad za účelom šifrovania správy P za pomoci tajného kľúča K s id, je na nasledujúci:
-\begin{enumerate}
-	\item{\lstinline|CYCLIST(K,id,E)|},
-	\item{\lstinline|ABSORB(nounce)|},
-	\item{C $\gets$ \lstinline|ENCRYPT(P)|}.
-\end{enumerate}
+\textbf{Použitie na zabránenie viac-cieľového útoku} -- $id$ parameter je voliteľný identifikátor kľúča $K$. Pre každý tajný kľúč by mal byť jedinečný. Ponúka možnosť zabránenia viac-cieľovým útokom. Jedná sa o útok na viacero používateľov daného kryptografického systému, resp. viacero kľúčov používateľa. Viac o tomto útoku je možné nájsť v \cite{mta}. V prípade použitia $id$ parametra algoritmus rozšíri veľkosť kľúča. Následne pri vyhľadávaní kľúčov nedochádza k degradácií bezpečnosti a veľkosť tajného kľúča môže ostať 128 bitov. Týmto spôsobom bude zachovaná aj rovnaká bezpečnosť systému pred útokom. 
+Príklad za účelom šifrovania správy $P$ za pomoci tajného kľúča $K$ s $id$, je na nasledujúci:
+\begin{lstlisting}[language=bash, mathescape=true]
+	CYCLIST($K$,$id$,$E$)
+	ABSORB(nounce)
+	$C$ $\gets$ ENCRYPT($P$).
+\end{lstlisting}
+\textbf{Tri spôsoby spracovania jednorázového kľúča} -- 3. parameter pri inicializácií režimu cyklista je \textit{counter}, resp. počítadlo. Jedná sa o dátový prvok vo forme bajtového reťazca, ktorý môže byť inkrementovaný. Spracúva sa po jednej číslici. Vďaka tomu sa obmedzuje počet informácií, ktoré vie útočník využiť pre rôzne vstupy. Pri inicializácií používateľ zvolí veľkosť počítadla v intervale $2 \leq B \leq 256$. Predpokladá sa, že počítadlo je reťazec z množiny $\mathbb{Z^*_B}$. Potom ak je počítadlo inicializované ako prázdny reťazec, tak množina všetkých možných hodnôt po inkrementácií je $\mathbb{Z^1_B}$. Pri každom ďalšom navýšení sa zvýši hodnota za $*$. Spracovanie prebieha od najvýznamnejšieho bitu. Čím menšia je hodnota $B$, tým menší je počet možných vstupov pri každej iterácií permutácie. Vďaka tomu je zabezpečená lepšia ochrana pred tzv. z ang \textit{Power analysis} \cite{paa} útokmi a jeho variantami. Za účelom zamedzenia týchto útokov sa používa \lstinline|ABSORB(nounce)| v prípade ak si počítadlo pri inicializácií zvolíme prázdny reťazec $E$. 
 
-\textbf{Tri spôsoby spracovania jednorázového kľúča} -- 3. parameter pri inicializácií režimu cyklista je \textit{counter}, resp. počítadlo. Jedná sa o dátový prvok vo forme bajtového reťazca, ktorý môže byť inkrementovaný. Spracúva sa po jednej číslici. Vďaka tomu sa obmedzuje počet informácií, ktoré vie útočník využiť pre rôzne vstupy. Pri inicializácií používateľ zvolí veľkosť počítadla v intervale $2 \leq B \leq 256$. Predpokladá sa, že počítadlo je reťazec z množiny $\mathbb{Z^*_B}$. Potom ak je počítadlo inicializované ako prázdny reťazec, tak množina všetkých možných hodnôt po inkrementácií je $\mathbb{Z^1_B}$. Pri každom ďalšom navýšení sa zvýši hodnota za $*$. Spracovanie prebieha od najvýznamnejšieho bitu. Čím menšia je hodnota B, tým menší je počet možných vstupov pri každej iterácií permutácie. Vďaka tomu je zabezpečená lepšia ochrana pred tzv. z ang \textit{Power analysis} \cite{paa} útokmi a jeho variantami. Za účelom zamedzenia týchto útokov sa používa \lstinline|ABSORB(nounce)| v prípade ak si počítadlo pri inicializácií zvolíme prázdny reťazec E. 
+\textbf{Autentizované šifrovanie} -- za účelom autentizovaného šifrovanie je Xoodyak možné použiť nasledovne:
+\begin{lstlisting}[language=bash,mathescape=true]
+	CYCLIST($K$,nonce,$E$)
+	ABSORB($A$)
+	$C$ $\gets$ ENCRYPT($P$)
+	$T$ $\gets$ SQUEEZE($t$)
+	return ($C$,$T$)
+\end{lstlisting}
+Pričom $K$ je tajný kľúč s pridruženým jednorázovým heslo a dátami $A$ k heslu. Z týchto údajov sa získa autentizačný tag $t$. Jeho veľkosť je rovná 16-bajtom. V prípade dešifrovania by postupnosť volaní vyzerala nasledovne:   
+\begin{lstlisting}[language=bash,mathescape=true]
+	CYCLIST($K$,nonce,$E$)
+	ABSORB($A$)
+	$C$ $\gets$ ENCRYPT($P$)
+	$T$ $\gets$ SQUEEZE($t$)
+	if $T = T'$ then 
+		return $P$, 
+	else 
+		return $\bot$ 	//vyjadrenia hodnoty false 
+\end{lstlisting}
+Kryptografická bezpečnosť takto implementovaného šifrovania je minimom z uvedených hodnôt $min(184,K,8t)$.
 
+\textbf{Autentizované relačné šifrovanie} -- pracuje so sekvenciou správ a autentizačných tagov. V princípe sa opakuje viacero blokov z predchádzajúcej možnosti použitia. Prvé volanie je rovnaké ako v predchádzajúcom príklade. Implementácia však zahŕňa aj možnosť vytvoriť tag bez toho aby bolo nutné použiť funkcie
+\lstinline|ABSORB()|, \lstinline|ENCRYPT()| alebo obe súčasne pred volaním \lstinline|SQUEEZE()|. Aj napriek tomu bude možné vytvoriť nový tag na základe predchádzajúcich dát, uložených v pamäti. 	
+
+\textbf{Použitie funkcie \lstinline|RATCHET()|} -- používateľ môže v režime kľúča kedykoľvek volať funkciu \lstinline|RATCHET()|. Volanie spôsobí prepísanie časti stavu s nulami. Vďaka tomu je nemožné vypočítať stav pred volaním funkcie \lstinline|RATCHET()|. Týmto spôsobom je možné zťažiť snahu pri pokuse obnoviť vnútorný stav, napríklad pri útoku postrannými kanálmi. \lstinline|RATCHET()| je možné použiť obdobne aj pri autentizovanom šifrovaní. Konkrétne pred alebo za funkciou vytvárania tagu \lstinline|SQUEEZE()|. 
+\begin{lstlisting}[language=bash,mathescape=true]
+	CYCLIST($K$,nonce,$E$)
+	ABSORB($A$)
+	$C$ $\gets$ ENCRYPT($P$)
+	RATCHET()	  //príklad volania pred
+	$T$ $\gets$ SQUEEZE($t$)
+	RATCHET()   //príklad volania za
+\end{lstlisting} 
+Obidva spôsoby majú svoje výhody. Volanie pred vytváraním tagu je najfektívnejšie. Dôvodom je, že vďaka tomu je potrebné len jedno extra volanie permutácie. V prípad volania funkcie \lstinline|RATCHET()| za \lstinline|SQUEEZE()| sa šifrovaný text prenáša, funkcionalita \lstinline|RATCHET()| je vykonaná asynchrónne a algoritmus môže spracovať ďalšiu správu, určenú na šifrovanie. 
+
+\textbf{Pohyblivé subkľúče} -- je alternatíva k použitiu dlhodobého tajného kľúča $K$ s inkrementovanými pridruženým jednorázovým kľúčom $nounce$ alebo identifikátorom kľúča $id$. Subkľúč/e sa vytvára/jú pomocou funkcie \lstinline|SQUEZEEKEY()|. Pri šifrovaní je teda možné nahradiť procesy inkrementácie a ukladania jednorázových hesiel pri každom použití  $K$, pomocou použitia pohyblivých subkľučov.\newpage
+\begin{lstlisting}[language=bash,mathescape=true]
+	$K_1 \gets K$ and $i \gets 1 $	   //inicializacia tajneho kluca
+	while condition do 
+	CYCLIST($K$,$E$,$E$)	//inicializácia novej Xoodyak inštancie
+	$K_{i+1} \gets$ SQUEEZEKEY($\ell_{sub}$) 
+	RATCHET()	      //volitelne
+	ABSORB($A_i$)
+	$C_i \gets$ ENCRYPT($P_i$)     //sifrovanie
+	$T_i \gets$ SQUEEZE($t$)      //vypocet tagu
+	$\implies$ output($C_i$,$T_i$) //caka na dalsiu správu
+	$i \gets i + 1$
+\end{lstlisting}     
+Parameter $\ell_{sub}$ je vo veľkosti 32 bajtov (256 bitov). Táto veľkosť by mala byť dostatočná aby sa zabránilo kolíziám za predpokladu, že v subkľúčoch nevznikla kolízia. Použitie týmto spôsobom ponúka odolnosť voči útokom cez postranné kanály. Tajný kľúč nie je po dodávke prvého subľúča používaný. Vďaka tomu nie je ani vystavený možnému útoku. Každým ďalším šifrovaním sa mení aj použitý kľúč na šifrovanie, čo veľmi sťažuje možnosti ďalšej analýzy. 
+ 
 \subsubsection{Použitie za účelom autentizovaného šifrovania s bežným heslom}
+Protokoly na výmenu kľúčov, ako napríklad Diffie-Hellman, poskytujú vo výsledku bežný tajný kľuč. Pred symetrickým šifrovaním je však potrebná jeho úprava. Za týmto účelom je možné použiť Cyklistu v hašovacom režime. Následne po spracovaní bežného kľúča použijeme odvodený kľuč na spustenie režimu kľúča. Funkcionalita je jednotlivých volaní je znázornená nižšie.
+\begin{lstlisting}[language=bash,mathescape=true]
+	CYCLIST($E$, $E$, $E$)         //hasovaci rezim
+	ABSORB($ID$)              //ID pouziteho protokolu
+	ABSORB($K_A$)              //verejny kluc A
+	ABSORB($K_B$)              //verejny kluc B 
+	ABSORB($K_{AB}$)              //tajny kluc 
+	$K_D \gets$ SQUEEZE($\ell$)
+	
+	CYCLIST($K_D$, $nonce$, $E$)       //rezim kluca
+	ABSORB($A$)
+	$C \gets$ ENCRYPT($P$)
+	$T \gets$ SQUEEZE($t$)
+	return ($C$, $T$)
+\end{lstlisting} 
+Ak platí $\ell \leq R_{hash}$, tak implementácia dokáže efektívne zreťaziť tajný kľúč $K_D$ a reinicializovať cyklistu \lstinline|CYCLIST($K_D$,$E$,$E$)|. Dôvodom je, že tajný kľúč je už súčasťou stavu permutácie. Je len potrebné nastaviť zvyšné parametre. Note also that if at least one of the public key pairs is ephemeral, the common secret
+KAB is used only once and no nonce is needed. ??\cite{xdr2, 3.3}  
