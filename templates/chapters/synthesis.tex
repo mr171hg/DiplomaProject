@@ -1,9 +1,118 @@
 % !TEX root = ../thesis.tex
-\chapter{Konfigurácia prostredia, metodika testovania a merania}
+\chapter{Charakteristika zariadenia, nástrojov a konfigurácia prostredí}
+Pri praktickej časti tejto práce budeme realizovať naše experimenty na~jednom fyzickom zariadení. Jedná sa o osobný prenosný počítač značky Asus. V~tabuľke \ref{pc}, je uvedená špecifikácia tohto zariadenia. Nad týmto zariadením budeme následne spúšťať virtuálne obrazy OS pomocou vizualizačných nástrojov. Týmto spôsobom izolujeme činnosť programov od nášho natívneho OS. Počas celej doby experimentovania bude zariadenie pripojené k elektrickej sieti s cieľom dosiahnuť čo najvyšší výkon.
+
+\begin{table}[!h]
+	\centering
+	\resizebox{0.65\textwidth}{!}{%
+		\begin{tabular}{c|c} 
+			\multirow{2}{*}{\bfseries Komponenty}
+			&\multicolumn{1}{c}{ \bfseries Zariadenie}  
+			\\ 
+			& \bfseries Asus TUF A15  
+			\\\hline\hline
+			\bfseries Model 
+			&  F506IU-AL006T
+			\\
+			\bfseries Verzia OS 
+			&  Win 11 Home; 64-bit.; v.22H2 
+			\\
+			\bfseries Zostava OS 
+			&22621.1555
+			\\
+			\bfseries CPU
+			& AMD Ryzen 7 Mobile 4800H
+			\\
+			\bfseries RAM
+			&16 GB DDR4 2x1600 MHz 
+			\\
+			\bfseries Úložisko
+			&SSD OM8PCP3512F-AB
+		\end{tabular}
+	}
+	\caption{Technická špecifikácia použitého fyzického zariadenia}\label{pc}
+\end{table}
+
+\section{Nástroje použité v obrazoch a v práci}
+Pri práci vo virtuálnych obrazoch bolo potrebné pracovať s viacerými programami. V tejto podkapitole si ich stručne predstavíme.  
+\subsubsection{Visual Studio Code}
+Visual Studio Code, taktiež známe ako VSCode, je odľahčená verzia textového editora. Program je dostupný pre Windows, macOS a Linux. Obsahuje zabudovanú podporu pre JavaScript, TypeScript, Node.js a má bohatý ekosystém rozšírení pre ďalšie jazyky ako napríklad C++, C\#, C, Java, Python, PHP, Go, .NET a ďalšie. Jedná sa o bezplatný program, dostupný na webe\footnote{\url{https://code.visualstudio.com/download}}. VSCode v práci používame ako primárny editor na úpravu, ladenie a preklad kódu.   
+\subsubsection{GCC prekladač a balík Make}
+Programy, ktoré v práci používané sú napísané v jazyku C. Kvôli potrebe prekladu kódu sme do virtuálnych OS nainštalovali aj prekladače a balík Make na jednoduchý bezstarostný preklad.
+Na OS Linux je inštalácia pomerne jednoduchá. Stačí zadať do terminálu tieto príkazy.
+\begin{lstlisting}[language=bash]
+	sudo apt install gcc
+	sudo apt install make
+\end{lstlisting}  
+V prípade OS Windows používame balíček Winlibs. 
+
+\subsubsection{Winlibs balík}
+Ako naznačuje názov jedná sa o balík s knižnicami jazyka C a C++ určený pre OS Windows. Jedná sa o voľne dostupný balík\footnote{dostupne na \href{https://winlibs.com/}{https://winlibs.com/}}. V prípade použitia je postup inštalácie zložitejší ako na Linuxe. Používateľ musí manuálne balíček stiahnuť. Po stiahnutí musí importovať uvedený balíček, resp. cestu k nemu, do premenných prostredia \acrshort{os} Windows. Jeden zo spôsobov je uvedený aj na Winlibs stránke. 
+
+Počas práce sme používali GCC s verziou 12.2.0, MinGW-w64 10.0.0 (UCRT) - release 2. Uvedený balík obsahuje aj program make.  
+\subsubsection{Tunelovacie rozhranie Wintun}
+Wintun je veľmi jednoduchý a minimalistický ovládač pre vytvorenie tunelovacieho rozhrania v systéme Windows. Wintun komunikuje s jadrom OS a poskytuje používateľovi prístup k sieťovému rozhraniu na zapisovanie a čítanie paketov. Rozhranie sa správa rovnako ako v prípade natívneho Linuxového a BSD ovládača. Wintun bol pôvodné navrhnutý pre implementáciu VPN protokolu WireGuard. Autori sa však rozhodli zverejniť túto časť samostatne čím otvorili cestu experimentovaniu v L3 sieťovej vrstve na OS Windows. Jediné obmedzenie vzniká na strane OS Windowsu. Aby sme dokázali spustiť vo Windowse ľubovoľný ovládač, tak musí byť digitálne podpísaný. Kvôli tomu autori poskytujú na svojej stránke\footnote{\url{https://www.wintun.net/}} už podpísaný ovládač. Používateľ potrebuje stiahnuť dynamickú knižnicu \lstinline|wintun.dll| a hlavičkový súbor \lstinline|wintun.h| . Pribaliť ju do projektu a následne použiť. Obdobne je na stránke vytvorené demo ako príklad použitia. 
+
+V rámci tejto práce sme sa rozhodli vyskladať ovládač aj vlastnými silami. Používateľ na to potrebuje vykonať 3 kroky: 
+\begin{itemize}
+	\item\textbf{inštalácia Windows Driver Kit} -- konkrétne v našom prípade verziu pre Windows 10, version 2004, pretože sme inštaláciu skúšali na OS Windows 10 s verziou 21H2. Okrem toho táto verzia je posledná kompatibilná možnosť pre Visual Studio 2019. Dostupné na Microsoft webe\footnote{\url{https://learn.microsoft.com/en-us/windows-hardware/drivers/other-wdk-downloads}},
+	\item\textbf{inštalácia Visual Studio IDE 2019} -- popri inštalácii by sa mal automatický nainštalovať aj Windows Software Development Kit. Ak by tak nenastalo odporúčame doinštalovať. Visual Studio postačuje vo verzii Community.  
+	\item\textbf{bcdedit /set testsigning on} -- zadať tento príkaz do príkazového riadka spusteného ako administrátor a následne reštartovať. 
+\end{itemize}  
+Po uvedených krokoch sa nám OS spustí do testovacieho režimu. V ňom dokážeme následne modifikovať pôvodné riešenie a vyskladať si vlastný ovládač. Ako uviedli autori, pre jeho použitie bez spusteného testovacieho režimu OS je nutné ovládač podpísať. 
+
+Pre čitateľa sme pripravili aj vlastnú demo ukážku použitia ovládača v jazyku C. Zdrojový kód je obsahom príloh. Konkrétne v priečinku \lstinline|wintun_demo|. Priečinok obsahuje zdrojový kód programu, podpísaný \lstinline|wintun.dll|, balíček make a jednoduché \lstinline|readme.txt| s pokynmi.
+Viac informácií nájde používateľ v dokumentácií Wintun, dostupnej na webe\footnote{\url{https://git.zx2c4.com/wintun/about/}}.
+   
+\subsubsection{Zdrojový kód na meranie počtu cyklov} 
+Pri experimentálnych meraniach kryptografickej permutácie XOODOO sme sa rozhodli použiť funkcie na meranie počtu vykonaných inštrukcií. Ukážku zdrojového kódu je možné si pozrieť v \ref{cycle}.
+
+ \begin{minipage}{\linewidth} 	
+	\begin{lstlisting}[frame=single,
+		numbers=left,
+		caption={Zdrojový kód funkcií na zmeranie počtu vykonaných cyklov}\label{cycle},
+		basicstyle=\ttfamily\small, keywordstyle=\color{black}\bfseries,]
+	//start of measurement
+	static __inline__ uint64_t cpucyclesS(){
+		unsigned cycles_low, cycles_high;
+		__asm__ volatile ("CPUID\n\t"
+		"RDTSC\n\t"
+		"mov %%edx, %0\n\t"
+		"mov %%eax, %1\n\t": "=r" (cycles_high), "=r" (cycles_low)::
+		"%rax", "%rbx", "%rcx", "%rdx");
+		return  (((uint64_t)cycles_high << 32) | cycles_low );
+	}
+	// end of measurement
+	static __inline__ uint64_t  cpucyclesE(){
+		unsigned cycles_low, cycles_high;
+		__asm__ volatile ("RDTSCP\n\t"
+		"mov %%edx, %0\n\t"
+		"mov %%eax, %1\n\t"
+		"CPUID\n\t": "=r" (cycles_high), "=r" (cycles_low)::
+		"%rax", "%rbx", "%rcx", "%rdx");
+		return (((uint64_t)cycles_high << 32) | cycles_low );
+	}
+	\end{lstlisting}
+\end{minipage}\\ 
+Uvedený kód bol prevzatý z bakalárskej práce \cite{bc}. Viac informácií o funkcionalite nájde čitateľ v uvedenom diele. 
+
+\subsubsection{Umelá inteligencia založená na OpenAI} 
+V čase vytvárania práce sa pre širokú verejnosť vypustila umelá inteligencia ChatGPT založená na OpenAI. Jedná sa o pomerne dobrý nástroj pri vyhľadávaní čiastkových riešení. V našom prípade nám bola nápomocná najviac pri problémoch súvisiacich s riešením kompatibility v kóde. Odpoveď na otázku sme týmto spôsobom dokázali nájsť podstatne skôr, než tradičným prehľadávaním internetu. Rád by som však upozornil čitateľa, že nástroj nie je vhodné používať za účelom vytvorenia komplexného riešenia. Nakoľko tento nástroj ešte nie je dostatočne vyspelý. 
+  
+Aktuálne dostupná verzia pre verejnosť má isté limitácie. Konkrétne sa jedná o jej dátový model na základe, ktorého bola učená. Informácie obsiahnuté v modeli su z roku 2021. V niektorých momentoch to preto poskytovalo pre používateľa neaktuálne alebo neplatné informácie.
+ 
+Čitateľ si môže ChatGPT vyskúšať na stránke\footnote{\url{https://chat.openai.com/}}. Odhadujeme že, vývoj tohto nástroja bude v blízkej dobe veľmi napredovať vzhľadom k získanej popularite. 
+\subsubsection{Program Wireshark na analýzu sieťovej premávky} 
+Wireshark je veľmi populárny a známy program s otvoreným zdrojovým kódom. Je vhodný na použitie za účelom analýzy sieťových protokolov, vyhľadávaní chýb pre smerovaní a vytváraní nových protokolov. Poskytuje používateľovi možnosti zachytávať sieťovú premávku a následne na základe analýzy týchto dát dokážeme vyhodnotiť správanie, výkon alebo prípadné bezpečnostné problémy riešenia.
+
+Práca s programom je relatívne jednoduchá a intuitívna. Používateľ si dokáže zvoliť ľubovoľné sieťové rozhranie a následne monitorovať čo sa deje. Zo získaných dát je možne určiť všetky podstatné sieťové informácie o prenášaných dátach.
+
+Viac o programe je možné nájsť na stránke\footnote{\url{https://www.wireshark.org/}} programu, odkiaľ boli aj informácie z tejto podkapitoly čerpané. 
+
 \section{Prostredie virtuálnych strojov pomocou VirtualBox}\label{merania}
 Pri testovaní funkcionality VPN sme použili virtualizačný nástroj (daľej \acrshort{vm}) Virtual Box (ďalej \acrshort{vb}), spoločnosti Oracle, vo verzii 6.1.38. \acrshort{vb} je voľne dostupný. Inštalácia je jednoduchá a rýchla. Viac informácii o nástroji je možné dohľadať v \cite{vbox}.
 
-Pre použitie je potrebné aby mal používateľ k dispozícií obraz operačného systému (ďalej \acrshort{os}). Tie nie je problém získať ani pre \acrshort{os} Windows a podobne, avšak pri našej práci sme zvolili využitie voľno dostupného  \acrshort{os} -- \textbf{Linux Ubuntu} vo verziách 22.04.3(\acrshort{lts}\footnote{z ang. \acrlong{lts}})-- OSC a následne vytvorili klon -- OSS. Pri opise práce použijeme označenia OSS pre VPN server a OSC pre klienta.
+Pre použitie je potrebné aby mal používateľ k dispozícií obraz operačného systému (ďalej \acrshort{os}). Tie nie je problém získať ani pre \acrshort{os} Windows a podobne, avšak pri našej práci sme zvolili využitie voľno dostupného  \acrshort{os} -- \textbf{Linux Ubuntu} vo verziách 22.04.3(\acrshort{lts}\footnote{z ang. \acrlong{lts}})-- OSS. Následne sme vykonali inštaláciu spomenutých nástrojov a vytvorili klon -- OSC. Pri opise práce použijeme označenia OSS pre VPN server a OSC pre klienta.
 
 Pri jednoduchej inštalácií \acrshort{vm} sme použili konfiguráciu s  2048 MB RAM a 2 jadrami. (Minimálna inštalácia). V prípade potreby dávame do popredia návod na prípravu Windows \acrshort{os} v \acrshort{vm} -- \cite{vmkonfig}, avšak postup je triviálny. Po inštalácii sme OS aktualizovali pomocou príkazov:
 \begin{lstlisting}[language=bash]
@@ -16,48 +125,82 @@ Následne sme doinštalovali potrebné súčasti k \acrshort{vm} \acrshort{os} v
 \end{lstlisting}
 a následne reštartovať \acrshort{os}.
 
-Posledné úpravy prostredia sú spojené s jazykom C a balíčkom Make. Inštalácia je opäť jednoduchá. Použili sme príkazy:
-\begin{lstlisting}[language=bash]
-	sudo apt install gcc
-	sudo apt install make
-\end{lstlisting}
-Uvedené úpravy boli vykonané na oboch \acrshort{os}.
-
-V prípade použitia \acrshort{os} Windows je postup inštalácie jazyka C a balička Make zložitejší. Používateľovi odporúčam použitie knižníc Winlibs\footnote{dostupne na \href{https://winlibs.com/}{https://winlibs.com/}}. Po stiahnutí balíčkov musí používateľ importovať uvedený balíček, resp. cestu k nemu, do premenných prostredia \acrshort{os} Windows. Jeden zo spôsobov je uvedený aj na Winlibs stránke. 
+Pri príprave prostredia S OS Windows sme postupovali obdobne. Zo stránok Microsoftu sme stiahli obraz s OS Windows 10. Následne sme konfigurovali obraz podľa prednastavených nastavení. Vo virtuálnom stroji sme priradili obrazu po 4 gigabajty pamäte RAM a 4 procesory. Po spustení sa systém začne automaticky aktualizovať. Nechali sme mu preto priestor 10 minút. Následne sme OS reštartovali a po štarte sme inštalovali potrebné nástroje. V prípade potreby ďalšieho zariadenia s OS Windows sme si len vytvárali klon tohto už predinštalovaného systému.
 
 \subsection{Zmena sieťových adaptérov}
 \acrshort{vb} ponúka rôzne možnosti nastavenia sieťových adaptérov. Aktuálne su dostupné tieto:
 \begin{itemize}
-	\item{Not attached}
-	\item{Network Address Translation (ďalej NAT)}
-	\item{NAT Network}
-	\item{Bridge adapter}
-	\item{Internal}
-	\item{Host-Only}
-	\item{Generic driver}
-	\item{Cloud-Based} -- experimentálne
+	\item{Not attached} -- zariadenie nemá žiaden sieťový adaptér a teda ani prístup do žiadnej siete,
+	\item{Network Address Translation (ďalej NAT)} -- VM host používa lokálnu adresu a s vonkajším svetom komunikuje vďaka portovým číslam a prekladu adries na adresu natívneho zariadenia,
+	\item{NAT Network} -- typ internej NAT siete, vďaka ktorej je možná taktiež komunikácia smerom von
+	\item{Bridge adapter} -- vytvorenie virtuálneho rozhrania s vlastnou IP adresou,
+	\item{Internal} -- interná sieť medzi VM bez prístupu do natívneho zariadenia,
+	\item{Host-Only} -- služi na vytvorenie podsiete medz natívnym zariadením a skupinou priradených VM bez prístupu na internet,
+	\item{Generic driver} -- všeobecné rozhranie s možnosťou výberu iného ovládača na vytvorenie sieťového rozhrania,
+	\item{Cloud-Based} -- používa sa na pripojenie lokálneho VM do vzdialenéj cloud služby.
 \end{itemize} 
- 
-Konektivita jednotlivých možností je znázornená pomocou obrázku \ref{vbmode}. Viac informácií o jednotlivých režimoch je dostupných na \cite{vboracle}.
 
-\begin{figure}
+Konektivita jednotlivých možností je znázornená pomocou tabuľky \ref{tab}. Host reprezentuje natívne zariadenie. NET prístup na internet. Viac informácií o režimoch je dostupných na \cite{vboracle}.
+
+\begin{table}[h!]
 	\centering
-	\includegraphics[width=.9\textwidth]{figures/vbmodes}
+	\resizebox{\textwidth}{!}{%
+		\begin{tabular}{c|c|c|c|c|c}
+			\multirow{2}{*}{\bfseries Režim} &
+			\multicolumn{5}{|c}{\bfseries Konektivita} 			
+			\\			
+			&\bfseries VM --> Host 
+			& \bfseries VM <-- Host
+			& \bfseries VM1 <--> VM2
+			& \bfseries VM --> NET
+			& \bfseries VM <-- NET
+			\\\hline\hline
+			\bfseries Host-only
+			& +		 
+			& +
+			& +
+			& -
+			& -
+			\\
+			\bfseries Internal
+			& -			 
+			& -
+			& + 
+			& -
+			& -
+			\\		
+			\bfseries Bridged
+			& +			 
+			& +
+			& +
+			& +
+			& +
+			\\
+			\bfseries NAT
+			& +		 
+			& konfigurácia portov
+			& -
+			& +
+			& konfigurácia portov
+			\\
+			\bfseries NAT network
+			& +			 
+			& konfigurácia portov
+			& +
+			& +
+			& konfigurácia portov
+			\\
+		\end{tabular}%
+	}
 	\caption{Konektivita jednotlivých sieťových adaptérov}
-	\label{vbmode}
-\end{figure}
+	\label{tab}
+	\end{table}
+
+
 Vzhľadom k našim potrebám, teda obojsmerná komunikácia medzi 2 VM, sú pre nás relevantné režimy bridge a NAT network. Ako si môžeme všimnúť, NAT vyžaduje dodatočnú konfiguráciu portov v prípadoch kedy chceme aby nastala komunikácia medzi dvoma VM. Z tohto dôvodu je pre čo najjednoduchší prístup zvoliť práve režim bridge. Ten priradí VM vlastnú IP adresu, pomocou, ktorej stroj komunikuje. 
 
 Viac o jednotlivých režimov je taktiež možné nájsť v \cite{vbguide}. Autor sa venuje postupu konfigurácie jednotlivých režimov spoločne s ich opisom.
 
-\section{Nástroje použité v obrazoch a v práci}
-  \subsubsection{Winlibs balík}
-  \subsubsection{Visual studio Code}
-  \subsubsection{GCC prekladač a balík Make}
-  \subsubsection{Tunelovacie rozhranie Wintun}
-  \subsubsection{Zdrojový kód na meranie počtu cyklov a času} 
-  \subsubsection{Umelá inteligencia založená na GPT3/4} 
-   
 \chapter{Implementacia jednoduchej VPN siete}
 Za účelom demonštrácie jednoduchej VPN siete sme zvolili voľne dostupnú implementáciu v jazyku C. V tejto kapitole postupne rozoberieme funkcionalitu a správanie vzniknutej VPN siete.
 \section{Dead Simple VPN}\label{dsvpn}
@@ -321,7 +464,7 @@ typedef struct Context_ {
 
  Následne dochádza k načítaniu vopred zdieľaného kľúča pomocou pomocnej funkcie 
 \\
- \lstinline|load_key_file()|\ref{load}. Úlohou je prečítanie kľúča, pričom sa používa funkcia z os.c -- \lstinline|safe_read()|. Realizuje sa znakové spočítanie, v ktorom je zakomponovaná funkcia  \lstinline|poll()| \cite{poll}. Dôvodom je, že \lstinline|safe_read()| sa používa aj pri čítaní zo soketu a tunelu. V linuxe je čítanie z týchto typov rovnaké. Tato časť kódu je však podmienená špecifickou chybou, ktorú je možné dostať len pri čítaní soketu, respektíve tunelu.  
+ \lstinline|load_key_file()|\ref{load}. Úlohou je prečítanie kľúča, pričom sa používa funkcia z os.c -- \lstinline|safe_read()|. Realizuje sa znakové spočítanie, v ktorom je zakomponovaná funkcia  \lstinline|poll()| \cite{poll}. Dôvodom je, že \lstinline|safe_read()| sa používa aj pri čítaní zo soketu a~tunelu. V linuxe je čítanie z týchto typov rovnaké. Tato časť kódu je však podmienená špecifickou chybou, ktorú je možné dostať len pri čítaní soketu, respektíve tunelu.  
  V prípade, ak sa prečítalo 32 bajtov, \lstinline|safe_read()| vracia 0. Následne sa inicializuje stav v XOODOO.
  
  \begin{minipage}{\linewidth} 	
@@ -349,11 +492,11 @@ typedef struct Context_ {
  }
   	\end{lstlisting}
 \end{minipage}\\ 
-Ako môžeme vidieť v implementácii sú bežne použité smerníky. Vo výsledku tak dokážeme preniesť zmenu hodnôt na viaceré premenné.
+Ako môžeme vidieť v implementácii sú bežne použité smerníky. Vo výsledku, tak dokážeme preniesť zmenu hodnôt na viaceré premenné.
  
 V prípade, ak používateľ pri štarte nezmenil parameter pre IP adresu sieťovej brány\footnote{z ang. \textit{GateWay}} (ďalej \acrshort{gw}), tak sa používa pôvodná. Tá sa získa pomocou funkcie \\\lstinline|get_default_gw_ip()|, ktorá je deklarovaná v \ref{os.h}. Prostredníctvom shell príkazu \lstinline|ip route| a \lstinline|read_from_shell_command()| funkcie, dochádza k extrakcii informácií priamo z príkazového riadka. Tento krok je teda závislý od \acrshort{os}, v ktorom používateľ pracuje. Nasleduje overenie návratových hodnôt z funkcií iba v prípade ak je DSVPN spustené ako Klient.
  
-Program v prípade servera pokračuje s \lstinline|get_default_ext_if_name()|. Obdobne ako v predchádzajúcom odstavci je realizácia funkcionality, vykonaná pomocou terminálu. Podstata spočíva v zistení mena tunelovacieho rozhrania.
+Program v prípade servera pokračuje s \lstinline|get_default_ext_if_name()|. \\Obdobne ako v predchádzajúcom odstavci je realizácia funkcionality, vykonaná pomocou terminálu. Podstata spočíva v zistení mena tunelovacieho rozhrania.
  
 Po nastavení parametrov sa dostávame k vytvoreniu tunelovacieho rozhrania. V tomto kroku autor používa funckiu \lstinline|tun_create|. Úloha je vysoko závislá od OS. Dôsledkom toho je možné vidieť vetvenie funkcionality vzhľadom k bežiacemu OS. DSVPN poskytuje kompatibilitu pre 6 OS, medzi, ktoré patrí Linux, FreeBSD, NetBSD, OpenBSD, MacOS, DragonFly. Následne na základe systému dochádza k vytváraniu tunelu s prednastaveným, resp. zvoleným menom. Program ďalej nastaví maximálnu veľkosť prepravovaného paketu\footnote{z ang. \textit{Maximum Transmission Unit}} (ďalej \acrshort{mtu}) na 1500/9000 bajtov. 
  
@@ -365,13 +508,13 @@ Posledným úkonom je samotný beh VPN. Ten spúšťa funkcia \lstinline|doit()|
  
 \begin{figure}
 	\centering
-	\includegraphics[width=0.5\textwidth]{figures/fc1}
-	\caption{Beh DSVPN}
+	\includegraphics[width=0.6\textwidth]{figures/fc1}
+	\caption{Schéma behu DSVPN vo funkcii main()}
 	\label{fc1}
 \end{figure}
 
 Od tohto momentu sa presúvame k postupnému vnáraniu do procesu spojenia a spracovania dát. Hlavnou úlohou funkcie \lstinline|doit()| je nadviazanie soketového TCP spojenia medzi klientom a serverom. Vo vnútri \lstinline|doit()| preto dochádza k vetveniu programu. V prípade, že je DSVPN spustená ako server spustí sa funkcia \lstinline|tcp_listener()|. V opačnom prípade \lstinline|client_reconnect()|. Listener vytvára socket a následne pomocou systemovej funkcie \lstinline|bind()| sa napojí na zvolený port. Potom čaká na spojenie od klienta pomocou funkcie \lstinline|listen()|. Smerník na socket je uložený do smerníka na štruktúru Context.
-Klient používa vetvu s \lstinline|Client_reconnect()|. V nej sa snaží opakovane nadviazať spojenie so serverom. Za týmto účelom \lstinline|client_connect()|. Pred týmto úkonom samozrejme dochádza k overeniu či už nedošlo k nadviazaniu spojenia. O to sa stará \lstinline|client_disconnect()|, ktorý ruší aktívne spojenie.
+Klient používa vetvu s~\lstinline|Client_reconnect()|. V nej sa snaží opakovane nadviazať spojenie so serverom. Za týmto účelom \lstinline|client_connect()|. Pred týmto úkonom samozrejme dochádza k overeniu či už nedošlo k nadviazaniu spojenia. O to sa stará \\\lstinline|client_disconnect()|, ktorý ruší aktívne spojenie.
 
 \lstinline|Client_connect()| slúži na pripojenie klienta k serveru. Vykonáva aj úpravu pravidiel v \acrshort{fw}. Následne sa pokúša o nadviazania spojenia pomocou funkcie  \lstinline|tcp_client()|. Po tejto sérií úloh sa vraciame opäť do \lstinline|doit()|. V cykle \lstinline|while| sa vykonávaná funkcia \lstinline|event_loop()|, v ktorej dochádza k použitiu kryptografickej knižnice charm. Jej obsahom je inicializácia pomocných premenných. viď. zdrojový kód \ref{el}. Schéma \ref{fc2} znázorňuje doteraz opísané skutočnosti.
   
@@ -458,7 +601,7 @@ Proces šifrovanie resp. dešifrovania správy nastáva na oboch stranách spoje
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.7\textwidth]{figures/fc3}
+	\includegraphics[width=0.8\textwidth]{figures/fc3}
 	\caption{Proces šifrovania v funkcii uc\_encrypt()}
 	\label{fc3}
 \end{figure}
@@ -575,12 +718,12 @@ static void permute(uint32_t st[12])
 }
 	\end{lstlisting}
 \end{minipage}\\
-Na druhej strane k \textbf{dešifrovaniu} dochádza v momente ak sa v klientskom sokete nachádzajú dáta. Program overuje či sú v premennej \lstinline|fds[POLLFD_CLIENT]| dáta určené na spracovanie. \lstinline|fds[POLLFD_CLIENT]| predstavuje smerník na pamäťový blok, kde je uložený soket na druhú stranu spojenia, teda akceptovaného klienta. V momente keď sa tam nachádzajú dáta dôjde k ich čítaniu pomocou funkcie \lstinline|safe_read_partial()|. Následne program realizuje dešifrovanie funkciou \lstinline|uc_decrypt()|, ktorá je inverznou k \lstinline|uc_encrypt()|. V ukážke zdrojového kódu \ref{decrypt}, si používateľ môže prezrieť obsah funkcie \lstinline|uc_decrypt()|. Po odšifrovaní dát ich program zapisuje do tunelovacieho rozhrania prostredníctvom funkcie \lstinline|tun_write()|. Následne TUN rozhranie dotvára paket a vloží ho do sieťového zásobníka\footnote{z ang. \textit{network stack}}. OS následne vykonáva ďalšie spracovanie paketu do nižších vrstiev sieťového modelu. 
+Na druhej strane k \textbf{dešifrovaniu} dochádza v momente ak sa v klientskom sokete nachádzajú dáta. Program overuje či sú v premennej \lstinline|fds[POLLFD_CLIENT]| dáta určené na spracovanie. \lstinline|fds[POLLFD_CLIENT]| predstavuje smerník na pamäťový blok, kde je uložený soket na druhú stranu spojenia, teda akceptovaného klienta. V momente keď sa tam nachádzajú dáta dôjde k ich čítaniu pomocou funkcie \lstinline|safe_read_partial()|. Následne program realizuje dešifrovanie funkciou \lstinline|uc_decrypt()|, ktorá je inverznou k \lstinline|uc_encrypt()|. V ukážke zdrojového kódu \ref{decrypt} a \ref{decrypt2}, si používateľ môže prezrieť obsah funkcie \lstinline|uc_decrypt()|. Po odšifrovaní dát ich program zapisuje do tunelovacieho rozhrania prostredníctvom funkcie \lstinline|tun_write()|. Následne TUN rozhranie dotvára paket a vloží ho do sieťového zásobníka\footnote{z ang. \textit{network stack}}. OS následne vykonáva ďalšie spracovanie paketu do nižších vrstiev sieťového modelu. 
 
 \begin{minipage}{\textwidth} 	
 	\begin{lstlisting}[frame=single,
 		numbers=left,
-		caption={Funkcia Permute + makrá }\label{decrypt},
+		caption={Zdrojový kód funkcie na dešifrovanie správy (1.časť)}\label{decrypt},
 		basicstyle=\ttfamily\small, keywordstyle=\color{black}\bfseries,]
 		int uc_decrypt(uint32_t st[12], unsigned char *msg, 
 		               size_t msg_len, 
@@ -612,16 +755,26 @@ Na druhej strane k \textbf{dešifrovaniu} dochádza v momente ak sa v klientskom
 			        (const unsigned char *) (const void *) st, 
 			        leftover
 			        );
-			xor128(&padded, squeezed);
+		    xor128(&padded, squeezed);
 			padded[leftover] = 0x80;
 			xor128(st, padded);
 			endian_swap_rate(st);
 			st[11] ^= (1UL << 24 | (uint32_t) leftover >> 4 
-			           << 25 | 1UL << 26);
+			<< 25 | 1UL << 26);
 			mem_cpy(&msg[off], padded, leftover);
+			
+	\end{lstlisting}
+\end{minipage}
+
+\begin{minipage}{\textwidth} 	
+	\begin{lstlisting}[frame=single,
+		numbers=left,
+		firstnumber=38,
+		caption={Zdrojový kód funkcie na dešifrovanie správy (2.časť)}\label{decrypt2},
+		basicstyle=\ttfamily\small, keywordstyle=\color{black}\bfseries,]
 			permute(st);
 			squeeze_permute(st, tag);
-			\\
+			
 			if (equals(expected_tag, tag, expected_tag_len) == 0) {
 				memset(msg, 0, msg_len);
 				return -1;
@@ -630,9 +783,6 @@ Na druhej strane k \textbf{dešifrovaniu} dochádza v momente ak sa v klientskom
 		}
 	\end{lstlisting}
 \end{minipage}\\
-
-
-
 
 Pre čitateľa sme si pripravili aj názornú ukážku šifrovania a prenosu týchto dát cez soket. Za účelom ukážky použijeme už spomínaný nástroj Wireshark na zachytávanie premávky v sieťových rozhraniach. Prechod dát z pohľadu klienta medzi zariadeniami je znázornený na obrázku \ref{wiresharkpakety}. 
 % TODO: \usepackage{graphicx} required
@@ -810,7 +960,293 @@ Spojenie medzi klientom a serverom je spustené na VM. Šifrovanie bolo merané 
 	\caption{Výsledky získaných meraní}
 	\label{tabmer}
 \end{table}
-Ako môžeme vidieť z experimentálnych meraní, tak implementácia XOODOO algoritmu je na bežnom počítači extrémne rýchla. Faktom ostáva že do meraní nám vo veľkej miere zásahuje OS. Okrem tohto faktu bežal klient aj server vo virtuálnom prostredí nad iným natívnym OS, so značne obmedzeným výkonom. Z výsledkov však môžeme zhodnotiť, že šifrovanie a dešifrovanie dokáže držať na úrovní 40-70 mikrosekúnd v závislosti od veľkosti vstupujúcich dát a prostredia, na ktorom aplikácia beží.
 
 Súčasťou príloh sú súbory s logmi, z ktorých bola tabuľka vytvorená. Zároveň prikladáme aj zdrojový kód programu, ktorý bol použitý na spracovanie výsledkov. Viď priečinok \lstinline|Measurements|. 
 \section{Windows kompatibilita}
+V tejto práci sme sa zamerali aj na rozšírenie pôvodnej funkcionality DSVPN o kompatibilitu na OS Windows. Rozšírenie by slúžilo vo veľkej miere ako edukatívny vzor pri jednoduchom vysvetlení problematiky VPN na rôznych platformách. Samozrejmosťou ostáva zachovanie pôvodnej kompatibility. V rámci tejto činnosti sme museli pridať, resp. zmeniť niektoré funkcionality. V priebehu tejto podkapitoly stručne opíšeme aplikované zmeny. Rád by som ešte upozornil čitateľa na použitie prepocesorov \lstinline|#ifdef| a \lstinline|#ifndef|. Vďaka ním sme dokázali podmienene určiť čo má program realizovať v danom OS.
+
+\subsection{Hlavičkové súbory}
+Prvotnou činnosťou bolo získanie vedomostí o potrebných knižniciach, ktoré v prípade soketového programovania potrebujeme. Priebežnou analýzou pôvodného riešenie sme zároveň vyhľadávali dané realizácie aj pre OS Windows. Obdobne pri snahe o priebežné ladenie programu, nám prekladač vypísal niektoré problémy týkajúce sa nedostupných knižníc pre Windows.  Vo výsledku sme pre Windows platformu potrebovali vložiť 13 hlavičkových knižníc a zadefinovať niektoré makrá, ktoré sa vo Windows volajú inak. Aplikované zmeny je možné si pozrieť v ukážke zdrojového kódu \ref{sck}. 
+\subsection{Funkcia generovania náhodných čísel}
+Implementácia XOODOO používa pri svojej činnosti aj náhodné dáta. V pôvodnej implementácií DSVPN sa tieto dáta získavajú pomocou systémových generátorov náhodných čísel. V prípade OS Linux sa tento úkon realizuje tradične systémovým volaním funkcie \lstinline|SYS_getrandom()|. V prípade ostatných podporovaných OS sa volá funkcia \lstinline|arc4random_buf()|. 
+Na základe odporúčaní z \cite{bc} sme do DSVPN zakomponovali pre prípad OS Windowsu volanie funkcie \\\lstinline|BCryptGenRandom()|. Toto rozhranie je aktuálne na Windowse odporúčaný spôsob generovania náhodných dát pre kryptografické účely. Výstupom volania sú dáta z kryptograficky bezpečného pseudonáhodného generátora náhodných čísel. V ukážke zdrojového kódu \ref{bcrypt} je znázornená modifikovaná funkcia na získavanie náhodných dát. 
+
+\begin{minipage}{\linewidth} 	
+	\begin{lstlisting}[frame=single,
+		numbers=left,
+		caption={Ukážka zdrojového kódu na získanie náhodných dát}\label{bcrypt},
+		basicstyle=\ttfamily\small, keywordstyle=\color{black}\bfseries,]
+void uc_randombytes_buf(void *buf, size_t len)
+	{
+		#ifdef _WIN32
+		if (STATUS_SUCCESS!=BCryptGenRandom(NULL,buf,len, 
+		                    BCRYPT_USE_SYSTEM_PREFERRED_RNG))
+		{
+			puts("BCRYPTGENRANDOM ERROR");
+		}
+		#elif defined(__linux__)  
+		if ((size_t) syscall(SYS_getrandom, buf, (int) len, 0)
+		                     != len) 
+		{
+				abort();
+		}
+		#else
+		arc4random_buf(buf, len);
+		#endif
+	}	
+	\end{lstlisting}
+\end{minipage}\\
+
+Viac o problematike generovania náhodných čísel je možné si prečítať v \cite{bc}.
+\subsection{Soketová kompatibilita}
+Windows v porovnaní s Linuxom pracuje s iným typom soketov. Ako sme videli v útržkoch kódu vyššie, linux pri vytváraní soketu vracia hodnotu typu \lstinline|int|, ktorá odkazuje na vytvorený soket. Windows na druhej strane vracia štruktúru typu \lstinline|SOCKET|. Pretypovanie z jedného typu na druhý bohužiaľ nie je možné jednoduchým riešením. Elegantné riešenie tohto problému bolo vytvorenie makra, ktoré prekladaču povedalo aký typ premennej má použiť. Za týmto účelom sme zadefinovali nové makro \lstinline|SCK|. Viď. ukážku zdrojového kódu \ref{sck}.
+
+Následne postačilo len zmeniť deklarácie a definície všetkých soketových premenných vstupujúcich do funkcie. Rovnaký scenár platil aj pri vytváraní soketových premennych. Jednoducho sme nahradili každý soket typu \lstinline|int| za \lstinline|SCK|.   
+
+\begin{minipage}{\linewidth} 	
+	\begin{lstlisting}[frame=single,
+		numbers=left,
+		caption={Makrá a hlavičkové súbory pridané do vpn.h}\label{sck},
+		basicstyle=\ttfamily\small, keywordstyle=\color{black}\bfseries,]
+		#ifdef _WIN32
+		#ifndef _WIN32_WINNT
+		#define _WIN32_WINNT 0x0600
+		#endif
+		#include <stdbool.h>
+		#include <winsock2.h>
+		#include <ws2tcpip.h>
+		#include <winioctl.h>
+		#include <windows.h>
+		#include <io.h>
+		#include <tchar.h>
+		#include <ws2ipdef.h>
+		#include <iphlpapi.h>
+		#include <mstcpip.h>
+		#include <winternl.h>
+		#include <stdarg.h>
+		#include "wintun.h"
+		#define SCK   SOCKET
+		#define SCKERR INVALID_SOCKET
+		#define INVSCK INVALID_SOCKET
+		#define nfds_t ULONG
+		#define TCP_DEFER_ACCEPT SO_ACCEPTCONN
+		#define SOL_TCP IPPROTO_TCP
+		#define IFNAMSIZ 256
+		#define SIOCSIFMTU 0x8922 
+		#else
+		#include <sys/wait.h>
+		#include <sys/ioctl.h>
+		#include <sys/socket.h>
+		#include <sys/types.h>
+		#include <sys/uio.h>
+		#include <net/if.h>
+		#include <netinet/in.h>
+		#include <netinet/tcp.h>
+		#include <netdb.h>
+		#include <poll.h>
+		#define SCK   int
+		#define INVSCK -1
+		#define SCKERR 0
+		#endif
+	\end{lstlisting}
+\end{minipage}\\ 
+
+Nasledovala práca so soketmi. Princíp fungovania soketov na strane klienta a servera ostáva v svojej podstate rovnaký. Odlišný je spôsob inicializácie, zápisu, čítania, konfigurácie a manipulácie s nimi. V tomto smere nám vo veľkej miere pomohol návod v \cite{sck}. Autor názorným spôsobom vysvetľuje princíp fungovania, práce a manipulácie so soketmi. Ak používateľ nie je zorientovaný v oblasti soketového programovania, tak by si mál túto krátku prezentáciu prečítať.
+
+Pred samotným používaním soketov je potrebné inicializovať tzv. Winsock. Tento úkon sme realizovali v \lstinline|main()| funkcii. Viď ukážku zdrojového kódu \ref{wsck}.
+
+\begin{minipage}{\linewidth} 	
+	\begin{lstlisting}[frame=single,
+		numbers=left,
+		caption={Inicializácie knižnice na prácu so soketmi}\label{wsck},
+		basicstyle=\ttfamily\small, keywordstyle=\color{black}\bfseries,]
+		#ifdef _WIN32
+		WSADATA wsa;
+		// Initialize Winsock
+		if (WSAStartup(MAKEWORD(2,2), &wsa) != 0) {
+			printf("WSAStartup failed. Error Code : %d",
+				      WSAGetLastError());
+			return 1;
+		}
+		#endif
+	\end{lstlisting}
+\end{minipage}\\
+
+V kóde sme potrebovali zmeniť spôsob čítania a zápisu dát do soketov. Za týmto účelom sme vytvorili viacero funkcií, ktoré danú činnosť realizujú. Ich volanie sa vykonáva v pôvodnej funkcionalite pomocou preprocesora \lstinline|#ifdef _WIN32|. Ak je teda potrebné aby pôvodná implementácia bola vykonaná odlišne, tak sme pomocou tohto makra volali nami vytvorenú funkciu. Celkovo sme takýmto spôsobom vytvorili 9 funkcií, ktoré sú obsahom os.c. Do os.h sme pridali deklarácie:
+\begin{itemize}
+	\item\lstinline|int SCK_close(SCK fd);|,
+	\item\lstinline|int w_open(const char *filename, int flag);|,
+	\item\lstinline|int w_read(int file, unsigned char *buf, size_t count);|,
+	\item\lstinline|int w_close(int file);|,
+	\item\lstinline|ssize_t w_read_file(const int fd, void *const buf_,|
+	 
+					\lstinline|size_t count);|,
+	\item\lstinline|ssize_t w_safe_read(const SOCKET fd, void *const buf_, | 
+	
+					\lstinline|size_t count, const int timeout);|,
+	\item\lstinline|ssize_t w_safe_write(const SOCKET fd, const void *const buf_, |
+	
+					\lstinline|size_t count, const int timeout);|,
+	\item\lstinline|ssize_t w_safe_read_partial(const SOCKET fd, void *const buf_, |
+					\lstinline|const size_t max_count);|,
+	\item\lstinline|ssize_t w_safe_write_partial(const SOCKET fd, void *const buf_,| 
+					\lstinline|const size_t max_count);|.
+\end{itemize}  
+Z názvov je jednoznačne jasné čo dané funkcie vykonávajú.
+
+Pri Windows OS na konci každého programu ešte potrebujeme zavolať \lstinline|WSACleanup();|. Za spomenutie ešte stojí získavanie chýbových hlášok zo soketov. V Linuxe sa v prípade cchyby ukladá chybová hláška do globálnej premennej  \lstinline|errno|. Z nej následne programátor dokáže určiť kde mohol nastať problém. V prípade Windowsu potrebuje používateľ zavolať \lstinline|WSAGetLastError()|. Následne má k dispozícií kód chybovej hlášky. Zoznam a popis chybových hlášok je dostupný na internete\footnote{\url{https://learn.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2}}.  
+\subsection{Tunelovacie rozhranie}
+Windows nemá natívnu podporu na vytváranie virtuálnych sieťových adaptérov. Na vyriešenie problému sme mali niekoľko možností. Prvá bola implementácia vlastného ovládača, ktorý by pracoval s jadrom OS. Drúha realnejšia možnosť bola použitie už vytvorenej implementácie. Tu sa nám naskytovali dve možné riešenie. OpenVPN TUN/TAP a Wintun adaptér. Z hľadiska použiteľnosti sa však Wintun adaptér pozdáva ako omnoho lepšie riešenie. Dôvodom je jeho použitie bez potreby inštalácie dodatočného softvéru. 
+Do kódu DSVPN sme implementovali funkcie na inicializáciu, čitanie, zápis a ukončenie ovládača. Jedná sa o funkcie: 
+\begin{itemize}
+	\item\lstinline|int wtunInit(Context *context);| -- realizuje načítanie wintun.dll knižnice, vytvorenie adaptéru, spustenie prevádzky a jeho uloženie do štruktúry.
+	\item\lstinline|int tun_reader(Context *context, unsigned char *outgoingData)| -- číta pakety, ktoré dorazia na rozhranie a ukladá ich do premennej outgoingData,
+	\item\lstinline|int tun_writer(Context *context, BYTE *PacketData,| 
+	
+		\lstinline|ssize_t PacketDataSize)| -- zapisuje dáta v premennej PacketData s veľkosťou PacketDataSize do tunelovacieho rozhrania,
+	\item\lstinline|void w_cleanUp(Context *context)| -- obsahuje funkcie z wintun.dll na bezpečné ukončenie prevádzky a vymazanie adaptéra.
+\end{itemize} 
+
+Tieto funkcie sme vložili v DSVPN do súbora vpn.c. Dôvodom bolo posielanie celej štuktúry do týchto funkcií. Na správne fungovanie potrebuje premennú typu \lstinline|WINTUN_SESSION_HANDLE|. Pri vytváraní adaptéra sa do nej uložia informácie o tunelovacom rozhraní. Na základe nich dokážeme následne čítať a zapisovať dáta na rozhranie. V budúcnosti by sa kvôli optimalizácií využitia pamäte odporúčalo zmeniť túto funkciu aby pracovalo len s premennou \lstinline|WINTUN_SESSION_HANDLE| a nie celou štruktúrou.
+
+Na rozdiel od pôvodnej implementácie nastal pri tomto adaptéry problém. V DSVPN na Linuxe dokážeme monitorovať stav rozhrania. Dokáže teda určiť či sa v ňom nachádzajú dáta na čítanie, nastala chyba alebo môžeme zapisovať dáta. V prípade wintunu sme však k takejto možnosti monitorovania nenašli informácie. Z uvedeného dôvodu sme museli pozmeniť logiku v kóde. Pôvodne sa z tunelovacieho rozhrania číta len ak rozhranie obsahuje nejaké dáta určené na čítanie. V aktualizovanej verzii čítame dáta z rozhrania pri každom cykle vo funkcii \lstinline|event_loop()|. OS Windows podporuje možnosť počkať na ukončenie procesu. Zároveň wintun implementuje funkcionalitu čakania na prichádzajúce dáta ak momentálne na rozhraní žiadne nie sú. Do \lstinline|tun_reader()| sme teda implementovali túto logiku. Vo výsledku funkcia skončí až keď nastane prečítanie nejakých dát. Tento úkon bude v prípade bežnej prevádzky potrebné zmeniť. Dôvodom je, že môže nastať blokovanie DSVPN v stave čítania z rozhrania. Pri experimentovaní sme nenastavovali filtrovacie pravidlá a ani raz spomenutý scenár nestal. 
+
+\subsection{Smerovanie a Firewall pravidlá}
+Posledný z krokov, ktorý je dôležitý, je aplikovanie firewall pravidiel a smerovacích ciest. V pôvodnej implementácií sa nachádzajú niektoré pravidlá, ktoré sa na bežnom Windowse nemožno uskutočniť. Pri experimentoch sme sa rozhodli preto Firewall pravidla na vypustiť. Pomocou príkazov ho vypíname. Okrem tejto zmeny je rozdiel aj v nastavovaní prednastavených pravidiel smerovania. Pri experimentoch sme aplikovali rôzne pravidla. Obsah príkazov pre príkazový riadok je možné vidieť v ukážke kódov \ref{rulesserver} a \ref{rulessklient}.
+
+\begin{minipage}{\linewidth} 	
+	\begin{lstlisting}[frame=single,
+		numbers=left,
+		caption={CMD pravidla použité na VPN Serveri}\label{rulesserver},
+		basicstyle=\ttfamily\small, keywordstyle=\color{black}\bfseries,]
+//SERVER
+*set_cmds[] ={
+//nastavuje ipv4 adresu
+"netsh interface ipv4 add address $IF_NAME 
+$LOCAL_TUN_IP 255.255.255.255", 
+	
+//nastavuje ipv6 adresu na wtun adapter   
+"netsh interface ipv6 add address $IF_NAME $LOCAL_TUN_IP6/96", 
+	      
+//vypina firewall 
+"netsh advfirewall set allprofiles state off", 
+	
+//default MTU je 9000                    
+"netsh interface ipv4 set subinterface 
+$IF_NAME mtu=9000 store=persistent",
+	 
+//aby mohlo z jedneho interfacu na druhy preposielat pakety 
+"netsh interface ipv4 set interface $IF_NAME 
+forwarding=enabled",
+	
+//(powershell) globalny pre vsetky vyssie 
+//"Set-NetIPInterface -Forwarding disabled", 
+	
+//zapina interface ak by bol vypnuty
+"netsh interface set interface $IF_NAME admin=enable",  
+	
+//ak je destinacia ip remote tunela, 
+//tak posli na local tunel rozhranie    
+"route add $REMOTE_TUN_IP mask 255.255.255.255 $LOCAL_TUN_IP", 
+	   
+NULL },
+	\end{lstlisting}
+\end{minipage}\\ 
+
+\begin{minipage}{\linewidth} 	
+	\begin{lstlisting}[frame=single,
+		numbers=left,
+		caption={CMD pravidla použité na VPN Klientovi}\label{rulesklient},
+		basicstyle=\ttfamily\small, keywordstyle=\color{black}\bfseries,]
+//KLIENT
+*set_cmds[] = {
+"netsh advfirewall set allprofiles state off",
+"netsh interface ipv4 set subinterface $IF_NAME mtu=9000 
+store=persistent",
+"netsh interface ipv4 set interface $IF_NAME forwarding=enabled",
+"netsh interface ipv4 add address $IF_NAME 
+$LOCAL_TUN_IP 255.255.255.255",
+
+//pri testovani vypnute			
+//"netsh interface ipv6 add address $IF_NAME $LOCAL_TUN_IP6/96",
+
+"netsh interface set interface $IF_NAME admin=enable",
+			
+//paket so s cielom server ip ma ist cez povodny gw 
+"route add $EXT_IP mask 255.255.255.255 $EXT_GW_IP",
+	
+"route delete 0.0.0.0", //maze defaultnu rutu 
+			
+//presmeruje kazdu IP, ktoru nepozna na lokalny tunel                             
+"route add 0.0.0.0 mask 0.0.0.0 $LOCAL_TUN_IP", 
+			
+NULL },    
+		
+//$IF_NAME = wtun0
+//$LOCAL_TUN_IP = ip lokalneho tunela
+//$REMOTE_TUN_IP = ip tunela na druhej stane
+//$EXT_IP = ip VPN servera
+//$EXT_GW_IP = povodna Gateway na zariadeni
+	\end{lstlisting}
+\end{minipage}\\ 
+
+\subsection{Preklad a ladenie zdrojových kódov}
+Zmeny vykonané s cieľom vytvorenia kompatibility si vyžadovali použitie iného balíka Make, ktorý by fungoval správne vo Windowse. Prepisovaný kód sme natvrdo premiestnili do jedného priečinka. Teda všetky pôvodné hlavičkové súbory a zdrojové kódy z DSVPN sme vložili do jedného priečinka. K nim sme priložili \lstinline|wintun.h| a \lstinline|wintun.dll|. Následne sme vytvorili jednoduchý Makefile na kompiláciu programu do funkčného celku. Ukážku jednoduchého zdrojového kódu je možné vidieť v \ref{make}. 
+
+\begin{minipage}{\linewidth} 	
+	\begin{lstlisting}[frame=single,
+		numbers=left,
+		caption={Ukážka zdrojového kódu v balíku Make}\label{make},
+		basicstyle=\ttfamily\small, keywordstyle=\color{black}\bfseries,]
+CC=gcc
+CFLAGS= -Wall -Wextra -g 
+WINFLAGS = -lbcrypt -liphlpapi -lws2_32
+SRCS= dsvpn
+CHARM=charm.c
+OS=os.c
+VPN=vpn.c
+all: $(SRCS) 
+
+$(SRCS): %:
+$(CC) -o $< $(SRCS) $(CHARM) $(OS) $(VPN) $(CFLAGS) $(WINFLAGS)
+
+clean:
+$(RM) *.exe 
+	\end{lstlisting}
+\end{minipage}\\
+
+Pri vývoji softvéru je veľmi dôležitým priateľom programátora aj nástroj na ladenie programov. Z uvedeného dôvodu prikladám aj konfiguráciu pre ladenie v prostredí programu Visual Studio C. Konfiguráciu bolo potrebné pripraviť. V nej ma čitateľ možnosť prečítať si ako daný program spúšťať za účelom ladenia. Dôležité je taktiež, že program Visual Studio Code musí byť pri ladení spustený ako administrátor. Ak tento scénar nenastane, tak nebude možné vytvoriť tunelovacie rozhranie a DSVPN spadne. V ukážke zdrojového kódu \ref{launch}, je možné vidieť potrebnú konfiguráciu \lstinline|launch.json| na spustenie DSVPN ako klient v režime ladenia. 
+
+\begin{minipage}{\linewidth} 	
+	\begin{lstlisting}[frame=single,
+		numbers=left,
+		caption={Konfigurácia launch.json pre ladenie DSVPN}\label{launch},
+		basicstyle=\ttfamily\small, keywordstyle=\color{black}\bfseries,]
+{
+	"version": "0.2.0",
+	"configurations": [
+	{
+		"name": "C/C++: g++.exe build and debug active file",
+		"type": "cppdbg",
+		"request": "launch",
+		"program": "${workspaceFolder}/dsvpn.exe",
+		"args": ["client", "C:/Users/marro/Desktop/xy/m.key", 
+		"192.168.88.10", "2340", "auto", "10.8.2.1", "10.8.1.1"],
+		"stopAtEntry": false,
+		"cwd": "${fileDirname}",
+		"environment": [],
+		"externalConsole": false,
+		"MIMode": "gdb",
+		"miDebuggerPath": "C:\\mingw64\\bin\\gdb.exe",
+		"setupCommands": [
+		{
+			"description": "Enable pretty-printing for gdb",
+			"text": "-enable-pretty-printing",
+			"ignoreFailures": true
+		}
+		]
+	}
+	]
+}
+	\end{lstlisting}
+\end{minipage}\\

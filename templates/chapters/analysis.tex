@@ -21,10 +21,10 @@ Táto technológia patrí aktuálne k najpoužívanejším spôsobom pripojenia 
 https://www.webhostingsecretrevealed.net/blog/security/how-vpn-works/
 
 \section{Výhody a nevýhody VPN sieti}
-neviem ci to bude rozsahovo treba na samostatnu podkapitolu
-mozno len doplnit informacie do textu zaciatku.
+Medzi výhody VPN sietí patrí najmä zvýšenie bezpečnosti pripojenia. Všetka sieťová premávka je zašifrovaná pomocou kryptografického algoritmu. V závislosti od kvality implementácie sú informácie prenášane po takejto sieti nečitatelné. Ďalším typickým znakom je poskytnutie anonymity. VPN dokáže zamaskovať našu IP adresu a zároveň aj geografickú lokáciu. Tým, že sa pripojíme na zariadenie v inej sieti, tak získavame prístup k všetkým povoleným lokáciam tohto vzdialeného zariadenia. Týmto spôsobom dokážeme napríklad pristupovať k interným dátam.
+VPN je šikovný nastroj na ochranu vo verejnej nezabezpečenej sieti, ktorá poskytuje útočníkom rôzne možnosti útoku alebo zneužitia pripojeného zariadenia.
 
-V prípade nestabilného spojenia, je možný vysoký výskyt straty paketov. Dôvodom je použitie TCP protokolu. Takýto problém je vhodné riešiť, tak sa odporúča prejsť na protokol 
+Medzi hlavné nevýhody patrí spomalenie internetového spojenia. Tým že, sa dodatočne spracúvavajú sieťové dáta, tak nastáva nechcené spomalenie. Táto dlhšia odozva siete sa predlžuje priamo úmerne od vzdialenosti servera, na ktorý sa pripájame. Ďalšou nepísanou nevýhodou je cena. Väčšina VPN poskytovateľov poskytuje služby za pomerne dráhe poplatky. Pri voľbe poskytovateľa je taktiež nutné prečítať si podmienky pripojenia. Niektorý poskytovatelia uchovávajú dáta, ktoré naprieč spojením prechádzajú. Poslednou nevýhodou je zložitá konfigurácia pri niektorých VPN protokoloch. Samozrejme uvedený problém nastáva len pri prvotnej konfigurácií VPN siete.   
 
 \section{Charakteristika a definovanie pojmov}
 Obsahom tejto podkapitoly je zavedenie a následne stručná charakteristika pojmov, potrebných na pochopenie problematiky VPN sieti.
@@ -127,31 +127,6 @@ Narozdiel od \acrshort{tcp}) neposkytuje žiadnu záruka doručenia správy aleb
 \acrshort{udp}) je vhodný na účely, kde kontrola a oprava chýb buď nie sú potrebné, alebo sa vykonávajú v aplikácii. Aplikácie citlivé na čas často používajú UDP, pretože zahadzovanie paketov je vhodnejšie ako čakanie na pakety oneskorené v dôsledku opätovného prenosu. Príklad použitia môžu byť streamovacie služby. 
 Podrobnejšie informácie o \acrshort{udp}) protokole nájde čitateľ v \cite{udp}.
 
-\subsection{IKEv2 Internet Key Exchange version 2}
-https://en.wikipedia.org/wiki/Internet\_Key\_Exchange
-
-\subsection{Transport Layer Security -- TLS}
-TCP protokol sam o sebe nezabezpečí dáta, ku ktorým sa pridáva TCP hlavička. Dôsledkom toho vznikli viacere protokoly slúžiace na autentizované šifrovanie dát. Najznámejší je protokol zabezpečenia prenosu -- \acrshort{tls} a  \acrshort{ipsec}.
-
-Zabezpečenie dát bolo prvotne vykonávané pomocou protokolu \textit{Secure Sockets Layer} -- \acrshort{ssl}. Tento spôsob používa certifikáty na odšifrovanie dát. SSL malo od svojho vytvorenia dlhý vývoj, ktorý smeroval až k doteraz najpoužívanejšiemu TLS vo verzii 1.3. Inými slovami, TLS protokol je nástupca SSL pričom obsahuje rôzne úpravy a vylepšenia najmä z hľadiska rýchlosti. Zároveň sa v dnešnej dobe neodporúča používanie SSL protokolu. Dôsledkom optimalizácií je, že klienta komunikujúci so serverom cez HTTPS protokol s TLS 1.3 je rýchlejší ako v prípade použitia nešifrovaného HTTP variantu. 
-
-TLS pracuje niekde na pomedzi aplikačnej a transportnej vrstvy. Spôsob spracovania dát je zobrazený pomocou schémy \ref{ssl} s SSL operáciami, prebratej z \cite{biks}. 
-\begin{figure}[!ht]
-	\centering
-	\includegraphics[width=0.7\linewidth]{figures/ssl}
-	\caption{Prehľad operácií v SSL protokole}
-	\label{ssl}
-\end{figure}
-
-Viac informácií o TLS protokole, jednotlivých verziách a optimalizáciách je možné nájsť na \cite{tls}. 
-
-\subsection{\acrfull{p2p}}
-https://en.wikipedia.org/wiki/Point-to-Point\_Protocol
-
-\subsection{\acrfull{mpls}}
-\acrshort{mpls} by sme do slovenčiny mohli preložiť ako Multi-protokolové prepínanie štítkov. Samotný protokol pridáva k paketom tzv. MPLS hlavičku. Jej obsahom sú štítky\footnote{z ang. \textit{labels}}, na základe ktorých dochádza k smerovaniu a preposielaniu paketov. Týmto spôsobom nie je nutná ďalšia analýza paketov. Štítky neidentifikujú koncové body, ale virtuálne spojenia medzi viacerými uzlami. Označenie multi-protokolový má, pretože dokáže zapuzdrovať viacero sieťových protokolov. MPLS pracuje na pomedzi L2 a L3 vrstvy. Často sa zvykne označovať ako L2.5 protokol. Viac o tomto protokole je možné si prečítať na \cite{mpls}, \cite{mplstuke} a \cite{mplsrfc}.
-
-
 \section{Klasifikácia VPN sietí}
 V súčasnosti má čitateľ k dispozícií veľa rôznych internetových zdrojov o problematike VPN. Uvedené sú rôzne možnosti klasifikácie VPN siete. V rámci tejto práce klasifikujeme VPN siete podľa logickej topológie, použitých protokolov a vrstiev, na ktorých sú postupy aplikované. Obsahom tejto podkapitoly je rozdelenie a opis jednotlivých typov VPN sieti. V závere kapitoly čitateľ nájde sumárne rozdelenie VPN sieti v tejto práci, znázornené pomocou schémy.  
 \subsection{Rozdelenie VPN sieti podľa logickej topológie}
@@ -242,10 +217,8 @@ Typický sa s L2 a L3 VPN sieťami môže používateľ stretnúť na špecializ
 V predchádzajúcej podkapitole sme klasifikovali VPN siete na základe zapojenia kryptografického bloku do OSI referenčného modelu. V tejto podkapitole pomocou uvedeného rozdelenia, zaradíme a charakterizujeme zopár protokolov, ktoré sa typicky používajú vo VPN sieťach. Pred začiatkom by som rád čitateľa upozornil, že aktuálne neexistuje svetový štandard na vytváranie VPN spojení. Dôsledkom toho existuje veľké množstvo rôznych protokolov. Vrámci tejto podkapaitoly si predstavíme niektoré z nich. 
 
 \subsection{\acrfull{pptp}}
-
-?nerozumiem?PPTP enables on-demand, virtual private networks over the Internet or other public TCP/IP-based data networks ??\\
-
-\acrshort{tcpip} sieťový protokol \acrshort{pptp} poskytuje zabezpečuje bezpečný prenos dát z klienta do privátneho servera vo VPN sieti. Jedná sa o starší Microsoft L2 protokol, ktorý bol definovaný v roku 1996. Je rozšírením L2 \acrshort{p2p} protokolu. \acrshort{pptp} zapuzdruje \acrshort{p2p} pakety do  IP datagramov. Následne ich prenáša cez sieť. Typicky pozostáva spojenie z 3 zariadení, ktoré sú znázornené na schéme \ref{ptptun} a \ref{pptpcon}. 
+PPTP umožnuje vytvoriť zabezpečené VPN spojenie k inej internetovej sieti.
+\acrshort{tcpip} sieťový protokol \acrshort{pptp} zabezpečuje bezpečný prenos dát z klienta do privátneho servera vo VPN sieti. Jedná sa o starší Microsoft L2 protokol, ktorý bol definovaný v roku 1996. Je rozšírením L2 \acrshort{p2p} protokolu. \acrshort{pptp} zapuzdruje \acrshort{p2p} pakety do  IP datagramov. Následne ich prenáša cez sieť. Typicky pozostáva spojenie z 3 zariadení, ktoré sú znázornené na schéme \ref{ptptun} a \ref{pptpcon}. 
 
 % TODO: \usepackage{graphicx} required
 \begin{figure}[h]
@@ -409,7 +382,22 @@ Bezpečnosť SSTP je sprostredkovaná za pomoci HTTPS protokolu, ktorý použív
 
 Viac informácií o protokole môže čitateľ nájsť v \cite{mssstp}, odkiaľ boli aj informácie pre túto podkapitolu čerpané.  
 
+\subsection{Transport Layer Security -- TLS}
+TCP ani UDP protokol sam o sebe nezabezpečí dáta, ku ktorým sa pridáva hlavička. Dôsledkom toho vznikli viaceré protokoly slúžiace na autentizované šifrovanie aplikačných dát. Najznámejší je protokol zabezpečenia prenosu -- \acrshort{tls}. 
 
+Zabezpečenie dát bolo prvotne vykonávané pomocou protokolu \textit{Secure Sockets Layer} -- \acrshort{ssl}. Tento spôsob používa certifikáty na odšifrovanie dát. SSL malo od svojho vytvorenia dlhý vývoj, ktorý smeroval až k doteraz najpoužívanejšiemu TLS vo verzii 1.3. Inými slovami, TLS protokol je nástupca SSL pričom obsahuje rôzne úpravy a vylepšenia najmä z hľadiska rýchlosti. Zároveň sa v dnešnej dobe neodporúča používanie SSL protokolu. Dôsledkom optimalizácií je, že klienta komunikujúci so serverom cez HTTPS protokol s TLS 1.3 je rýchlejší ako v prípade použitia nešifrovaného HTTP variantu. 
+
+TLS pracuje na pomedzi aplikačnej a transportnej vrstvy. Spôsob spracovania dát je zobrazený pomocou schémy \ref{ssl} s SSL operáciami, prebratej z \cite{biks}.
+ 
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[width=0.7\linewidth]{figures/ssl}
+	\caption{Prehľad operácií v SSL protokole}
+	\label{ssl}
+\end{figure}
+TLS sa v niektorej literatúre zvykne označovať aj ako VPN protokol. Z hladiska funkcionality VPN však s týmto tvrdením nemôžeme úplne súhlasiť. TLS spracúva dáta konkrétnej aplikácie. Jeho úlohou je zabezpečenie aplikačných dát pri bežnom prenose. Z hľadiska VPN by sme však mohli tunelovať naprieč sieťou len jednú konkrétnu aplikáciu. Ako vidíme jedná sa o veľmi špeciálny prípad. Situácia sa však mení v prípade implementácie TLS protokolu do aplikácie ako je napríklad webový prehliadač. V takomto prípade by sme za pomoci manipulácie dát vychádzajúcich z prehliadača dokázali sprostredkovať činnosť VPN. Ako príklad realizácie by mohli byť rôzne typy rozšírení, ktoré si môžeme do prehliadačov doinštalovať v podobe pluginov. Z tohto dôvodu zaradíme tento protokol vrámci rozdelenia VPN sieti do L4 kategórie aj napriek faktu, že sa nejedná o tunelovací protokol.
+     
+Viac informácií o TLS protokole, jednotlivých verziách a optimalizáciách je možné nájsť na \cite{tls}. 
 \subsection{Ostatné populárne VPN protokoly}
 Vrámci tejto práce si predstavíme ešte dvojicu veľmi populárnych VPN riešení. Koncepčne sú riešenia pri vytváraní tunelu a prenose správ podobné vyššie opísaným protokolom. Z uvedeného dôvodu protokoly len stručne charakterizujeme.
 \subsubsection{OpenVPN}
@@ -432,7 +420,7 @@ Protokoly použité vo WireGuarde sú:
 \begin{itemize}
 	\item{\textbf{X25519}} \cite{x25519} -- zabezpečuje výmenu kľúčov vďaka kryptografii s eliptickým krivkami \cite{ecc} (ďalej \acrshort{ecc}), ponúka 128-bitovú bezpečnosť s veľkosťou kľúča 256-bitov. Považuje sa za jednu z najrýchlejších kriviek v \acrshort{ecc}.
 	\item{\textbf{ChaCha20}} \cite{chacha} -- zabezpečuje symetrické šífrovanie.
-	\item{\textbf{Poly1305}} \cite{poly} -- vytvára autentifikačný kód správy\footnote{z ang. \textins{Message Authentication codes}}. Veľmi častá je kombinácia ChaCha20-Poly1305 za účelom autentizovaného šifrovania s pridruženými dátami\footnote{z ang. \textit{Authenticated encryption with associated data}}.
+	\item{\textbf{Poly1305}} \cite{poly} -- vytvára autentifikačný kód správy\footnote{z ang. \textit{Message Authentication codes}}. Veľmi častá je kombinácia ChaCha20-Poly1305 za účelom autentizovaného šifrovania s pridruženými dátami\footnote{z ang. \textit{Authenticated encryption with associated data}}.
 	\item{\textbf{SipHash}} \cite{siphash} -- algoritmus sa používa na vytvorenie a mapovanie kľúčov k hodnotám v hashovacej tabuľke. Hashovacie tabuľky sú známy pojem v oblasti dátových štruktúr. Ich hlavnou výhodou je vysoká rýchlosť v porovnaní s ostatnými možnosťami.  
 	\item{\textbf{BLAKE2s}} \cite{blake} -- hashovacia funkcia, rýchlejšia než aktuálne štandardy z rodiny SHA. 
 	\item{\textbf{UDP}} --  protokol na prepravu zapuzdrených dát.
@@ -453,9 +441,7 @@ https://www.auvik.com/franklyit/blog/vpn-types/
 https://www.geeksforgeeks.org/types-of-virtual-private-network-vpn-and-its-protocols/?ref=rp
 https://www.geeksforgeeks.org/difference-between-site-to-site-vpn-and-remote-access-vpn/?ref=rp
 \\
-V~súčasnosti je trend, využívanie VPN na súkromné účely. Dôvodov môže byť viacero. Napríklad prístup k lokálne blokovaným doménam, anonymita v internetovom prostredí, zabezpečenie pripojenia a iné. V tomto prípade vstupujú do popredia tzv. VPN poskytovatelia (z ang. \textit{VPN Providers}). Ktorý za poplatok poskytujú výhody pripojenia cez VPN k verejnej sieti.
--- stoji za zmienku \\
-https://github.com/vpnhood/VpnHood a plus v inych jazykoch 
+V~súčasnosti je trend, využívanie VPN na súkromné účely. Dôvodov môže byť viacero. Napríklad prístup k lokálne blokovaným doménam, anonymita v internetovom prostredí, zabezpečenie pripojenia a iné. V tomto prípade vstupujú do popredia tzv. VPN poskytovatelia (z ang. \textit{VPN Providers}). Ktorý za poplatok poskytujú výhody pripojenia cez VPN k verejnej sieti. Pre čitateľa dávame do popredia bezplatnú implementáciu VPN, VPNHood s voľne prístupným kódom\footnote{dostupné na \url{https://github.com/vpnhood/VpnHood}}.  
 
 \chapter{Ľahká kryptografia}\label{krypto}
 V počítačovej sfére sa do popredia dostávajú zariadenia, ktorých hardvérové prostriedky a ponúkaný výkon sú podstatne nižšie ako v prípade bežne dostupných zariadení na domáce, resp. komerčné použitie. Príkladom môžu byť \acrshort{iot} zariadenia, senzorové uzly, mikro-ovládače a podobné. Dôležitou vlastnosťou je aj komunikácia medzi sebou alebo inými zariadeniami. V dôsledku toho je nutné riešiť aj otázku zabezpečenia, resp. bezpečnosti takého prenosu dát. 
@@ -476,7 +462,7 @@ V prípade zariadení spomenutých v úvode kapitoly, však môže nastať probl
 \begin{itemize}
 	\item{\textbf{minimalizácia spotreby zdrojov zariadenia}} -- veľkosť kódu, používaných dát a spotreby energie,
 	\item{\textbf{poskytnutie vysokého stupňa bezpečnosti}},
-	\item{\textbf{odolnosť voči útoku cez postranné kanály -- z ang. \textit{side-channel attack}}}, napríklad útokom na analýzu výkonu a na časovanie, 
+	\item{\textbf{odolnosť voči útoku cez postranné kanály} -- z ang. \textit{side-channel attack}}, napríklad útokom na analýzu výkonu a na časovanie, 
 	\item{\textbf{jednoduchá implementácia a efektívnosť,}}
 	\item{\textbf{nízka pamäťová stopa}} -- z ang. \textit{low memory footprint}.
 \end{itemize}
@@ -567,12 +553,55 @@ Tabuľka \ref{tab1} vysvetľuje jednotlivé operácie, ktoré sa v algoritme pou
   	\label{xoodooalgo}
 \end{figure}
 
-\begin{figure}[h!]
+
+\begin{table}[!h]
 	\centering
-	\includegraphics[width=1.0\textwidth]{figures/tab2}
-	\caption{Súbor rundových konštánt kryptografického algoritmu XOODOO \cite{xcb}}
-	\label{tab2}
-\end{figure}
+	\resizebox{0.25\textwidth}{!}{%
+		\begin{tabular}{c|c} 
+			\multirow{1}{*}{\bfseries$i$}&
+			\multicolumn{1}{c}{ \bfseries$c_i$}   
+			\\\hline\hline
+			 0 
+			&  0x00000012
+			\\
+			 -1
+			&  0x000001A0
+			\\
+			 -2 
+			&  0x000000F0
+			\\
+			 -3 
+			&  0x00000380
+			\\
+			 -4 
+			&  0x0000002C
+			\\
+			 -5 
+			&  0x00000060 
+			\\
+			 -6 
+			& 0x00000014
+			\\
+			 -7 
+			& 0x00000120
+			\\
+			 -8 
+			&  0x000000D0
+			\\
+			 -9 
+			&  0x000003C0
+			\\
+			 -10
+			&  0x00000038
+			\\
+			 -11 
+			&  0x00000058
+			\\	
+		\end{tabular}
+	}
+	\caption{Súbor rundových konštánt kryptografického algoritmu \\ XOODOO \cite{xcb}}\label{tab2}
+\end{table}
+
 
 \subsection{Kryptograficý balíček Xoodyak} 
 Xoodyak možno považovať za všestranný kryptografický nástroj. Je vhodný pre väčšinu operácií využívajúcich symetrický kľúč. Napríklad generovanie pseudonáhodných bitov, autentizáciu, šifrovanie a iné. Tím Keccak použil pri návrhu duplexnú konštrukciu. Konkrétne variant s plným stavom a využitím kľúča. Tento dizajn označujeme ako \acrfull{fskd}. Viac o tejto konštrukcii si čitateľ môže prečítať v \cite{duplex}.
