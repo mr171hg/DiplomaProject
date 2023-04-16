@@ -204,13 +204,7 @@ Viac o jednotlivých režimov je taktiež možné nájsť v \cite{vbguide}. Auto
 \chapter{Implementacia jednoduchej VPN siete}
 Za účelom demonštrácie jednoduchej VPN siete sme zvolili voľne dostupnú implementáciu v jazyku C. V tejto kapitole postupne rozoberieme funkcionalitu a správanie vzniknutej VPN siete.
 \section{Dead Simple VPN}\label{dsvpn}
-Dead Simple VPN je voľne dostupný\footnote{\href{https://github.com/jedisct1/dsvpn}{https://github.com/jedisct1/dsvpn}} program, napísaný v jazyku C. Určený je pre operačný systém Linux. Autorom je Frank Denis. DSVPN rieši najbežnejší prípad použitia VPN, teda pripojenie klienta k VPN serveru cez nezabezpečenú sieť. Následne sa klient dostane na internet prostredníctvom servera. Uvedenú skutočnosť je možne vidieť na schéme \ref{vpnsimple}.
-\begin{figure}
-	\centering
-	\includegraphics[width=0.9\textwidth]{figures/vpnsimple}
-	\caption{Schéma jednoduchej VPN}
-	\label{vpnsimple}
-\end{figure}
+Dead Simple VPN je voľne dostupný\footnote{\href{https://github.com/jedisct1/dsvpn}{https://github.com/jedisct1/dsvpn}} program, napísaný v jazyku C. Určený je pre operačný systém Linux. Autorom je Frank Denis. DSVPN rieši najbežnejší prípad použitia VPN, teda pripojenie klienta k VPN serveru cez nezabezpečenú sieť. Následne sa klient dostane na internet prostredníctvom servera. Tak ako bolo uvedené napríklad v obrázku \ref{vpnfancy}.
 
 DSVPN používa protokol riadenia prenosu -- \acrshort{tcp} \cite{tcp}. Medzi ďalšie pozitíva patrí:
 \begin{itemize}
@@ -249,7 +243,16 @@ DSVPN používa v svojej implementácií malú sebestačnú kryptografickú kni�
 
 Kryptografický algoritmus použitý v DSVPN je Xoodoo permutácia v duplex móde, pričom môže byť jednoducho nahradená napríklad Gimli-im\footnote{\url{https://github.com/jedisct1/gimli}} \cite{gimli} alebo Simpira384\footnote{\url{https://github.com/jedisct1/simpira384}} \cite{simpira}. Pri zmene musí používateľ zasiahnuť do zdrojového kódu v súbore \textbf{charm.c}, ktorého obsahom sú kryptografické primitíva.     
 \section{Experimentálne overenie VPN}
-DSVPN sme prakticky overili pomocou dvojice virtuálnych strojov OSS a OSC, ktorých opis je obsahom \ref{merania}. Na zariadení OSS sme pomocou balička make a GCC prekladača vykonali inštaláciu DSVPN. Obdobný postup je aplikovaný aj vo VM OSC. Na OSS spúšťame VPN Server, ktorý nám poskytne IP adresu, prostredníctvom ktorej budeme komunikovať s vonkajším svetom. Na spustenie a vytvorenie spojenie vykonáme nasledujúce úkony:
+DSVPN sme prakticky overili pomocou dvojice virtuálnych strojov OSS a OSC, ktorých opis je obsahom \ref{merania}. Na zariadení OSS sme pomocou balička make a GCC prekladača vykonali inštaláciu DSVPN. Obdobný postup je aplikovaný aj vo VM OSC. Na OSS spúšťame VPN Server, ktorý nám poskytne IP adresu, prostredníctvom ktorej budeme komunikovať s vonkajším svetom. V schéme \ref{vpnsimple} je znázornená architektúra sieťa, v ktorej bude vykonaný experiment.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.7\textwidth]{figures/vpnsimple}
+	\caption{Schéma architektúry jednoduchej VPN siete počas experimentu}
+	\label{vpnsimple}
+\end{figure}
+
+Na spustenie a vytvorenie spojenie vykonáme nasledujúce úkony:
 \begin{enumerate}
 	\item Vygenerovanie zdieľaného kľúča:\begin{lstlisting}[language=bash]
 		dd if=/dev/urandom of=vpn.key count=1 bs=32
