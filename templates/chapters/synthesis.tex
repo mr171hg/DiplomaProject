@@ -275,7 +275,7 @@ Na overenie správnosti funkcionality nám postačí jednoduchý sieťový prík
 
 V našom prípade bolo nutné použiť lokálne adresy vzhľadom na to, že oba VM bežia na jednom hosťovskom počítači. Obidve zariadenia sú tým pádom pripojené k jednému internetovému poskytovateľovi, čo má za následok takmer rovnaké smerovanie k vzdialenej doméne. 
 
-Proces zistenia IP adresy VPN servera, po spustení, a overenie funkčnosti je následne znázornený pomocou obrázkov \ref{ipu21},\ref{ipu20}, \ref{vpntru20}.
+Proces zistenia IP adresy VPN servera, po spustení, a overenie funkčnosti je následne znázornený pomocou obrázkov \ref{ipu21}, \ref{ipu20}, \ref{vpntru20}.
 
 \begin{figure}[!h]
 	\centering
@@ -304,13 +304,13 @@ Nakoniec, v \ref{vpntru20} môžeme vidieť ako klient pri internetovej komunik�
 \section{Koncepčný opis a praktické overenie programu DSVPN}
 DSVPN vytvára VPN sieť medzi VPN klientom a VPN serverom. Na obidvoch zariadeniach je potrebné spustiť program pomocou korešpondujúcich príkazov. 
 
-Princíp vysvetlíme na praktickom príklade. Klienta umiestnime na lokálnu sieť bez prístupu na internet. Následne vymažeme všetky smerovacie pravidlá v~zariadeni. Klient po tomto kroku nedokáže komunikovať so žiadným zariadením, keďže nemá žiadne prednastavené pravidlá, kam by smeroval internetovú komunikáciu. V uvedenej lokálnej sieti bude prítomný taktiež VPN server, ktorý ako jediný dokáže komunikovať s okolitým svetom. Po spustení DSVPN na obidvoch zariadeniach, dochádza k spojeniu. Jedná sa o TCP spojenie vytvorené soketmi. Úlohou soketového TCP spojenia je preposielanie už zašifrovaných dát v novom L3 pakete. Dáta sú šifrované pomocou kryptografickej permutácie XOODOO, ktorú sme opísali v druhej kapitole tejto práce. Následne DSVPN overuje stav soketov a tunelovacieho rozhrania. Ak je tun rozhranie pripravené na čítanie (obsahuje pakety), tak dochádza k ich spracovaniu (šifrovaniu) a preposlaní cez soket. Po prijatí sa dáta dešifrujú a smerujú na základe dát z L3 IP hlavičky. 
+Princíp vysvetlíme na praktickom príklade. Klienta umiestnime na lokálnu sieť bez prístupu na internet. Následne vymažeme všetky smerovacie pravidlá v~zariadeni. Klient po tomto kroku nedokáže komunikovať so žiadným zariadením, keďže nemá žiadne prednastavené pravidlá, kam by smeroval internetovú komunikáciu. V uvedenej lokálnej sieti bude prítomný taktiež VPN server, ktorý ako jediný dokáže komunikovať s okolitým svetom. Po spustení DSVPN na obidvoch zariadeniach, dochádza k spojeniu. Jedná sa o TCP spojenie vytvorené soketmi, ktoré je na začiatku nešifrované. Jeho úlohou je až následné preposielanie už zašifrovaných dát v novom L3 pakete. Dáta sú šifrované pomocou kryptografickej permutácie XOODOO, ktorú sme opísali v druhej kapitole tejto práce. Následne DSVPN overuje stav soketov a tunelovacieho rozhrania. Ak je tun rozhranie pripravené na čítanie (obsahuje pakety), tak dochádza k ich spracovaniu (šifrovaniu) a preposlaní cez soket. Po prijatí sa dáta dešifrujú a smerujú na základe dát z L3 IP hlavičky. 
 
 Toto je celý princíp zabezpečenej komunikácie medzi klientom a serverom vo VPN sieti na vrstve L3. Aby sme docielili plnohodnotnú funkcionalitu VPN, tak potrebujeme do tohto riešenia zakomponovať smerovanie. Tým, že dáta smerujeme von z tejto siete, tak je ešte potrebné upraviť niektoré systémové smerovacie pravidla.      
 
-Okrem načrtnutého príkladu s prístupom na internet, dokáže klient takto získať konektivitu k jemu nedostupným segmentom siete. Samozrejme za predpokladu, že sú dostupné pre server. Ako príklad môže byť diskové úložisko. Prípadne prístup na internetové domény. V angličtine sa takýto termín označuje ako \textit{remote access}, teda vzdialený prístup. Je to tiež veľmi obľúbený a používaný typ VPN siete. 
+Okrem načrtnutého príkladu s prístupom na internet, dokáže klient takto získať konektivitu k jemu nedostupným segmentom siete. Samozrejme za predpokladu, že sú dostupné pre server. Ako príklad zdroja môže byť diskové úložisko. Prípadne prístup na internetové domény. V angličtine sa takýto termín označuje ako \textit{remote access}, teda vzdialený prístup. Je to tiež veľmi obľúbený a používaný typ VPN siete. 
 
-Funkcionalita DSVPN je znázornená pomocou schémy \ref{dsvpnarch}. V nej môžeme na ľavej strane vidieť čo sa deje s paketom pri požiadavke smerom od VPN klienta k VPN serveru. OS na základe požiadavky formoju L3 pakety. Po presmerovaní paketu na tunel DSVPN zašifruje tieto dáta. Následne ich zapíše na soket, ktorý tvorí so serverom TCP spojenie. Server tieto dáta spracuje a vykoná potrebné náležitosti. Po získaní odpovede zasa server odpovedá klientovi rovnakým mechanizmom. Čitateľovi by som rád doplnil, že v schéme sme pre DSVPN vytvorili 2 bloky. \textbf{DSVPN IN} a \textbf{DSVPN OUT}. Funkcionalita je znázornená iba v spodnej časti schémy. Jedná sa však o identické bloky.
+Funkcionalita DSVPN je znázornená pomocou schémy na obrázku \ref{dsvpnarch}. V nej môžeme na~ľavej strane vidieť čo sa deje s paketom pri požiadavke smerom od VPN klienta k VPN serveru. OS na základe požiadavky formuje L3 pakety. Po presmerovaní paketu na tunel DSVPN zašifruje tieto dáta. Následne ich zapíše do soketu, ktorý tvorí so serverom TCP spojenie. Server tieto dáta spracuje a vykoná potrebné náležitosti. Po získaní odpovede zasa server odpovedá klientovi rovnakým mechanizmom. v obrázku sme pre DSVPN vytvorili 2 bloky. \textbf{DSVPN IN} a \textbf{DSVPN OUT}. Funkcionalita je znázornená iba v spodnej časti schémy. Jedná sa však o identické bloky. V obrázku je možné si ešte všimnúť zaradenie blokov podľa ich činnosti na šifrovaciu a dešifrovaciu časť. 
 % TODO: \usepackage{graphicx} required
 \begin{figure}[h!]
 	\centering
@@ -322,7 +322,7 @@ Funkcionalita DSVPN je znázornená pomocou schémy \ref{dsvpnarch}. V nej môž
 
  
 \section{Analýza zdrojového kódu DSVPN}
-Pri analýze sa zameriame výhradne na dôležité časti kódu DSVPN pre programovací jazyk C. Repozitár pozostáva z jedného make-file balíčka\cite{make}. 3 hlavičkových (.h) a k ním korešpondujúcimi zdrojovými kódmi (.c), s pomenovaním:
+Pri analýze sa zameriame výhradne na dôležité časti kódu DSVPN pre programovací jazyk C. Repozitár pozostáva z jedného make-file súbora \cite{make}. Troch hlavičkových (.h) a k ním korešpondujúcimi zdrojovými kódmi (.c), s pomenovaním:
  \begin{enumerate}
  	\item \textbf{charm.h} -- kryptografická knižnica so 6 funkciami,
  	\item \textbf{os.h} -- funkcie čítania a zápisu paketov, vytvorenia, používania a zrušenia tunelovacieho rozhrania,
@@ -332,12 +332,12 @@ Pri analýze sa zameriame výhradne na dôležité časti kódu DSVPN pre progra
 V spomenutých hlavičkových súboroch sa nachádzajú deklarácie funkcií, ktoré VPN používa. Definície sú obsahom .c súborov, ako je v jazyku C zaužívaným zvykom. Obsahom tejto podkapitoly je analýza týchto kódov. 
  
 \subsection{Súbor charm.h a charm.c}
-Obsahom sú prevažne funkcie slúžiace pri behu kryptografického algoritmu XOODOO. Charm.h pozostáva z 6 funkcií. Ich implementácia nie je až tak rozsiahla. Zaberá celkovo 337 riadkov. Princípy použité v algoritme bolí opísané v~kapitole 2.  
+Obsahom sú prevažne funkcie, používané pri vykonávaní kryptografického algoritmu XOODOO. Charm.h pozostáva zo 6 funkcií. Ich implementácia nie je až tak rozsiahla. Zaberá celkovo 337 riadkov. Princípy použité v algoritme boli opísané v~kapitole 2.  
  
    \begin{minipage}{\linewidth} 	
   	\begin{lstlisting}[frame=single,
   		numbers=left,
-  		caption={Obsah charm.h}\label{charm.h},
+  		caption={Obsah hlavičkového súboru charm.h}\label{charm.h},
   		basicstyle=\ttfamily\small, keywordstyle=\color{black}\bfseries,]
 void uc_state_init(uint32_t st[12], const unsigned char key[32], 
 				  			 	 const unsigned char iv[16]);
@@ -353,15 +353,15 @@ void uc_memzero(void *buf, size_t len);
 void uc_randombytes_buf(void *buf, size_t len);
   		 	\end{lstlisting}
   	\end{minipage}\\
-Z názvov funkcií je pomerne jasné čo sa v jednotlivých volaniach deje.   
+     
  \subsection{Súbor os.h a os.c}
-Obsahom su funkcie, ktorých úlohami sú čítanie alebo pridanie \acrshort{gw}, vytvorenie a nastavenie tunelu v danom OS. Následne je aplikovaná úprava firewall pravidiel, tak aby všetka komunikácia bola presmerovaná na VPN server. Úprava firewall pravidiel je závislá od role, pod ktorou je VPN spustená. Teda či sa jedná o server alebo klienta. 
-Celkovo je obsahom 12 funkcií, ktoré riešia uvedené úlohy. Detail je možné vidiet v \ref{os.h}.
+Obsahom su funkcie, ktorých úlohami sú čítanie alebo pridanie \acrshort{gw}, vytvorenie a nastavenie tunelu v danom OS. Následne je aplikovaná úprava firewall pravidiel, tak aby všetka komunikácia bola presmerovaná na VPN server. Úprava firewall pravidiel je závislá od úlohy programu, pod ktorou je DSVPN spustená, teda či sa jedná o server alebo klienta. 
+Celkovo je obsahom 12 funkcií, ktoré riešia uvedené úlohy. Detaily je možné vidiet v \ref{os.h}.
  
  \begin{minipage}{\linewidth} 	
 	\begin{lstlisting}[frame=single,
 		numbers=left,
-		caption={Obsah ZK os.h}\label{os.h},
+		caption={Obsah hlavičkového súboru os.h}\label{os.h},
 		basicstyle=\ttfamily\small, keywordstyle=\color{black}\bfseries,]
  ssize_t safe_read(const int fd, void *const buf_, size_t count, 
  						       const int timeout);
@@ -390,14 +390,14 @@ Celkovo je obsahom 12 funkcií, ktoré riešia uvedené úlohy. Detail je možn�
  ssize_t tun_write(int fd, const void *data, size_t size); 
 \end{lstlisting}
 \end{minipage}\\ 
-Samozrejmosťou je implementácie čítania a zápisu dát z TUN tunelu, soketu a príkazového riadku. 
+Zdrojový kód implementuje čítania a zápisu dát z TUN tunelu, soketu a príkazového riadku. 
  \subsection{Súbor vpn.h a vpn.c}
- Hlavičkový súbor obsahuje prevažne definovanie niektorých parametrov potrebných na správnu funkcionalitu VPN, spoločne s korekciou pre niektoré OS. Viď. \ref{vpn.h}. Ostatné parametre, ktoré bolí opísané pre spustenie, su definované práve v tomto súbore (porty, IP adresy, MTU (z ang. \textit{Maximum Transmission Unit}) atď.).
+ Hlavičkový súbor obsahuje prevažne definovanie niektorých parametrov potrebných na správnu funkcionalitu VPN, spoločne s korekciou pre niektoré OS. Viac detailov je možné vidieť v zdrojovom kóde \ref{vpn.h}. Ostatné parametre, ktoré bolí opísané pre spustenie, su definované práve v tomto súbore (porty, IP adresy, MTU (z ang. \textit{Maximum Transmission Unit}) atď.).
  
  \begin{minipage}{\linewidth} 	
  	\begin{lstlisting}[frame=single,
  		numbers=left,
- 		caption={Obsah ZK vpn.h}\label{vpn.h},
+ 		caption={Obsah hlavičkového súboru vpn.h}\label{vpn.h},
  		basicstyle=\ttfamily\small, keywordstyle=\color{black}\bfseries,]
  /*UNIX-like OS Dependent Libraries*/
  #include <sys/ioctl.h>
@@ -432,12 +432,12 @@ Samozrejmosťou je implementácie čítania a zápisu dát z TUN tunelu, soketu 
 \subsubsection{Main() -- Beh programu}
 Pred samotným opisom by som rád upozornil na jeden fakt. Autor DSVPN používa vo veľkej miere zápis pomocou tzv. ternárnych operátorov. Viac informácií o tejto problematike je možné nájsť v \cite{ternary}. V skratke, používa sa podmienený zápis hodnoty do premennej.
 
-Vpn.c je hlavným zdrojovým kódom DSVPN. V jeho vnútri nájdeme hlavnú, štartovaciu, funkciu main. Zároveň má prilinkované aj vyššie uvedené knižnice. Ako prvé dochádza k inicializácií premennej štruktúry \lstinline|Context|\ref{context}. Štruktúra \\v~sebe nesie všetky premenné, potrebné na správne fungovanie programu.
+Vpn.c je hlavným zdrojovým kódom DSVPN. V jeho vnútri nájdeme hlavnú funkciu \lstinline|main()|. Zároveň obsahuje hlavičkové súbory uvedených knižníc. Ako prvé dochádza k inicializácií premennej štruktúry \lstinline|Context| \ref{context}. Štruktúra v~sebe nesie všetky premenné, potrebné na správne fungovanie programu.
 
 \begin{minipage}{\linewidth} 	
 	\begin{lstlisting}[frame=single,
 		numbers=left,
-		caption={Štruktúra Context}\label{context},
+		caption={Štruktúra Context obsahujúca dôležité premenné programu DSVPN}\label{context},
 		basicstyle=\ttfamily\small, keywordstyle=\color{black}\bfseries,]
 typedef struct Context_ {
 	const char *  wanted_if_name;
@@ -467,10 +467,10 @@ typedef struct Context_ {
  	\end{lstlisting}
 \end{minipage}\\ 
 
- Následne dochádza k načítaniu vopred zdieľaného kľúča pomocou pomocnej funkcie 
-\\
- \lstinline|load_key_file()|\ref{load}. Úlohou je prečítanie kľúča, pričom sa používa funkcia z os.c -- \lstinline|safe_read()|. Realizuje sa znakové spočítanie, v ktorom je zakomponovaná funkcia  \lstinline|poll()| \cite{poll}. Dôvodom je, že \lstinline|safe_read()| sa používa aj pri čítaní zo soketu a~tunelu. V linuxe je čítanie z týchto typov rovnaké. Tato časť kódu je však podmienená špecifickou chybou, ktorú je možné dostať len pri čítaní soketu, respektíve tunelu.  
- V prípade, ak sa prečítalo 32 bajtov, \lstinline|safe_read()| vracia 0. Následne sa inicializuje stav v XOODOO.
+Následne dochádza k načítaniu vopred zdieľaného kľúča pomocou pomocnej funkcie 
+\lstinline|load_key_file()| \ref{load}. Úlohou je prečítanie kľúča, pričom sa používa funkcia z os.c -- \lstinline|safe_read()|. Realizuje sa spočítanie prečítaných znakov. \lstinline|Safe_read()| má v sebe zakomponovanú aj funkciu \lstinline|poll()| \cite{poll}. Dôvodom je, že \lstinline|safe_read()| sa používa aj pri čítaní zo soketu a~tunelu. V linuxe je čítanie z týchto typov rovnaké. Tato časť kódu je však podmienená. Vyhodnocuje sa špecifická chyba, ktorú je možné dostať len pri čítaní soketu, respektíve tunelu.  
+
+V prípade, ak sa prečítalo 32 bajtov, \lstinline|safe_read()| vracia 0. Následne sa inicializuje stav v XOODOO permutácií.
  
  \begin{minipage}{\linewidth} 	
  	\begin{lstlisting}[frame=single,
@@ -499,29 +499,65 @@ typedef struct Context_ {
 \end{minipage}\\ 
 Ako môžeme vidieť v implementácii sú bežne použité smerníky. Vo výsledku, tak dokážeme preniesť zmenu hodnôt na viaceré premenné.
  
-V prípade, ak používateľ pri štarte nezmenil parameter pre IP adresu sieťovej brány (z ang. \textit{GateWay}) (ďalej \acrshort{gw}), tak sa používa pôvodná. Tá sa získa pomocou funkcie \\\lstinline|get_default_gw_ip()|, ktorá je deklarovaná v \ref{os.h}. Prostredníctvom shell príkazu \lstinline|ip route| a \lstinline|read_from_shell_command()| funkcie, dochádza k extrakcii informácií priamo z príkazového riadka. Tento krok je teda závislý od \acrshort{os}, v ktorom používateľ pracuje. Nasleduje overenie návratových hodnôt z funkcií iba v prípade ak je DSVPN spustené ako klient.
+V prípade, ak používateľ pri štarte nezmenil parameter pre IP adresu sieťovej brány (z ang. \textit{GateWay}) (ďalej \acrshort{gw}), tak sa používa preddefinovaná. Tá sa získa pomocou funkcie \\\lstinline|get_default_gw_ip()|, ktorá je deklarovaná v \ref{os.h}. Prostredníctvom shell príkazu \lstinline|ip route| a funkcie \lstinline|read_from_shell_command()|, dochádza k extrakcii informácií priamo z príkazového riadka. Tento krok je teda závislý od \acrshort{os}, v ktorom používateľ pracuje. Nasleduje overenie návratových hodnôt z funkcií iba v prípade ak je DSVPN spustené ako klient.
  
-Program v prípade servera pokračuje s \lstinline|get_default_ext_if_name()|. \\Obdobne ako v predchádzajúcom odstavci je realizácia funkcionality, vykonaná pomocou terminálu. Podstata spočíva v zistení mena tunelovacieho rozhrania.
+Program v prípade servera pokračuje s \lstinline|get_default_ext_if_name()|. \\Obdobne ako v predchádzajúcom odstavci je realizácia funkcionality vykonaná pomocou terminálu. Podstata spočíva v zistení mena tunelovacieho rozhrania.
  
-Po nastavení parametrov sa dostávame k vytvoreniu tunelovacieho rozhrania. V tomto kroku autor používa funckiu \lstinline|tun_create|. Úloha je vysoko závislá od OS. Dôsledkom toho je možné vidieť vetvenie funkcionality vzhľadom k bežiacemu OS. DSVPN poskytuje kompatibilitu pre 6 OS, medzi, ktoré patrí Linux, FreeBSD, NetBSD, OpenBSD, MacOS, DragonFly. Následne na základe systému dochádza k vytváraniu tunelu s prednastaveným, resp. zvoleným menom. Program ďalej nastaví maximálnu veľkosť prepravovaného paketu (z ang. \textit{Maximum Transmission Unit}, (ďalej \acrshort{mtu}) na 1500/9000 bajtov. 
+Po nastavení parametrov sa dostávame k vytvoreniu tunelovacieho rozhrania. V tomto kroku autor používa funckiu \lstinline|tun_create|. Úloha je vysoko závislá od OS. Dôsledkom toho je možné vidieť vetvenie funkcionality vzhľadom k bežiacemu OS. DSVPN poskytuje kompatibilitu pre 6 OS, medzi, ktoré patrí Linux, FreeBSD \cite{fbsd}, NetBSD \cite{netbsd}, OpenBSD \cite{obsd}, MacOS \cite{mac}, Dragon Fly BSD \cite{dfbsd}. Následne na základe systému dochádza k vytváraniu tunelu s prednastaveným, resp. zvoleným menom. Program ďalej nastaví maximálnu veľkosť preneseného paketu (z ang. \textit{Maximum Transmission Unit}, (ďalej \acrshort{mtu}) na 1500 alebo 9000 bajtov. Tento parameter závisí od používaného OS.  
  
-Po príprave tunelu dochádza k overeniu dostupnosti VPN servera. Tento krok vykonáva funkcia \lstinline|resolve_ip|. Tá ma v sebe vnorené 2 funkcie, ktoré su menným ekvivalentom aj vo Windows knižniciach. Jedná sa o funkcie \lstinline|getaddrinfo| \\a~\lstinline|getnameinfo|.  
+Po príprave tunelu dochádza k overeniu dostupnosti VPN servera. Tento krok vykonáva funkcia \lstinline|resolve_ip|. Tá ma v sebe vnorené 2 funkcie, ktoré su menným ekvivalentom aj vo Windows knižniciach. Jedná sa o funkcie \lstinline|getaddrinfo| \\a~\lstinline|getnameinfo|. Funkcie sa používajú na overenie dostupnosti služby, na ktorú sa soket má napojiť. 
  
-Posledným krokom súvisiacim s konfiguráciou prostredia je vytvorenie pravidla pre branu FireWall (ďalej \acrshort{fw}). Tento úkon realizuje \lstinline|firewall_rules()|. Tento proces je opäť systémovo závislý. Jeho realizácia je vykonaná pomocou globálne definovanej funkcie \lstinline|Cmds firewall_rules_cmds()|. Tá obsahuje súbor prednastavených príkazov. Ich úlohou je presmerovanie celej premávky cez vzniknutý tunel.
+Posledným krokom súvisiacim s konfiguráciou prostredia je vytvorenie pravidla pre branu FireWall (ďalej \acrshort{fw}). Tento úkon realizuje \lstinline|firewall_rules()|. Tento proces je opäť systémovo závislý. Jeho realizácia je vykonaná pomocou funkcie \lstinline|Cmds|, ktorá je globálne definovaná štruktúra. \lstinline|Cmds firewall_rules_cmds()| obsahuje súbor prednastavených shell príkazov, ktoré sú postupne vkladané do príkazového riadka. Ich úlohou je presmerovanie prenosu cez vzniknutý tunel. Ukážka príkazov je znázornená v zdrojovom kóde \ref{prikazy}. 
+
+ \begin{minipage}{\linewidth} 	
+	\begin{lstlisting}[frame=single,
+		numbers=left,
+		caption={Ukážka zdrojového kódu funkcie \lstinline|Cmds firewall_rules_cmds()|}\label{prikazy},
+		basicstyle=\ttfamily\small, keywordstyle=\color{black}\bfseries,]
+Cmds firewall_rules_cmds(int is_server)
+{
+	if (is_server) {
+		#ifdef __linux__
+		static const char
+		*set_cmds[] =
+		{ "sysctl net.ipv4.ip_forward=1", //ipv4 forwarding zapina
+	   	  "ip addr add $LOCAL_TUN_IP peer 
+	   	  $REMOTE_TUN_IP dev $IF_NAME", 
+	   	  //priradenie ip tunelovaciemu rozhraniu
+		  "ip -6 addr add $LOCAL_TUN_IP6 peer 
+		  $REMOTE_TUN_IP6/96 dev $IF_NAME",
+		  "ip link set dev $IF_NAME up", 
+		  //zapnutie tunelovacieho rozhrania
+		  "iptables -t raw -I PREROUTING ! -i 
+		  $IF_NAME -d $LOCAL_TUN_IP -m addrtype ! 
+		  --src-type LOCAL -j DROP", //priklad smerovacieho pravidla
+		  NULL 
+	    },
+		*unset_cmds[] = { //priklad odnastavenia pravidla vyssie
+		  "iptables -t raw -D PREROUTING ! -i 
+		  $IF_NAME -d $LOCAL_TUN_IP -m addrtype ! 
+		  --src-type LOCAL -j DROP",
+		   NULL
+		};
+		#endif
+	}
+}
+	\end{lstlisting}
+\end{minipage}\\ 
  
 Posledným úkonom je samotný beh VPN. Ten spúšťa funkcia \lstinline|doit()|. Doterajší beh programu je jednoducho znázornený pomocou flow diagramu \ref{fc1}.
  
 \begin{figure}[!h]
 	\centering
 	\includegraphics[width=0.6\textwidth]{figures/fc1}
-	\caption{Schéma behu DSVPN vo funkcii main()}
+	\caption{Štruktúra funkcie\lstinline|main()| v programe DSVPN}
 	\label{fc1}
 \end{figure}
 
-Od tohto momentu sa presúvame k postupnému vnáraniu do procesu spojenia a spracovania dát. Hlavnou úlohou funkcie \lstinline|doit()| je nadviazanie soketového TCP spojenia medzi klientom a serverom. Vo vnútri \lstinline|doit()| preto dochádza k vetveniu programu. V prípade, že je DSVPN spustená ako server spustí sa funkcia \lstinline|tcp_listener()|. V opačnom prípade \lstinline|client_reconnect()|. Listener vytvára socket a následne pomocou systemovej funkcie \lstinline|bind()| sa napojí na zvolené číslo portu. Potom čaká na spojenie od klienta pomocou funkcie \lstinline|listen()|. Smerník na socket je uložený do smerníka na štruktúru Context.
-Klient používa vetvu s~\lstinline|Client_reconnect()|. V nej sa snaží opakovane nadviazať spojenie so serverom. Za týmto účelom \lstinline|client_connect()|. Pred týmto úkonom samozrejme dochádza k overeniu či už nedošlo k nadviazaniu spojenia. O to sa stará \\\lstinline|client_disconnect()|, ktorý ruší aktívne spojenie.
+Od tohto momentu sa presúvame do procesu spojenia a spracovania dát. Hlavnou úlohou funkcie \lstinline|doit()| je nadviazanie soketového TCP spojenia medzi klientom a serverom. Vo vnútri \lstinline|doit()| preto dochádza k vetveniu programu. V prípade, že je DSVPN spustená ako server spustí sa funkcia \lstinline|tcp_listener()|. V opačnom prípade \lstinline|client_reconnect()|. Listener vytvára socket a následne pomocou systemovej funkcie \lstinline|bind()| sa napojí na zvolené číslo portu. Potom čaká na spojenie od klienta pomocou funkcie \lstinline|listen()|. Smerník na socket je uložený do smerníka na štruktúru Context.
+Klient používa vetvu s~\lstinline|Client_reconnect()|. V nej sa snaží opakovane nadviazať spojenie so serverom. Za týmto účelom \\\lstinline|client_connect()|. Pred týmto úkonom, samozrejme, dochádza k overeniu či už nedošlo k nadviazaniu spojenia. O to sa stará \lstinline|client_disconnect()|, ktorý ruší aktívne spojenie.
 
-\lstinline|Client_connect()| slúži na pripojenie klienta k serveru. Vykonáva aj úpravu pravidiel v \acrshort{fw}. Následne sa pokúša o nadviazania spojenia pomocou funkcie  \lstinline|tcp_client()|. Po tejto sérií úloh sa vraciame opäť do \lstinline|doit()|. V cykle \lstinline|while| sa vykonávaná funkcia \lstinline|event_loop()|, v ktorej dochádza k použitiu kryptografickej knižnice charm. Jej obsahom je inicializácia pomocných premenných. viď. zdrojový kód \ref{el}. Schéma \ref{fc2} znázorňuje doteraz opísané skutočnosti.
+\lstinline|Client_connect()| slúži na pripojenie klienta k serveru. Vykonáva aj úpravu pravidiel v \acrshort{fw}. Následne sa pokúša o nadviazania spojenia pomocou funkcie  \lstinline|tcp_client()|. Po tejto sérií činností sa program vracia do \lstinline|doit()|. V cykle \lstinline|while| sa vykonávaná funkcia \lstinline|event_loop()|, v ktorej dochádza k použitiu kryptografickej knižnice charm. Jej obsahom je inicializácia pomocných premenných. viď. zdrojový kód \ref{el}. Obrázok \ref{fc2} znázorňuje doteraz opísanú činnosť funkcie \lstinline|doit()|.
   
   \begin{minipage}{\linewidth} 	
   	\begin{lstlisting}[frame=single,
@@ -547,16 +583,16 @@ Klient používa vetvu s~\lstinline|Client_reconnect()|. V nej sa snaží opakov
 \end{figure}
 
 \subsubsection{Funckia \lstinline|event_loop()|}
-\lstinline|Event_loop()| je 111 riadkov dlhá funkcia. Jej obsah môžeme rozdeliť na overovací a výkonový. Úlohou niekoľkých \lstinline|if-ov| vo funkcii je preverovanie signálov, spätných hodnôt a podobných premenných, ktoré by signalizovali chybu, používateľov záujem o ukončenie programu alebo signál pre čítanie dát zo soketov, respektíve tunelov. 
+\lstinline|Event_loop()| je 111 riadkov dlhá funkcia. Jej obsah môžeme rozdeliť na overovací a vykonávací. Úlohou niekoľkých \lstinline|if-ov| vo funkcii je preverovanie signálov, spätných hodnôt a premenných, ktoré by signalizovali chybu, používateľov záujem o ukončenie programu alebo signál pre čítanie dát zo soketov, respektíve tunelov. 
  
-Zaujímavé je taktiež predom definované makro \lstinline|BUFFERBLOAT_CONTROL|. Jeho úlohou je zamedzenie problému zvaného \textbf{Bufferbloat}. V skratke, je to nechcený jav, ktorý je zapríčinený nadmerným ukladaním paketov do vyrovnávacej pamäte, tzv. zahltenie. To ma za následok vysokú latenciu a tzv. z ang. \textit{Packet Delay Variation} (ďalej \acrshort{pdv}/Jitter), v paketovo-orientovaných sieťach. Viac o tejto problematike je možne si prečítať na \cite{bufferbloat}.
+Zaujímavé je taktiež definované makro \lstinline|BUFFERBLOAT_CONTROL|. Jeho úlohou je zamedzenie problému zvaného \textbf{Bufferbloat}. V skratke, je to nechcený jav, ktorý je zapríčinený nadmerným ukladaním paketov do vyrovnávacej pamäte, tzv. zahltenie. To ma za následok vysokú latenciu a tzv. z ang. \textit{Packet Delay Variation} (ďalej \acrshort{pdv}/Jitter), v paketovo-orientovaných sieťach. Viac o tejto problematike je možne si prečítať v \cite{bufferbloat}.
  
-Na druhej strane výkonové funkcie, ako hovorí ich názov. niečo vykonávajú. Do tejto kategórie sme zaradili funkcie:
+Na druhej strane vykonávacie funkcie niečo vykonávajú. Do tejto kategórie zaraďujeme funkcie:
  \begin{itemize}
  	\item\lstinline|tcp_accept()| -- slúži na vytvorenie nového soketového TCP spojenia s klientom, 
  	\item\lstinline|tun_read()| -- v prípade linuxového OS, volá \lstinline|safe_read_partial()| na zapísanie dát do nami vytvoreného tunelovacieho rozhrania,
  	\item\lstinline|uc_encrypt()| -- kryptografické šifrovanie paketov z tunelovacieho rozhrania,
- 	\item\lstinline|safe_write_partial()| -- používa štandardizovanú funkciu \lstinline|write()| vo while cykle, zapíše zašifrované dáta do buffera určeného pre odoslanie klientovi, vracia počet zapísaných dát,
+ 	\item\lstinline|safe_write_partial()| -- používa štandardizovanú funkciu \lstinline|write()| vo while cykle, zapíše zašifrované dáta do vyrovnávacej pamäte, určenej pre odoslanie klientovi, vracia počet zapísaných dát,
  	\item\lstinline|safe_write()| -- používa sa v prípade ak došlo k zahlteniu paketmi,
  	\item\lstinline|client_reconnect()| -- slúži na obnovu spojenia v prípade chyby,
  	\item\lstinline|safe_read_partial()| -- obdobne ako pri \lstinline|write()|, používa \lstinline|read()| funkciu,
@@ -584,9 +620,9 @@ Metóda použitá pri zápise zašifrovaných dát vo funkcii \lstinline|event_l
  }
    	\end{lstlisting}
 \end{minipage}\\ 
-V princípe celá logika tejto VPN pozostáva z kontroly obsahu tunelovacieho rozhrania a aktívnych soketov. Následne ak sa na vstupoch nachádzajú dáta dochádza k ich čítaniu, dešifrovaniu a následnému odoslaniu dát aplikácií, ktorej prislúchajú.
+V princípe celá logika tejto VPN pozostáva z kontroly obsahu tunelovacieho rozhrania a aktívnych soketov. Následne, ak sa na vstupoch nachádzajú dáta, tak dochádza k ich čítaniu, dešifrovaniu a odoslaniu dát aplikácií, ktorej prislúchajú.
 
-Na konci funkcie \lstinline|event_loop()| sa nachádza ešte overenie pre prípad keď buffer s dátami nie je úplne plný. V tomto prípade funkcia vykonáva posun uložených bajtov na začiatok buffera. Inými slovami pripravuje dáta na ďalšie čítanie. Vyššie uvedené výroky sú znázornené v zdrojovom kóde \ref{bufferPreparation}.
+Na konci funkcie \lstinline|event_loop()| sa nachádza ešte overenie pre prípad keď nie je vyrovnávacia pamäť s dátami plná. V tomto prípade funkcia vykonáva posun uložených bajtov na začiatok. Inými slovami pripravuje dáta na ďalšie čítanie. Vyššie uvedené činnosti sú znázornené v zdrojovom kóde \ref{bufferPreparation}.
 
 \begin{lstlisting}[frame=single,
 	numbers=left,
@@ -602,7 +638,7 @@ Na konci funkcie \lstinline|event_loop()| sa nachádza ešte overenie pre prípa
 \end{lstlisting}
  
 \subsubsection{Šifrovanie a dešifrovanie}
-Proces šifrovanie resp. dešifrovania správy nastáva na oboch stranách spojenia, teda pri klientovi aj serveri. Zdrojový kód \ref{SS} demonštruje šifrovanie implementované v funkcii \lstinline|uc_encrypt()|. Tento proces sme sa pokúsili opísať v grafe \ref{fc3}. 
+Proces šifrovania, resp. dešifrovania správy nastáva na oboch stranách spojenia, teda pri klientovi aj serveri. Zdrojový kód \ref{SS} demonštruje šifrovanie implementované v funkcii \lstinline|uc_encrypt()|. Tento proces sme opísali v obrázku \ref{fc3}. 
 
 \begin{figure}
 	\centering
@@ -614,7 +650,7 @@ Proces šifrovanie resp. dešifrovania správy nastáva na oboch stranách spoje
 \begin{minipage}{\linewidth} 	
 	\begin{lstlisting}[frame=single,
 		numbers=left,
-		caption={Šifrovanie správy pomocou uc\_encrypt}\label{SS},
+		caption={Šifrovanie správy pomocou testovanej funkcie uc\_encrypt}\label{SS},
 		basicstyle=\ttfamily\small, keywordstyle=\color{black}\bfseries,]
  		
 void uc_encrypt(uint32_t st[12], unsigned char *msg, 
@@ -653,12 +689,12 @@ void uc_encrypt(uint32_t st[12], unsigned char *msg,
   	\end{lstlisting}
 \end{minipage}\\ 
 
-Ako je viditeľne v kóde dochádza k častému použitiu 2 funkcií. Nimi sú  \lstinline|xor128()| a  \lstinline|permute()|. Jedná sa o pomerne dôležité bloky pre správne fungovanie šifrovacieho algoritmu. Obsah prvej z uvedených je preto znázornený v zdrojovom kóde \ref{xor}.
+V kóde dochádza k častému použitiu 2 funkcií. Konkrétne \lstinline|xor128()| a  \lstinline|permute()|. Jedná sa o pomerne dôležité bloky pre správne fungovanie šifrovacieho algoritmu. Obsah prvej z uvedených je preto znázornený v zdrojovom kóde \ref{xor}.
 
 \begin{minipage}{\linewidth} 	
 	\begin{lstlisting}[frame=single,
 		numbers=left,
-		caption={Funkcia xor128}\label{xor},
+		caption={Funkcia xor128 použitá v implementácií šifrovania}\label{xor},
 		basicstyle=\ttfamily\small, keywordstyle=\color{black}\bfseries,]
 static inline void xor128(void *out, const void *in)
 {
@@ -679,12 +715,12 @@ static inline void xor128(void *out, const void *in)
   	\end{lstlisting}
 \end{minipage}\\ 
 
-Funkcia \lstinline|permute()| je pomerne rozsiahla. Jej obsah sa rozprestiera na 100 riadkoch. Jedná sa o implementáciu XOODOO permutácie, ktorá bola opísaná v kapitole číslo 2. Funkcionalita závisí od prostredia a procesorových inštrukcií. Samozrejmosťou je softvérová implementácia, ktorá je aj použitá pri behu. Dôvodom je, že naše zariadenie nemá k dispozícií uvedené procesorové inštrukcie. Blok, ktorý je použitý pri volaní sa nachádza v \ref{permute}.   
+Funkcia \lstinline|permute()| je pomerne rozsiahla. Jej obsah tvorí 100 riadkov zdrojového kódu. Jedná sa o implementáciu XOODOO permutácie, ktorá bola opísaná v Kapitole 2 tejto práce. Použitá implementácia závisí od podmieneného kompilovania zdrojového kódu. Naše zariadenie nemá k dispozícií potrebné procesorové inštrukcie. Po skompilovaní sa používa blok, ktorý sa nachádza v ukážke zdrojového kódu \ref{permute}.   
 
 \begin{minipage}{\linewidth} 	
 	\begin{lstlisting}[frame=single,
 		numbers=left,
-		caption={Funkcia Permute + makrá }\label{permute},
+		caption={Funkcia permute() a makrá realizujúce permutáciu XOODOO}\label{permute},
 		basicstyle=\ttfamily\small, keywordstyle=\color{black}\bfseries,]
 #define ROTR32(x, b) (uint32_t)(((x) >> (b)) | 
                      ((x) << (32 - (b))))
@@ -723,12 +759,12 @@ static void permute(uint32_t st[12])
 }
 	\end{lstlisting}
 \end{minipage}\\
-Na druhej strane k \textbf{dešifrovaniu} dochádza v momente ak sa v klientskom sokete nachádzajú dáta. Program overuje či sú v premennej \lstinline|fds[POLLFD_CLIENT]| dáta určené na spracovanie. \lstinline|fds[POLLFD_CLIENT]| predstavuje smerník na pamäťový blok, kde je uložený soket na druhú stranu spojenia, teda akceptovaného klienta. V momente keď sa tam nachádzajú dáta dôjde k ich čítaniu pomocou funkcie \lstinline|safe_read_partial()|. Následne program realizuje dešifrovanie funkciou \lstinline|uc_decrypt()|, ktorá je inverznou k \lstinline|uc_encrypt()|. V ukážke zdrojového kódu \ref{decrypt} a \ref{decrypt2}, si používateľ môže prezrieť obsah funkcie \lstinline|uc_decrypt()|. Po odšifrovaní dát ich program zapisuje do tunelovacieho rozhrania prostredníctvom funkcie \lstinline|tun_write()|. Následne TUN rozhranie dotvára paket a vloží ho do sieťového zásobníka (z ang. \textit{network stack}). OS následne vykonáva ďalšie spracovanie paketu do nižších vrstiev sieťového modelu. 
+K \textbf{dešifrovaniu} dochádza ak sa v klientskom sokete nachádzajú dáta. Program overuje či sú v premennej \lstinline|fds[POLLFD_CLIENT]| dáta určené na spracovanie. Premenná \lstinline|fds[POLLFD_CLIENT]| predstavuje smerník na pamäťový blok, kde je uložený soket na druhú stranu spojenia, teda akceptovaného klienta. V momente keď sa tam nachádzajú dáta dôjde k ich čítaniu pomocou funkcie \lstinline|safe_read_partial()|. Následne program realizuje dešifrovanie funkciou \lstinline|uc_decrypt()|, ktorá je inverznou k \lstinline|uc_encrypt()|. V ukážke zdrojového kódu \ref{decrypt} a \ref{decrypt2}, si používateľ môže prezrieť obsah funkcie \lstinline|uc_decrypt()|. Po odšifrovaní dát ich program zapisuje do~tunelovacieho rozhrania prostredníctvom funkcie \lstinline|tun_write()|. Následne TUN rozhranie dotvára paket a vloží ho do sieťového zásobníka (z ang. \textit{network stack}). OS následne vykonáva ďalšie spracovanie paketu do nižších vrstiev sieťového modelu. 
 
 \begin{minipage}{\textwidth} 	
 	\begin{lstlisting}[frame=single,
 		numbers=left,
-		caption={Zdrojový kód funkcie na dešifrovanie správy (1.časť)}\label{decrypt},
+		caption={Zdrojový kód testovanej funkcie na dešifrovanie správy (1.časť)}\label{decrypt},
 		basicstyle=\ttfamily\small, keywordstyle=\color{black}\bfseries,]
 		int uc_decrypt(uint32_t st[12], unsigned char *msg, 
 		               size_t msg_len, 
@@ -775,7 +811,7 @@ Na druhej strane k \textbf{dešifrovaniu} dochádza v momente ak sa v klientskom
 	\begin{lstlisting}[frame=single,
 		numbers=left,
 		firstnumber=38,
-		caption={Zdrojový kód funkcie na dešifrovanie správy (2.časť)}\label{decrypt2},
+		caption={Zdrojový kód testovanej funkcie na dešifrovanie správy (2.časť)}\label{decrypt2},
 		basicstyle=\ttfamily\small, keywordstyle=\color{black}\bfseries,]
 			permute(st);
 			squeeze_permute(st, tag);
@@ -789,15 +825,16 @@ Na druhej strane k \textbf{dešifrovaniu} dochádza v momente ak sa v klientskom
 	\end{lstlisting}
 \end{minipage}\\
 
-Pre čitateľa sme si pripravili aj názornú ukážku šifrovania a prenosu týchto dát cez soket. Za účelom ukážky použijeme už spomínaný nástroj Wireshark na zachytávanie premávky v sieťových rozhraniach. Prechod dát z pohľadu klienta medzi zariadeniami je znázornený na obrázku \ref{wiresharkpakety}. 
+Na obrázku \ref{sifrovanypaket} sme pripravili názornú ukážku šifrovaných dát pri prenose cez soket. Za účelom sme použili už spomínaný nástroj Wireshark na zachytávanie premávky v sieťových rozhraniach. Prechod dát z pohľadu klienta medzi zariadeniami je znázornený na obrázku \ref{wiresharkpakety}. 
 % TODO: \usepackage{graphicx} required
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=1\textwidth]{figures/wiresharkpakety}
 	\caption{Prenos zašifrovaných dát z VPN klienta na VPN server}
-	\label{:wiresharkpakety}
+	\label{wiresharkpakety}
 \end{figure}
-Na VPN klientovi sme spustili v príkazovom riadku jednoduchý príkaz \lstinline|ping 10.8.1.1|. Ten nám vytvára veľmi známy ICMP paket so žiadosťou o odpoveď\footnote{paket číslo 25}. Obsah tohto paketu je možné si pozrieť v obrázku \ref{req}. % TODO: \usepackage{graphicx} required
+
+Na VPN klientovi sme spustili v príkazovom riadku príkaz \lstinline|ping 10.8.1.1|. Ten nám vytvára ICMP paket so žiadosťou o odpoveď\footnote{paket číslo 25}. Obsah tohto paketu je možné si pozrieť v obrázku \ref{req}. % TODO: \usepackage{graphicx} required
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=1\textwidth]{figures/req}
@@ -812,19 +849,19 @@ Tento paket je vo VPN klinetovi po spracovaní vo DSVPN zašifrovaný pomocou XO
 	\caption{Zašifrovaný pôvodný ICMP paket v novom TCP pakete}
 	\label{sifrovanypaket}
 \end{figure}
-Označená časť paketu v obrázku je už spomenutý zašifrovaný ICMP paket z obrázku \ref{req}. VPN server ho po prijatí dešifruje a posiela na vlastné tunelovacie rozhranie. Odiaľ prevezme paket OS a vygeneruje odpoveď na pôvodnú požiadavku vo forme nového paketu. Ten je prenesený na klienta opäť cez soketové TCP spojenie\footnote{paket číslo 27}. Paket číslo 28 je odpoveď na úspešne prijatie. DSVPN spracuje tento paket a zapíše pôvodný na tunelovacie rozhranie.. Z hľadiska klienta už vidíme dešifrovanú odpoveď v~pakete číslo 29, ktorú spracuje OS.
+Označená časť paketu v obrázku je už spomenutý zašifrovaný ICMP paket z obrázku \ref{req}. VPN server ho po prijatí dešifruje a posiela na vlastné tunelovacie rozhranie. Odiaľ prevezme paket OS a vygeneruje odpoveď na pôvodnú požiadavku vo forme nového paketu. Ten je prenesený na klienta opäť cez soketové TCP spojenie\footnote{paket číslo 27}. Paket číslo 28 je odpoveď na úspešne prijatie. DSVPN spracuje tento paket a zapíše pôvodný na tunelovacie rozhranie. Z hľadiska klienta už vidíme dešifrovanú odpoveď v~pakete číslo 29, ktorú spracuje OS.
 
   
 \subsubsection{Ukončenie činnosti programu}
 Používateľ má možnosť ukončiť vzniknuté VPN spojenie medzi klientom a~serverom pomocou jednoduchého príkazu \lstinline|crtl + c|. Program zaznamená tento \\vstup a ukončí cyklus. Po návrate až do hlavnej funckie \lstinline|main()| sa z OS vymažú aplikované FW pravidlá a používateľ môže používať počítač ako pred spustením DSVPN.
 
 \section{Analýza výpočtových nárokov DSVPN}\label{analyza}
-Za účelom analýzy výpočtových nárokov sme sa v práci zamerali na meranie potrebného počtu cyklov a zároveň aj času, potrebného na vykonanie šifrovanie a~dešifrovanie permutacie XOODOO. Pre linuxovú platformu sme použili niektoré zabudované funkcie ako je \lstinline|clock()|. Pomocou nej sme zmerali čas vykonávania. Ukážka ako bol kód na meranie implementovaný do DSVPN je možné vidieť v ukážke zdrojového kódu
+Za účelom analýzy výpočtových nárokov sme sa v práci zamerali na meranie potrebného počtu cyklov a zároveň aj času, potrebného na vykonanie šifrovanie a~dešifrovanie permutacie XOODOO. Pre linuxovú platformu sme použili niektoré zabudované funkcie ako je \lstinline|clock()|. Pomocou nej sme zmerali čas vykonávania meranej funkcie. Ukážka ako bol kód na meranie implementovaný do DSVPN je možné vidieť v ukážke zdrojového kódu \ref{meranie}.
  
 \begin{minipage}{\linewidth} 	
 	\begin{lstlisting}[frame=single,
 		numbers=left,
-		caption={Ukážka spôsobu merania pri (de)šifrovaní XOODOO}\label{mneranie},
+		caption={Ukážka spôsobu merania pri (de)šifrovaní XOODOO}\label{meranie},
 		basicstyle=\ttfamily\small, keywordstyle=\color{black}\bfseries,]
 		uint64_t time,tick;	//inicializacia premennych
 		clock_t t = clock();
@@ -839,7 +876,7 @@ Za účelom analýzy výpočtových nárokov sme sa v práci zamerali na meranie
 		       time, time_taken);	
 	\end{lstlisting}
 \end{minipage}\\
-V prípade, ak by používateľ potreboval vykonať podobné meranie času v prostredí OS Windows, tak dávame do pozornosti tento variant. Viď zdrojový kód \ref{winmer}. Viac o použití a limitáciách je možné nájsť v práci \cite{bc}.
+V prípade, ak by používateľ potreboval vykonať podobné meranie času v prostredí OS Windows, tak môže použiť zdrojový kód \ref{winmer}. Viac o použití a obmedzeniach je možné nájsť v práci \cite{bc}.
 
 \begin{minipage}{\linewidth} 	
 	\begin{lstlisting}[frame=single,
@@ -869,16 +906,16 @@ V prípade, ak by používateľ potreboval vykonať podobné meranie času v pro
 	\end{lstlisting}
 \end{minipage}\\
 
-Spojenie medzi klientom a serverom je spustené na VM. Šifrovanie bolo merané na strane klienta. Dešifrovanie sme merali v OS servera. Počas spojenia sme sa snažili naviesť stav väčšieho sieťového zataženia. Tento úkon sme zrealizovali otvorením viacerých rôznych kariet vo webovom prehliadači. Týmto spôsobom sme odsimuloval potrebu prenosu vačšieho množstva dát naprieč sieťou. Najčastejšie však do šifrovania vstupovali TCP pakety, ktoré majú za úlohu udržať soketové TCP spojenie. Ich veľkosť je 52bajtov. Z výpisu sme ešte na základe pozorovania sledovali aké veľkosti sa najčastejšie vyskytujú. Na základe takto získaných dát sme vypracovali tabuľku \ref{tabmer}. Hodnoty pre jednotlivé stĺpce boli získane ako aritmetický priemer z meraní. Pakety, ktoré vstupovali do šifrovania, resp. dešifrovania menej ako 20-krát sme z meraní vypustili. Dôvodom je snaha o získanie lepších štatistických údajov. Obdobne sme pri výpočte aritmetického priemeru nebrali do úvahy príliš veľké výchylky pri meraní počtu cyklov. Uvedené chyby merania spôsobil samotný OS, kvôli prerušovania činnosti programu DSVPN.     
+Spojenie medzi klientom a serverom je spustené na VM. Šifrovanie bolo merané na strane klienta. Dešifrovanie sme merali v OS servera. Počas spojenia sme sa snažili naviesť stav väčšieho sieťového zaťaženia. Tento úkon sme zrealizovali otvorením viacerých rôznych okien vo webovom prehliadači. Týmto spôsobom sme simulovali potrebu prenosu väčšieho množstva dát naprieč sieťou. Najčastejšie však do šifrovania vstupovali TCP pakety, ktoré majú za úlohu udržať soketové TCP spojenie. Ich veľkosť je 52 bajtov. Z výpisu sme ešte na základe pozorovania sledovali aké veľkosti sa najčastejšie vyskytujú. Na základe takto získaných dát sme vypracovali tabuľku \ref{tabmer}. Hodnoty pre jednotlivé stĺpce boli získane ako aritmetický priemer z meraní. Pakety, ktoré vstupovali do šifrovania, resp. dešifrovania menej ako 20-krát sme z meraní vypustili. Dôvodom je snaha o získanie lepších štatistických údajov. Obdobne sme pri výpočte aritmetického priemeru nebrali do úvahy príliš veľké výchylky pri meraní počtu cyklov. Uvedené chyby merania spôsobil samotný OS, kvôli prerušovania činnosti programu DSVPN.     
 
 \begin{table}[h!]
 	\centering
 	\resizebox{\textwidth}{!}{%
 		\begin{tabular}{c|c|c|c|c}
-			\bfseries Veľkosť dát[B] &
+			\bfseries Veľkosť dát [B] &
 			\multicolumn{4}{|c}{\bfseries Názov meranej funkcie} 			
 			\\
-			\bfseries X &
+			\bfseries $X$ &
 			\multicolumn{2}{|c}{\bfseries uc\_encrypt()} &
 			\multicolumn{2}{|c}{\bfseries uc\_decrypt()}
 			\\
@@ -888,65 +925,65 @@ Spojenie medzi klientom a serverom je spustené na VM. Šifrovanie bolo merané 
 			& Počet cyklov
 			& Čas vykonávania [s] 
 			\\\hline\hline
-			 52   X 1376			 
+			 52   $X$ 1376			 
 			& 1 648
 			& 0.000 076
 			& 2 377
 			& 0.000 062
 			\\		
-			60  X  79	
+			60  $X$  79	
 			& 2 527
 			& 0.000 049
 			& 2 769
 			& 0.000 044
 			\\	
-			64 X 47		
+			64 $X$ 47		
 			& 1 799
 			& 0.000 048
 			& 2 341
 			& 0.000 043
 			\\
-			 80  X 145		
+			 80 $X$ 145		
 			& 2 853
 			& 0.000 053
 			& 3 343
 			& 0.000 057
 			\\ 
-			 91  X 128		
+			 91 $X$ 128		
 			& 2 944
 			& 0.000 046
 			& 2 965
 			& 0.000 042
 			\\
-			116 X 35		
+			116 $X$ 35		
 			& 4 083
 			& 0.000 049
 			& 2 878
 			& 0.000 049
 			\\
-			222 X 23		
+			222 $X$ 23		
 			& 4 220
 			& 0.000 345
 			& 3 976
 			& 0.000 040
 			\\
-			569 X 51		
+			569 $X$ 51		
 			& 10 245
-			& 0.000 950
+			& 0.000 150
 			& 8 574
-			& 0.000 043
+			& 0.000 143
 			\\
-			1 385 X 147		
+			1 385 $X$ 147		
 			& 21 232
 			& 0.000 165
 			& 19 046
-			& 0.000 045
+			& 0.000 145
 			\\
-			1 452 X 14		
+			1 452 $X$ 14		
 			& 22 599
-			& 0.000 077
+			& 0.000 177
 			& 20 083
-			& 0.000 532
+			& 0.000 232
 			\\\hline\hline
 		 	\bfseries	Celkom [B]		
 			& -
@@ -962,16 +999,16 @@ Spojenie medzi klientom a serverom je spustené na VM. Šifrovanie bolo merané 
 						
 		\end{tabular}%
 	}
-	\caption{Výsledky získaných meraní}
+	\caption{Výsledky z experimentálnych meraní funkcií na šifrovanie a dešifrovanie v prostredí virtuálnych strojov}
 	\label{tabmer}
 \end{table}
 
-Súčasťou príloh sú súbory s logmi, z ktorých bola tabuľka vytvorená. Zároveň prikladáme aj zdrojový kód programu, ktorý bol použitý na spracovanie výsledkov. Viď priečinok \lstinline|Measurements|. 
+Súčasťou prílohy A sú súbory s logmi, z ktorých bola tabuľka vytvorená. Zároveň v prílohe A prikladáme priečinok \lstinline|Measurements| so zdrojovým kódom programu, ktorý bol použitý na spracovanie výsledkov.  
 \section{Windows kompatibilita}
-V tejto práci sme sa zamerali aj na rozšírenie pôvodnej funkcionality DSVPN o kompatibilitu na OS Windows. Rozšírenie by slúžilo vo veľkej miere ako edukatívny vzor pri jednoduchom vysvetlení problematiky VPN na rôznych platformách. Samozrejmosťou ostáva zachovanie pôvodnej kompatibility. V rámci tejto činnosti sme museli pridať, resp. zmeniť niektoré funkcionality. V priebehu tejto podkapitoly stručne opíšeme aplikované zmeny. Rád by som ešte upozornil čitateľa na použitie prepocesorov \lstinline|#ifdef| a \lstinline|#ifndef|. Vďaka ním sme dokázali podmienene určiť čo má program realizovať v danom OS.
+V tejto práci sme sa zamerali aj na rozšírenie pôvodnej funkcionality DSVPN o kompatibilitu na OS Windows. Rozšírenie by slúžilo vo veľkej miere ako edukatívny vzor pri jednoduchom vysvetlení problematiky VPN na rôznych platformách. Samozrejmosťou ostáva zachovanie pôvodnej kompatibility. V rámci tejto činnosti sme museli pridať, resp. zmeniť niektoré funkcionality. V priebehu tejto podkapitoly stručne opíšeme aplikované zmeny. Rád by som ešte upozornil čitateľa na použitie prepocesorov \lstinline|#ifdef| a \lstinline|#ifndef|. Kompletne upravený kód je obsahom prílohy A
 
 \subsection{Hlavičkové súbory}
-Prvotnou činnosťou bolo získanie vedomostí o potrebných knižniciach, ktoré v prípade soketového programovania potrebujeme. Priebežnou analýzou pôvodného riešenie sme zároveň vyhľadávali dané realizácie aj pre OS Windows. Obdobne pri snahe o priebežné ladenie programu, nám prekladač vypísal niektoré problémy týkajúce sa nedostupných knižníc pre Windows.  Vo výsledku sme pre Windows platformu potrebovali vložiť 13 hlavičkových knižníc a zadefinovať niektoré makrá, ktoré sa vo Windows volajú inak. Aplikované zmeny je možné si pozrieť v ukážke zdrojového kódu \ref{sck}. 
+Prvotnou činnosťou pre vytvorenie kompatibility programu DSVPN s OS Windows bolo získanie vedomostí o knižniciach, ktoré v prípade soketového programovania potrebujeme. Priebežnou analýzou pôvodného riešenia sme zároveň vyhľadávali dané realizácie aj pre OS Windows. Obdobne pri snahe o priebežné ladenie programu, nám prekladač vypísal niektoré problémy týkajúce sa nedostupných knižníc pre Windows. Vo výsledku sme pre Windows platformu potrebovali vložiť 13 hlavičkových súborov a zadefinovať niektoré makrá, ktoré sa vo Windows volajú inak. Aplikované zmeny je možné si pozrieť v ukážke zdrojového kódu \ref{sck}. 
 \subsection{Funkcia generovania náhodných čísel}
 Implementácia XOODOO používa pri svojej činnosti aj náhodné dáta. V pôvodnej implementácií DSVPN sa tieto dáta získavajú pomocou systémových generátorov náhodných čísel. V prípade OS Linux sa tento úkon realizuje tradične systémovým volaním funkcie \lstinline|SYS_getrandom()|. V prípade ostatných podporovaných OS sa volá funkcia \lstinline|arc4random_buf()|. 
 Na základe odporúčaní z \cite{bc} sme do DSVPN zakomponovali pre prípad OS Windowsu volanie funkcie \\\lstinline|BCryptGenRandom()|. Toto rozhranie je aktuálne na Windowse odporúčaný spôsob generovania náhodných dát pre kryptografické účely. Výstupom volania sú dáta z kryptograficky bezpečného pseudonáhodného generátora náhodných čísel. V ukážke zdrojového kódu \ref{bcrypt} je znázornená modifikovaná funkcia na získavanie náhodných dát. 
@@ -988,6 +1025,7 @@ void uc_randombytes_buf(void *buf, size_t len)
 		                    BCRYPT_USE_SYSTEM_PREFERRED_RNG))
 		{
 			puts("BCRYPTGENRANDOM ERROR");
+			abort();
 		}
 		#elif defined(__linux__)  
 		if ((size_t) syscall(SYS_getrandom, buf, (int) len, 0)
@@ -1056,9 +1094,9 @@ Následne postačilo len zmeniť deklarácie a definície všetkých soketových
 	\end{lstlisting}
 \end{minipage}\\ 
 
-Nasledovala práca so soketmi. Princíp fungovania soketov na strane klienta a~servera ostáva v svojej podstate rovnaký. Odlišný je spôsob inicializácie, zápisu, čítania, konfigurácie a manipulácie s nimi. V tomto smere nám vo veľkej miere pomohol návod v \cite{sck}. Autor názorným spôsobom vysvetľuje princíp fungovania, práce a manipulácie so soketmi. Ak používateľ nie je zorientovaný v oblasti soketového programovania, tak by si mál túto krátku prezentáciu prečítať.
+Nasledovala práca so soketmi. Princíp fungovania soketov na strane klienta a~servera ostáva v svojej podstate rovnaký. Odlišný je spôsob inicializácie, zápisu, čítania, konfigurácie a manipulácie s nimi. V tomto smere nám vo veľkej miere pomohol návod v \cite{sck}. V publikácií je názorným spôsobom vysvetlený princíp fungovania, práce a manipulácie so soketmi. 
 
-Pred samotným používaním soketov je potrebné inicializovať tzv. Winsock. Tento úkon sme realizovali v \lstinline|main()| funkcii. Viď ukážku zdrojového kódu \ref{wsck}.
+Pred samotným používaním soketov je potrebné inicializovať tzv. Winsock. Tento úkon sme realizovali v \lstinline|main()| funkcii, zobrazenú v ukážke zdrojového kódu \ref{wsck}.
 
 \begin{minipage}{\linewidth} 	
 	\begin{lstlisting}[frame=single,
@@ -1077,7 +1115,7 @@ Pred samotným používaním soketov je potrebné inicializovať tzv. Winsock. T
 	\end{lstlisting}
 \end{minipage}\\
 
-V kóde sme potrebovali zmeniť spôsob čítania a zápisu dát do soketov. Za~týmto účelom sme vytvorili viacero funkcií, ktoré danú činnosť realizujú. Ich volanie sa vykonáva v pôvodnej funkcionalite pomocou preprocesora \lstinline|#ifdef _WIN32|. Ak je teda potrebné aby pôvodná implementácia bola vykonaná odlišne, tak sme pomocou tohto makra volali nami vytvorenú funkciu. Celkovo sme takýmto spôsobom vytvorili 9 funkcií, ktoré sú obsahom os.c. Do os.h sme pridali deklarácie:
+V kóde sme potrebovali zmeniť spôsob čítania a zápisu dát do soketov. Za~týmto účelom sme vytvorili viacero funkcií, ktoré danú činnosť realizujú. Ich volanie sa vykonáva v pôvodnej funkcionalite pomocou preprocesora \lstinline|#ifdef _WIN32|. Ak~je teda potrebné aby pôvodná implementácia bola vykonaná odlišne, tak sme pomocou tohto makra volali nami vytvorenú funkciu. Celkovo sme takýmto spôsobom vytvorili 9 funkcií, ktoré sú obsahom os.c. Do os.h sme pridali deklarácie:
 \begin{itemize}
 	\item\lstinline|int SCK_close(SCK fd);|,
 	\item\lstinline|int w_open(const char *filename, int flag);|,
@@ -1097,27 +1135,26 @@ V kóde sme potrebovali zmeniť spôsob čítania a zápisu dát do soketov. Za~
 	\item\lstinline|ssize_t w_safe_write_partial(const SOCKET fd, void *const buf_,| 
 					\lstinline|const size_t max_count);|.
 \end{itemize}  
-Z názvov je jednoznačne jasné čo dané funkcie vykonávajú.
 
-Pri Windows OS na konci každého programu ešte potrebujeme zavolať \\\lstinline|WSACleanup();|. Za spomenutie ešte stojí získavanie chýbových hlášok zo soketov. V Linuxe sa v prípade cchyby ukladá chybová hláška do globálnej premennej  \lstinline|errno|. Z nej následne programátor dokáže určiť kde mohol nastať problém. V prípade Windowsu potrebuje používateľ zavolať \lstinline|WSAGetLastError()|. Následne má k dispozícií kód chybovej hlášky. Zoznam a popis chybových hlášok je dostupný na internete\footnote{\url{https://learn.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2}}.  
+Pri Windows OS na konci každého programu ešte potrebujeme zavolať \\\lstinline|WSACleanup();|. Za spomenutie ešte stojí získavanie chýbových hlášok zo soketov. V Linuxe sa v prípade chyby ukladá chybová hláška do globálnej premennej  \lstinline|errno|. Z nej následne programátor dokáže určiť kde mohol nastať problém. V prípade Windowsu potrebuje používateľ zavolať \lstinline|WSAGetLastError()|. Následne má k dispozícií kód chybovej hlášky. Zoznam a popis chybových hlášok je dostupný na internete\footnote{\url{https://learn.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2}}.  
 \subsection{Tunelovacie rozhranie}
-Windows nemá natívnu podporu na vytváranie virtuálnych sieťových adaptérov. Na vyriešenie problému sme mali niekoľko možností. Prvá bola implementácia vlastného ovládača, ktorý by pracoval s jadrom OS. Drúha realnejšia možnosť bola použitie už vytvorenej implementácie. Tu sa nám naskytovali dve možné riešenie. OpenVPN TUN/TAP a Wintun adaptér. Z hľadiska použiteľnosti sa však Wintun adaptér pozdáva ako omnoho lepšie riešenie. Dôvodom je jeho použitie bez potreby inštalácie dodatočného softvéru. 
+Windows nemá natívnu podporu na vytváranie virtuálnych sieťových adaptérov. Na vyriešenie problému sme mali niekoľko možností. Prvá bola implementácia vlastného ovládača, ktorý by pracoval s jadrom OS. Reálnejšia možnosť bola použitie už vytvorenej implementácie. Tu sa nám naskytovali dve možné riešenie. OpenVPN TUN/TAP a Wintun adaptér \cite{wintun}. Rozhodli sme sa použiť Wintun adaptér. Dôvodom je jeho použitie bez potreby inštalácie dodatočného softvéru. 
 Do kódu DSVPN sme implementovali funkcie na inicializáciu, čitanie, zápis a ukončenie ovládača. Jedná sa o funkcie: 
 \begin{itemize}
 	\item\lstinline|int wtunInit(Context *context);| -- realizuje načítanie wintun.dll knižnice, vytvorenie adaptéru, spustenie prevádzky a jeho uloženie do štruktúry.
-	\item\lstinline|int tun_reader(Context *context, unsigned char *outgoingData)| -- číta pakety, ktoré dorazia na rozhranie a ukladá ich do premennej outgoingData,
+	\item\lstinline|int tun_reader(Context *context, unsigned char *outgoingData)| -- číta pakety, ktoré sú prijaté na rozhranie a ukladá ich do premennej outgoingData,
 	\item\lstinline|int tun_writer(Context *context, BYTE *PacketData,| 
 	
 		\lstinline|ssize_t PacketDataSize)| -- zapisuje dáta v premennej PacketData s veľkosťou PacketDataSize do tunelovacieho rozhrania,
 	\item\lstinline|void w_cleanUp(Context *context)| -- obsahuje funkcie z wintun.dll na~bezpečné ukončenie prevádzky a vymazanie adaptéra.
 \end{itemize} 
 
-Tieto funkcie sme vložili v DSVPN do súbora vpn.c. Dôvodom bolo posielanie celej štuktúry do týchto funkcií. Na správne fungovanie potrebuje premennú typu \lstinline|WINTUN_SESSION_HANDLE|. Pri vytváraní adaptéra sa do nej uložia informácie o~tunelovacom rozhraní. Na základe nich dokážeme následne čítať a zapisovať dáta na rozhranie. V budúcnosti by sa kvôli optimalizácií využitia pamäte odporúčalo zmeniť túto funkciu aby pracovalo len s premennou \lstinline|WINTUN_SESSION_HANDLE| a~nie celou štruktúrou.
+Tieto funkcie sme vložili v DSVPN do súbora vpn.c. Dôvodom bolo posielanie celej štuktúry do týchto funkcií. Na správne fungovanie potrebuje premennú typu \lstinline|WINTUN_SESSION_HANDLE|. Pri vytváraní adaptéra sa do nej uložia informácie o~tunelovacom rozhraní. Na základe nich dokážeme následne čítať a zapisovať dáta do rozhrania. V budúcnosti by sa kvôli optimalizácií využitia pamäte odporúčalo zmeniť túto funkciu aby pracovala len s premennou \lstinline|WINTUN_SESSION_HANDLE| a~nie celou štruktúrou.
 
-Na rozdiel od pôvodnej implementácie nastal pri tomto adaptéry problém. V DSVPN na Linuxe dokážeme monitorovať stav rozhrania. Dokáže teda určiť či sa v ňom nachádzajú dáta na čítanie, nastala chyba alebo môžeme zapisovať dáta. V prípade wintunu sme však k takejto možnosti monitorovania nenašli informácie. Z uvedeného dôvodu sme museli pozmeniť logiku v kóde. Pôvodne sa z tunelovacieho rozhrania číta len ak rozhranie obsahuje nejaké dáta určené na čítanie. V aktualizovanej verzii čítame dáta z rozhrania pri každom cykle vo funkcii \lstinline|event_loop()|. OS Windows podporuje možnosť počkať na ukončenie procesu. Zároveň wintun implementuje funkcionalitu čakania na prichádzajúce dáta ak momentálne na rozhraní žiadne nie sú. Do \lstinline|tun_reader()| sme teda implementovali túto logiku. Vo výsledku funkcia skončí až keď nastane prečítanie nejakých dát. Tento úkon bude v prípade bežnej prevádzky potrebné zmeniť. Dôvodom je, že môže nastať blokovanie DSVPN v stave čítania z rozhrania. Pri experimentovaní sme nenastavovali filtrovacie pravidlá a ani raz spomenutý scenár nestal. 
+Na rozdiel od pôvodnej implementácie nastal pri tomto adaptéri problém. V~DSVPN na Linuxe dokážeme monitorovať stav rozhrania. Dokáže teda určiť, či sa v~ňom nachádzajú dáta na~čítanie, nastala chyba alebo môžeme zapisovať dáta. V~prípade wintunu sme však k takejto možnosti monitorovania nenašli informácie. Z~uvedeného dôvodu sme museli pozmeniť logiku v kóde. Pôvodne sa z~tunelovacieho rozhrania číta len ak rozhranie obsahuje nejaké dáta určené na čítanie. V~aktualizovanej verzii čítame dáta z rozhrania pri každom cykle vo funkcii \lstinline|event_loop()|. OS Windows podporuje možnosť počkať na~ukončenie procesu. Zároveň wintun implementuje funkcionalitu čakania na prichádzajúce dáta ak momentálne na rozhraní žiadne nie sú. Do~\lstinline|tun_reader()| sme teda implementovali túto logiku. Vo výsledku funkcia skončí až keď nastane prečítanie nejakých dát. Tento úkon bude v prípade bežnej prevádzky potrebné zmeniť. Dôvodom je, že môže nastať blokovanie DSVPN v~stave čítania z rozhrania. Pri~experimentovaní sme nenastavovali filtrovacie pravidlá a ani raz spomenutý scenár nestal. 
 
 \subsection{Smerovanie a Firewall pravidlá}
-Posledný z krokov, ktorý je dôležitý, je aplikovanie firewall pravidiel a smerovacích ciest. V pôvodnej implementácií sa nachádzajú niektoré pravidlá, ktoré sa na bežnom Windowse nemožno uskutočniť. Pri experimentoch sme sa rozhodli preto Firewall pravidla na vypustiť. Pomocou príkazov ho vypíname. Okrem tejto zmeny je rozdiel aj v nastavovaní prednastavených pravidiel smerovania. Pri experimentoch sme aplikovali rôzne pravidla. Obsah príkazov pre príkazový riadok je možné vidieť v ukážke kódov \ref{rulesserver} a \ref{rulesklient}.
+Posledný z krokov, ktorý je dôležitý, je aplikovanie firewall pravidiel a smerovacích ciest. V pôvodnej implementácií sa nachádzajú niektoré pravidlá, ktoré sa na bežnom Windowse nemožno uskutočniť. Pri experimentoch sme sa rozhodli preto Firewall pravidlá na vypustiť. Pri implementácií sme ho vypli pomocou príkazu. Ten je možné si pozrieť v ukážke zdrojového kódu \ref{rulesklient}. Okrem tejto zmeny je rozdiel aj v nastavovaní prednastavených pravidiel smerovania. Pri experimentoch sme aplikovali rôzne pravidla. Obsah príkazov pre príkazový riadok je možné vidieť v ukážke kódov \ref{rulesserver} a \ref{rulesklient}.
 
 \begin{minipage}{\linewidth} 	
 	\begin{lstlisting}[frame=single,
@@ -1220,7 +1257,7 @@ $(RM) *.exe
 	\end{lstlisting}
 \end{minipage}\\
 
-Pri vývoji softvéru je veľmi dôležitým priateľom programátora aj nástroj na~ladenie programov. Z uvedeného dôvodu prikladám aj konfiguráciu pre ladenie v~prostredí programu Visual Studio C. Konfiguráciu bolo potrebné pripraviť. V~nej ma čitateľ možnosť prečítať si ako daný program spúšťať za účelom ladenia. Dôležité je taktiež, že program Visual Studio Code musí byť pri ladení spustený ako administrátor. Ak tento scénar nenastane, tak nebude možné vytvoriť tunelovacie rozhranie a DSVPN spadne. V ukážke zdrojového kódu \ref{launch}, je možné vidieť potrebnú konfiguráciu \lstinline|launch.json| na spustenie DSVPN ako klient v režime ladenia. 
+Pri vývoji softvéru sme používali aj nástroj na~ladenie programov. Z uvedeného dôvodu prikladám aj konfiguráciu pre ladenie v~prostredí programu Visual Studio C. Konfiguráciu bolo potrebné pripraviť. V~nej ma čitateľ možnosť prečítať si ako daný program spúšťať za účelom ladenia. Dôležité je taktiež, že program Visual Studio Code \textbf{musí} byť pri bežnom chode DSVPN a aj jeho ladení \textbf{byť spustený ako administrátor}. Ak tento scénar nenastane, tak nebude možné vytvoriť tunelovacie rozhranie a DSVPN ukončí činnosť. V ukážke zdrojového kódu \ref{launch}, je možné vidieť potrebnú konfiguráciu \lstinline|launch.json| na spustenie DSVPN ako klient v režime ladenia. 
 
 \begin{minipage}{\linewidth} 	
 	\begin{lstlisting}[frame=single,
