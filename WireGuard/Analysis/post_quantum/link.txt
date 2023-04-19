@@ -1,2 +1,0 @@
-Post-Quantum Cryptography in WireGuard VPN
-https://sar.informatik.hu-berlin.de/research/publications/SAR-PR-2020-03/SAR-PR-2020-03_.pdf
