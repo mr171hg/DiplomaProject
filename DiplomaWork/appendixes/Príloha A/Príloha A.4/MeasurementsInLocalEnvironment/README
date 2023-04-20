@@ -1,0 +1,4 @@
+localMeasurement obsahuje zdrojovy kod na meranie implementacie XOODOO v DSVPN
+
+kompilacia: make all
+pouzitie: ./test >log.txt

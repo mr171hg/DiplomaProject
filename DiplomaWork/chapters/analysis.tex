@@ -63,7 +63,7 @@ TCP/IP model je zobrazený pomocou schémy na~obrázku \ref{tcpipprot}. V uveden
 \begin{figure}[!ht]
 	\centering
 	\includegraphics[width=0.9\textwidth]{figures/tcpiprot}
-	\caption{Schéma TCP/IP modelu s niektorými protokolmi}
+	\caption{Schéma TCP/IP modelu s niektorými protokolmi \cite{tcpguide}}
 	\label{tcpipprot}
 \end{figure}
 
@@ -105,7 +105,7 @@ Na začiatku 21. storočia je 95\% paketov používaných na internete typu TCP.
 
 V súčasnosti je možne TCP protokol implementovať softvérovo aj hardvérovo. Pri prvom z uvedených je problémom závislosť na OS a následne aj vysoká vyťaženosť procesora pri príprave a spracovaní dát. Pri hardvérovom riešení je výhodou optimalizácia a implementácia bez potreby dodatočnej úpravy OS. Hardvérové implementácie sa realizujú pomocou koprocesorov.
 
-Podrobnejšie informácie o TCP protokole je možné nájsť v \cite{tcp2}. V uvedenej publikácií sa nachádza opis TCP hlavičky, metódy nadviazania a ukončenia spojenia. Obdobne je spomenuté ako dochádza k prenosu dát pomocou sekvenčných čísel. V uvedenej publikácií môže čitateľ nájsť ďalšie informácie o protokole TCP.
+Podrobnejšie informácie o TCP protokole je možné nájsť v \cite{tcp2}. V uvedenej publikácií sa nachádza opis TCP hlavičky, metódy nadviazania a ukončenia spojenia. Obdobne je spomenuté ako dochádza k prenosu dát pomocou sekvenčných čísel. V uvedenej publikácií a v \cite{tcpguide} môže čitateľ nájsť ďalšie informácie o protokole TCP.
 
 \textbf{Používateľský datagramový protokol} (z ang. \textit{User Datagram Protocol}, ďalej \acrshort{udp}) je jedným zo základných komunikačných \acrshort{ip} protokolov. Používa sa na~odosielanie správ iným hostiteľom v~sieti. Správy sú prenášané ako datagramy v~paketoch. \acrshort{udp} nevyžaduje predchádzajúcu komunikáciu na~nastavenie komunikačných kanálov alebo dátových ciest. Používa jednoduchý komunikačný model bez spojenia s minimom protokolových mechanizmov. Poskytuje kontrolné súčty pre integritu údajov a čísla portov na adresovanie rôznych funkcií v zdroji a cieli datagramu. 
 

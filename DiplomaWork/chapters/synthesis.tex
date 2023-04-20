@@ -61,7 +61,7 @@ V rámci tejto práce sme sa rozhodli vyskladať ovládač aj vlastnými silami.
 \end{itemize}  
 Po uvedených krokoch sa nám OS spustí do testovacieho režimu. V ňom dokážeme následne modifikovať pôvodné riešenie a vyskladať si vlastný ovládač. Ako uviedli autori, pre jeho použitie bez spusteného testovacieho režimu OS je nutné ovládač podpísať. 
 
-Pre čitateľa sme pripravili aj vlastnú demo ukážku použitia ovládača v jazyku C. Zdrojový kód je obsahom príloh. Konkrétne v priečinku \lstinline|wintun_demo|. Priečinok obsahuje zdrojový kód programu, podpísaný \lstinline|wintun.dll|, balíček make a jednoduché \lstinline|readme.txt| s pokynmi.
+Pre čitateľa sme pripravili aj vlastnú demo ukážku použitia ovládača v jazyku C. Zdrojový kód je obsahom príloh. Konkrétne v priečinku Prílohe A.2. Priečinok obsahuje zdrojový kód programu, podpísaný \lstinline|wintun.dll|, balíček make a jednoduché \lstinline|readme.txt| s pokynmi.
 Viac informácií nájde používateľ v dokumentácií Wintun, dostupnej na webe\footnote{\url{https://git.zx2c4.com/wintun/about/}}.
    
 \subsubsection{Zdrojový kód na meranie počtu cyklov} 
@@ -295,7 +295,7 @@ Následne v \ref{ipu20} môžeme vidieť to isté pre klienta.
   
 \begin{figure}[!h]
 	\centering
-	\includegraphics[width=0.9\textwidth]{figures/vpntru20}
+	\includegraphics[width=1\textwidth]{figures/vpntru20}
 	\caption{Overenie funkcionality DSVPN pomocou traceroute}
 	\label{vpntru20}
 \end{figure}
@@ -845,7 +845,7 @@ Tento paket je vo VPN klinetovi po spracovaní vo DSVPN zašifrovaný pomocou XO
 % TODO: \usepackage{graphicx} required
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=0.9\textwidth]{figures/sifrovanypaket}
+	\includegraphics[width=1\textwidth]{figures/sifrovanypaket}
 	\caption{Zašifrovaný pôvodný ICMP paket v novom TCP pakete}
 	\label{sifrovanypaket}
 \end{figure}
@@ -927,63 +927,63 @@ Spojenie medzi klientom a serverom je spustené na VM. Šifrovanie bolo merané 
 			\\\hline\hline
 			 52   $X$ 1376			 
 			& 1 648
-			& 0.000 076
+			& 0,000 076
 			& 2 377
-			& 0.000 062
+			& 0,000 062
 			\\		
 			60  $X$  79	
 			& 2 527
-			& 0.000 049
+			& 0,000 049
 			& 2 769
-			& 0.000 044
+			& 0,000 044
 			\\	
 			64 $X$ 47		
 			& 1 799
-			& 0.000 048
+			& 0,000 048
 			& 2 341
-			& 0.000 043
+			& 0,000 043
 			\\
 			 80 $X$ 145		
 			& 2 853
-			& 0.000 053
+			& 0,000 053
 			& 3 343
-			& 0.000 057
+			& 0,000 057
 			\\ 
 			 91 $X$ 128		
 			& 2 944
-			& 0.000 046
+			& 0,000 046
 			& 2 965
-			& 0.000 042
+			& 0,000 042
 			\\
 			116 $X$ 35		
 			& 4 083
-			& 0.000 049
+			& 0,000 049
 			& 2 878
-			& 0.000 049
+			& 0,000 049
 			\\
 			222 $X$ 23		
 			& 4 220
-			& 0.000 345
+			& 0,000 345
 			& 3 976
-			& 0.000 040
+			& 0,000 040
 			\\
 			569 $X$ 51		
 			& 10 245
-			& 0.000 150
+			& 0,000 950
 			& 8 574
-			& 0.000 143
+			& 0,000 143
 			\\
 			1 385 $X$ 147		
 			& 21 232
-			& 0.000 165
+			& 0,000 165
 			& 19 046
-			& 0.000 145
+			& 0,000 045
 			\\
 			1 452 $X$ 14		
 			& 22 599
-			& 0.000 177
+			& 0,000 077
 			& 20 083
-			& 0.000 232
+			& 0,000 532
 			\\\hline\hline
 		 	\bfseries	Celkom [B]		
 			& -
@@ -993,9 +993,9 @@ Spojenie medzi klientom a serverom je spustené na VM. Šifrovanie bolo merané 
 			\\
 			364 656		
 			& 74 150
-			& 0.001 858
+			& 0,001 858
 			& 68 352
-			& 0.000 957
+			& 0,000 957
 						
 		\end{tabular}%
 	}
@@ -1003,9 +1003,9 @@ Spojenie medzi klientom a serverom je spustené na VM. Šifrovanie bolo merané 
 	\label{tabmer}
 \end{table}
 
-Súčasťou prílohy A sú súbory s logmi, z ktorých bola tabuľka vytvorená. Zároveň v prílohe A prikladáme priečinok \lstinline|Measurements| so zdrojovým kódom programu, ktorý bol použitý na spracovanie výsledkov.  
+Súčasťou Prílohy A.4 sú súbory s logmi, z ktorých bola tabuľka vytvorená. Zároveň do Prílohe A.4 prikladáme priečinok \lstinline|MeasurementsInVMEnvironment| so zdrojovým kódom programu, ktorý bol použitý na spracovanie výsledkov.  
 \section{Windows kompatibilita}
-V tejto práci sme sa zamerali aj na rozšírenie pôvodnej funkcionality DSVPN o kompatibilitu na OS Windows. Rozšírenie by slúžilo vo veľkej miere ako edukatívny vzor pri jednoduchom vysvetlení problematiky VPN na rôznych platformách. Samozrejmosťou ostáva zachovanie pôvodnej kompatibility. V rámci tejto činnosti sme museli pridať, resp. zmeniť niektoré funkcionality. V priebehu tejto podkapitoly stručne opíšeme aplikované zmeny. Rád by som ešte upozornil čitateľa na použitie prepocesorov \lstinline|#ifdef| a \lstinline|#ifndef|. Kompletne upravený kód je obsahom prílohy A
+V tejto práci sme sa zamerali aj na rozšírenie pôvodnej funkcionality DSVPN o kompatibilitu na OS Windows. Rozšírenie by slúžilo vo veľkej miere ako edukatívny vzor pri jednoduchom vysvetlení problematiky VPN na rôznych platformách. Samozrejmosťou ostáva zachovanie pôvodnej kompatibility. V rámci tejto činnosti sme museli pridať, resp. zmeniť niektoré funkcionality. V priebehu tejto podkapitoly stručne opíšeme aplikované zmeny. Rád by som ešte upozornil čitateľa na použitie prepocesorov \lstinline|#ifdef| a \lstinline|#ifndef|. Kompletne upravený kód je obsahom prílohy A.3.
 
 \subsection{Hlavičkové súbory}
 Prvotnou činnosťou pre vytvorenie kompatibility programu DSVPN s OS Windows bolo získanie vedomostí o knižniciach, ktoré v prípade soketového programovania potrebujeme. Priebežnou analýzou pôvodného riešenia sme zároveň vyhľadávali dané realizácie aj pre OS Windows. Obdobne pri snahe o priebežné ladenie programu, nám prekladač vypísal niektoré problémy týkajúce sa nedostupných knižníc pre Windows. Vo výsledku sme pre Windows platformu potrebovali vložiť 13 hlavičkových súborov a zadefinovať niektoré makrá, ktoré sa vo Windows volajú inak. Aplikované zmeny je možné si pozrieť v ukážke zdrojového kódu \ref{sck}. 
