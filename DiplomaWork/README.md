@@ -22,9 +22,9 @@ Projekt si samozrejme môžete otvoriť v ktoromkoľvek _LaTeX_ editore alebo ID
 
 Všetky zdrojové kódy a odladené programy sú dostupné v priečinku:
 
-    appendixes --> BC_ZK
+    appendixes --> Priloha A
 
-Viac informácií je možné násť v tomto priečinku alebo v bakalárskej práci (Obsah Prílohy A). 
+Viac informácií je možné násť v tomto priečinku alebo v práci (Obsah Prílohy A). 
 
 # Author
 Organization: Technical University of Kosice (TUKE),
@@ -37,7 +37,7 @@ Feld of study: 	Informatics,
 
 Study program: Computer Networks, 
 
-School year: 3., Bachelor study, 2020/2021,
+School year: 3., Bachelor study, 2022/2023,
 
 Author:  Marek Rohac -- MR,
 

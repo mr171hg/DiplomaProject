@@ -11,7 +11,7 @@ Study program: Computer Networks,
 
 Year: 2021 - 2023,
 
-Author: Bc. Marek Rohač-- MR,
+Author: Bc. Marek Rohač -- MR,
 
 Contact: 
   marek.rohac@student.tuke.sk
@@ -25,7 +25,7 @@ This repository was created to stored all data connected with a process of prepa
 
 # Updates
 
-Last modification: 03.10.2021 - MR
+Last modification: 21.04.2023 - MR
 
 # Contributing
 As first download git app for your platform --> https://git-scm.com/downloads
